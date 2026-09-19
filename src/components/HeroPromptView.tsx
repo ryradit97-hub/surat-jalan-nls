@@ -123,14 +123,14 @@ export const HeroPromptView: React.FC<HeroPromptViewProps> = ({
 
         {/* Title Header */}
         <div className="text-center mb-8 sm:mb-10 relative z-10">
-          <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.06] border border-[#faedd9]/20 text-[#faedd9] text-xs sm:text-sm font-semibold mb-4 backdrop-blur-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.15)]">
+          <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.06] border border-[#faedd9]/20 text-[#faedd9] text-xs sm:text-sm font-semibold mb-4 backdrop-blur-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.15)] theme-badge">
             <img src={nlsLogo} alt="NLS" className="w-4 h-4 object-contain rounded-full shadow-sm" />
             <span>Asisten Cerdas Surat Jalan</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-[#fffdfa] tracking-tight leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-[#fffdfa] tracking-tight leading-tight theme-hero-headline">
             Buat Surat Jalan Otomatis
           </h1>
-          <p className="text-sm sm:text-base md:text-lg text-[#faedd9]/80 mt-3 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-sm sm:text-base md:text-lg text-[#faedd9]/80 mt-3 max-w-2xl mx-auto leading-relaxed theme-hero-sub">
             Ketik atau diktekan kalimat detail pengiriman dalam Bahasa Indonesia. AI menyusun dokumen resmi A4 standar PT Niaga Logistics Sejahtera.
           </p>
         </div>
@@ -207,10 +207,10 @@ export const HeroPromptView: React.FC<HeroPromptViewProps> = ({
                 <button
                   type="submit"
                   disabled={!prompt.trim()}
-                  className="flex items-center gap-3 px-8 sm:px-10 md:px-12 py-3.5 sm:py-4 md:py-4.5 rounded-2xl text-base sm:text-lg font-black text-[#181022] bg-gradient-to-r from-[#faedd9] via-[#fff7ed] to-[#faedd9] hover:shadow-[0_15px_45px_rgba(250,237,217,0.45)] hover:scale-105 active:scale-95 disabled:opacity-40 transition-all cursor-pointer shadow-[0_10px_30px_rgba(250,237,217,0.3),inset_0_2px_2px_rgba(255,255,255,0.9)] group"
+                  className="flex items-center gap-3 px-8 sm:px-10 md:px-12 py-3.5 sm:py-4 md:py-4.5 rounded-2xl text-base sm:text-lg font-black text-[#181022] bg-gradient-to-r from-[#faedd9] via-[#fff7ed] to-[#faedd9] hover:shadow-[0_15px_45px_rgba(250,237,217,0.45)] hover:scale-105 active:scale-95 disabled:opacity-40 transition-all cursor-pointer shadow-[0_10px_30px_rgba(250,237,217,0.3),inset_0_2px_2px_rgba(255,255,255,0.9)] group theme-btn-primary"
                 >
                   <span>Buat Surat Jalan</span>
-                  <ArrowRight className="w-5 h-5 text-[#7e22ce] group-hover:translate-x-1.5 transition-transform" />
+                  <ArrowRight className="w-5 h-5 opacity-80 group-hover:translate-x-1.5 transition-transform" />
                 </button>
               </div>
             </div>
@@ -218,7 +218,7 @@ export const HeroPromptView: React.FC<HeroPromptViewProps> = ({
 
           {/* Liquid Prompt Suggestion Chips */}
           <div className="mt-8 sm:mt-10 pt-6 sm:pt-8 border-t border-white/[0.06]">
-            <div className="flex items-center gap-2 text-[#faedd9]/80 text-xs sm:text-sm font-bold mb-4">
+            <div className="flex items-center gap-2 text-[#faedd9]/80 text-xs sm:text-sm font-bold mb-4 theme-hero-sub">
               <MessageSquare className="w-4 h-4 text-[#d8b4fe]" />
               <span>Contoh Prompt Cepat:</span>
             </div>
@@ -228,12 +228,12 @@ export const HeroPromptView: React.FC<HeroPromptViewProps> = ({
                   key={idx}
                   type="button"
                   onClick={() => setPrompt(item.text)}
-                  className="text-left p-4 sm:p-5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.06] hover:border-[#faedd9]/25 backdrop-blur-xl transition-all group cursor-pointer hover:scale-[1.015] shadow-[inset_0_1px_1px_rgba(255,255,255,0.06)]"
+                  className="text-left p-4 sm:p-5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.06] hover:border-[#faedd9]/25 backdrop-blur-xl transition-all group cursor-pointer hover:scale-[1.015] shadow-[inset_0_1px_1px_rgba(255,255,255,0.06)] theme-card"
                 >
-                  <span className="font-extrabold text-[#fffdfa] group-hover:text-[#faedd9] block mb-1 text-sm sm:text-base">
+                  <span className="font-extrabold text-[#fffdfa] group-hover:text-[#faedd9] block mb-1 text-sm sm:text-base theme-text-light">
                     {item.title}
                   </span>
-                  <span className="text-[#c4b5fd]/70 line-clamp-2 text-xs sm:text-sm leading-relaxed">
+                  <span className="text-[#c4b5fd]/70 line-clamp-2 text-xs sm:text-sm leading-relaxed theme-text-muted">
                     {item.text}
                   </span>
                 </button>

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Plus, RefreshCw, X, Sparkles, FileText } from 'lucide-react';
 import { SuratJalanData } from '../types/suratJalan';
+import { AppTheme } from '../types/theme';
+import { ThemeSwitcher } from './ThemeSwitcher';
 import nlsLogo from '../assets/nlslogo.png';
 
 interface NavbarProps {
@@ -12,6 +14,8 @@ interface NavbarProps {
   onDeleteDocument: (id: string) => void;
   onOpenPromptView: () => void;
   isStudioView: boolean;
+  currentTheme: AppTheme;
+  onSelectTheme: (theme: AppTheme) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -23,9 +27,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   onDeleteDocument,
   onOpenPromptView,
   isStudioView,
+  currentTheme,
+  onSelectTheme,
 }) => {
   return (
-    <header className="sticky top-0 z-40 no-print flex flex-col bg-[#140d1c] border-b border-[#faedd9]/10 shadow-lg">
+    <header className="sticky top-0 z-40 no-print flex flex-col bg-[#140d1c] border-b border-[#faedd9]/10 shadow-lg theme-nav-strip">
       {/* 1. CHROME BROWSER TAB STRIP WITH SOFT PASTEL ACCENTS - ONLY IN STUDIO VIEW */}
       {isStudioView && (
         <div className="flex items-center justify-between px-3 pt-2 bg-[#100a17] border-b border-[#faedd9]/8 select-none">
@@ -98,8 +104,8 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       )}
 
-      {/* 2. SIMPLE PURPLE & CREAM TOOLBAR */}
-      <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 bg-[#1e132b]/95">
+      {/* 2. MAIN TOOLBAR */}
+      <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 bg-[#1e132b]/95 theme-nav-bar">
         {/* Brand identity - ALWAYS VISIBLE */}
         <div className="flex items-center gap-2.5">
           <img
@@ -108,39 +114,45 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="w-9 h-9 object-contain drop-shadow-md shrink-0"
           />
           <div className="flex flex-col justify-center leading-none select-none">
-            <span className="font-black text-xs sm:text-[13px] text-[#fffdfa] tracking-wider uppercase">
+            <span className="font-black text-xs sm:text-[13px] text-[#fffdfa] tracking-wider uppercase theme-brand-name">
               PT NIAGA LOGISTICS
             </span>
-            <span className="font-bold text-[10.5px] sm:text-[11px] text-[#faedd9] tracking-[0.18em] uppercase mt-0.5">
+            <span className="font-bold text-[10.5px] sm:text-[11px] text-[#faedd9] tracking-[0.18em] uppercase mt-0.5 theme-brand-subtitle">
               SEJAHTERA
             </span>
           </div>
         </div>
 
-        {/* Toolbar Actions - ONLY VISIBLE IN STUDIO VIEW */}
-        {isStudioView && (
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={onResetDocument}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-[#c4b5fd]/70 hover:text-[#fffdfa] hover:bg-white/[0.06] transition-all cursor-pointer"
-              title="Reset formulir aktif ke data awal"
-            >
-              <RefreshCw className="w-3 h-3" />
-              <span>Reset</span>
-            </button>
+        {/* Right Controls: Theme Switcher (always visible) + Studio Actions */}
+        <div className="flex items-center gap-2.5">
+          {/* THEME SWITCHER */}
+          <ThemeSwitcher currentTheme={currentTheme} onSelectTheme={onSelectTheme} />
 
-            <button
-              type="button"
-              onClick={onOpenPromptView}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-[#181022] bg-[#faedd9] hover:bg-[#fffdfa] transition-all active:scale-95 shadow-sm cursor-pointer"
-              title="Buka Form Prompt AI Penuh"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-[#7e22ce]" />
-              <span>Prompt AI Baru</span>
-            </button>
-          </div>
-        )}
+          {/* Studio Specific Actions */}
+          {isStudioView && (
+            <>
+              <button
+                type="button"
+                onClick={onResetDocument}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-[#c4b5fd]/70 hover:text-[#fffdfa] hover:bg-white/[0.06] transition-all cursor-pointer"
+                title="Reset formulir aktif ke data awal"
+              >
+                <RefreshCw className="w-3 h-3" />
+                <span>Reset</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={onOpenPromptView}
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-[#181022] bg-[#faedd9] hover:bg-[#fffdfa] transition-all active:scale-95 shadow-sm cursor-pointer theme-btn-primary"
+                title="Buka Form Prompt AI Penuh"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Prompt AI Baru</span>
+              </button>
+            </>
+          )}
+        </div>
       </div>
     </header>
   );

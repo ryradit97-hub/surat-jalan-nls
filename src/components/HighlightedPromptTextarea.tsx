@@ -213,7 +213,7 @@ export const HighlightedPromptTextarea: React.FC<HighlightedPromptTextareaProps>
   };
 
   return (
-    <div className={`relative w-full ${className}`}>
+    <div className={`relative w-full theme-textarea-wrapper ${className}`}>
       {/* 1. VISUAL BACKDROP MIRROR LAYER (Displays highlighted bold values with 0px displacement) */}
       <div
         ref={backdropRef}

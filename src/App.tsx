@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { SuratJalanData, ShipperPreset, DriverPreset } from './types/suratJalan';
+import { AppTheme } from './types/theme';
 import { createEmptySuratJalan } from './utils/defaultData';
 import { Navbar } from './components/Navbar';
 import { FormEditor } from './components/FormEditor';
@@ -87,6 +88,20 @@ export const App: React.FC = () => {
   const [isBatchOpen, setIsBatchOpen] = useState<boolean>(false);
   const [zoomLevel, setZoomLevel] = useState<number>(100);
   const [activeDropdown, setActiveDropdown] = useState<'download' | 'print' | 'whatsapp' | null>(null);
+
+  // Theme Switcher State ('yoga-purple' | 'earth-cream' | 'sea-nls')
+  const [theme, setTheme] = useState<AppTheme>(() => {
+    const saved = localStorage.getItem('nls_app_theme') as AppTheme;
+    if (saved && (saved === 'yoga-purple' || saved === 'earth-cream' || saved === 'sea-nls')) {
+      return saved;
+    }
+    return 'yoga-purple';
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('nls_app_theme', theme);
+  }, [theme]);
 
   // Dismiss toolbar dropdown when clicked outside
   useEffect(() => {
@@ -529,7 +544,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#181022] text-[#faf5ee] flex flex-col selection:bg-[#d8b4fe]/30">
+    <div className="min-h-screen theme-app-shell bg-[#181022] text-[#faf5ee] flex flex-col selection:bg-[#d8b4fe]/30">
       {/* Top Navbar with Chrome Tab Bar & Liquid Toolbar */}
       <Navbar
         currentDocument={currentDoc}
@@ -543,6 +558,8 @@ export const App: React.FC = () => {
         onResetDocument={handleResetCurrentDoc}
         onOpenPromptView={() => setViewState('hero-prompt')}
         isStudioView={viewState === 'studio'}
+        currentTheme={theme}
+        onSelectTheme={setTheme}
       />
 
       {/* VIEW STATE 1: FULL PROMPT FORM WINDOW (FIRST WINDOW) */}

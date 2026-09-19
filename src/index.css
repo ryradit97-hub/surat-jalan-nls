@@ -21,7 +21,444 @@
     color: #faf5ee;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
+}
+
+/* =========================================================================
+   THEME SWITCHER SYSTEM: The Yoga Purple, Earth Theme (Cream), Sea Theme (NLS)
+   ========================================================================= */
+
+/* Default / The Yoga Purple Theme Base Variables */
+:root, [data-theme="yoga-purple"] {
+  --app-bg: #181022;
+  --app-nav-strip: #100a17;
+  --app-nav-bar: #1e132b;
+  --app-tab-active-bg: #251736;
+  --app-tab-active-text: #faedd9;
+  --app-tab-active-border: #d8b4fe;
+  --app-surface: #231730;
+  --app-card: rgba(44, 30, 61, 0.5);
+  --app-card-border: rgba(250, 237, 217, 0.1);
+  --app-text-main: #fffdfa;
+  --app-text-secondary: #faedd9;
+  --app-text-muted: #c4b5fd;
+  --app-accent: #d8b4fe;
+  --app-btn-primary-bg: #faedd9;
+  --app-btn-primary-text: #181022;
+  --app-trigger-bg: rgba(255, 255, 255, 0.08);
+  --app-trigger-border: rgba(255, 255, 255, 0.15);
+  --app-trigger-text: #faedd9;
+  --app-menu-bg: rgba(27, 16, 38, 0.98);
+  --app-menu-border: rgba(255, 255, 255, 0.15);
+}
+
+/* Earth Theme (Warm Sand, Cream & Linen) */
+[data-theme="earth-cream"] {
+  --app-bg: #f7f3eb;
+  --app-nav-strip: #ebdcca;
+  --app-nav-bar: #faf5ed;
+  --app-tab-active-bg: #ffffff;
+  --app-tab-active-text: #261d15;
+  --app-tab-active-border: #b87333;
+  --app-surface: #faf5ed;
+  --app-card: #ffffff;
+  --app-card-border: rgba(138, 103, 71, 0.16);
+  --app-text-main: #261d15;
+  --app-text-secondary: #5c4531;
+  --app-text-muted: #8c735d;
+  --app-accent: #b87333;
+  --app-btn-primary-bg: #2b2118;
+  --app-btn-primary-text: #ffffff;
+  --app-trigger-bg: #eae0d0;
+  --app-trigger-border: rgba(138, 103, 71, 0.25);
+  --app-trigger-text: #261d15;
+  --app-menu-bg: #ffffff;
+  --app-menu-border: rgba(138, 103, 71, 0.2);
+}
+
+/* Sea Theme (Official NLS Logo Colors: Navy Blue & Ocean Azure Cyan) */
+[data-theme="sea-nls"] {
+  --app-bg: #06152b;
+  --app-nav-strip: #030d1c;
+  --app-nav-bar: #081d38;
+  --app-tab-active-bg: #0d2e57;
+  --app-tab-active-text: #ffffff;
+  --app-tab-active-border: #00A3E0;
+  --app-surface: #081d38;
+  --app-card: rgba(10, 32, 61, 0.65);
+  --app-card-border: rgba(0, 163, 224, 0.22);
+  --app-text-main: #ffffff;
+  --app-text-secondary: #e0f2fe;
+  --app-text-muted: #7dd3fc;
+  --app-accent: #00A3E0;
+  --app-btn-primary-bg: #00A3E0;
+  --app-btn-primary-text: #002447;
+  --app-trigger-bg: rgba(12, 39, 75, 0.85);
+  --app-trigger-border: rgba(0, 163, 224, 0.35);
+  --app-trigger-text: #e0f2fe;
+  --app-menu-bg: rgba(8, 31, 61, 0.98);
+  --app-menu-border: rgba(0, 163, 224, 0.35);
+}
+
+/* Generic Theme Switcher Component Classes */
+.theme-btn-trigger {
+  background-color: var(--app-trigger-bg);
+  border-color: var(--app-trigger-border);
+  color: var(--app-trigger-text);
+}
+.theme-btn-trigger:hover {
+  filter: brightness(1.1);
+}
+.theme-trigger-label {
+  color: var(--app-trigger-text);
+}
+.theme-dropdown-menu {
+  background-color: var(--app-menu-bg);
+  border-color: var(--app-menu-border);
+  color: var(--app-text-main);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+.theme-menu-item {
+  color: var(--app-text-secondary);
+}
+.theme-menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--app-text-main);
+}
+.theme-menu-item-active {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: var(--app-text-main);
+  font-weight: 700;
+}
+[data-theme="earth-cream"] .theme-menu-item:hover {
+  background-color: rgba(138, 103, 71, 0.08);
+}
+[data-theme="earth-cream"] .theme-menu-item-active {
+  background-color: rgba(184, 115, 51, 0.12);
+}
+
+/* -------------------------------------------------------------
+   EXHAUSTIVE THEME OVERRIDES FOR EARTH THEME (CREAM)
+   ------------------------------------------------------------- */
+[data-theme="earth-cream"] body,
+[data-theme="earth-cream"] .theme-app-shell {
+  background-color: #f7f3eb !important;
+  color: #261d15 !important;
+}
+
+[data-theme="earth-cream"] .theme-nav-strip {
+  background-color: #ebdcca !important;
+  border-color: rgba(138, 103, 71, 0.15) !important;
+}
+
+[data-theme="earth-cream"] .theme-nav-bar {
+  background-color: #faf5ed !important;
+  border-color: rgba(138, 103, 71, 0.15) !important;
+}
+
+[data-theme="earth-cream"] .chrome-tab {
+  color: #7d644d !important;
+}
+[data-theme="earth-cream"] .chrome-tab:hover {
+  background: rgba(255, 255, 255, 0.6) !important;
+  color: #261d15 !important;
+}
+[data-theme="earth-cream"] .chrome-tab.active {
+  background: #ffffff !important;
+  color: #261d15 !important;
+  border-top: 2px solid #b87333 !important;
+  border-left: 1px solid rgba(138, 103, 71, 0.15) !important;
+  border-right: 1px solid rgba(138, 103, 71, 0.15) !important;
+  box-shadow: 0 -2px 10px rgba(74, 52, 32, 0.08) !important;
+}
+
+[data-theme="earth-cream"] .theme-brand-name {
+  color: #261d15 !important;
+}
+[data-theme="earth-cream"] .theme-brand-subtitle {
+  color: #8c531e !important;
+}
+
+[data-theme="earth-cream"] .theme-sidebar {
+  background-color: #faf5ed !important;
+  border-color: rgba(138, 103, 71, 0.16) !important;
+  color: #261d15 !important;
+}
+
+[data-theme="earth-cream"] .theme-preview-area {
+  background-color: #f0e7d9 !important;
+}
+
+[data-theme="earth-cream"] .theme-preview-toolbar {
+  background-color: #faf5ed !important;
+  border-color: rgba(138, 103, 71, 0.16) !important;
+  color: #261d15 !important;
+}
+
+[data-theme="earth-cream"] .liquid-card,
+[data-theme="earth-cream"] .theme-card {
+  background: #ffffff !important;
+  border-color: rgba(138, 103, 71, 0.16) !important;
+  color: #261d15 !important;
+  box-shadow: 0 4px 20px rgba(74, 52, 32, 0.06) !important;
+}
+
+[data-theme="earth-cream"] .liquid-card:hover {
+  border-color: rgba(184, 115, 51, 0.45) !important;
+  box-shadow: 0 8px 30px rgba(74, 52, 32, 0.12) !important;
+}
+
+[data-theme="earth-cream"] .liquid-input {
+  background: #ffffff !important;
+  border-color: rgba(138, 103, 71, 0.25) !important;
+  color: #261d15 !important;
+}
+[data-theme="earth-cream"] .liquid-input:focus {
+  border-color: #b87333 !important;
+  box-shadow: 0 0 0 3px rgba(184, 115, 51, 0.18) !important;
+  background: #ffffff !important;
+}
+
+[data-theme="earth-cream"] .liquid-hero-glass {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(253, 249, 243, 0.94) 40%, rgba(246, 238, 227, 0.98) 100%) !important;
+  border-color: rgba(138, 103, 71, 0.22) !important;
+  box-shadow: 0 35px 95px -20px rgba(184, 115, 51, 0.15), 0 0 60px rgba(212, 163, 115, 0.1) !important;
+}
+
+[data-theme="earth-cream"] .liquid-glass-pill {
+  background: #faf5ed !important;
+  border-color: rgba(138, 103, 71, 0.22) !important;
+  color: #261d15 !important;
+  box-shadow: 0 2px 10px rgba(74, 52, 32, 0.06) !important;
+}
+[data-theme="earth-cream"] .liquid-glass-pill:hover {
+  background: #ffffff !important;
+  border-color: #b87333 !important;
+}
+
+[data-theme="earth-cream"] .theme-hero-headline {
+  color: #261d15 !important;
+}
+[data-theme="earth-cream"] .theme-hero-sub {
+  color: #5c4531 !important;
+}
+[data-theme="earth-cream"] .theme-badge {
+  background-color: #faf5ed !important;
+  border-color: rgba(138, 103, 71, 0.22) !important;
+  color: #4a3420 !important;
+}
+[data-theme="earth-cream"] .theme-btn-primary {
+  background-color: #2b2118 !important;
+  color: #ffffff !important;
+}
+[data-theme="earth-cream"] .theme-btn-primary:hover {
+  background-color: #3d3023 !important;
+}
+[data-theme="earth-cream"] .theme-text-light {
+  color: #261d15 !important;
+}
+[data-theme="earth-cream"] .theme-text-muted {
+  color: #6e553f !important;
+}
+
+[data-theme="earth-cream"] textarea {
+  caret-color: #261d15 !important;
+}
+[data-theme="earth-cream"] textarea::placeholder {
+  color: rgba(92, 69, 49, 0.45) !important;
+}
+[data-theme="earth-cream"] .theme-textarea-wrapper span {
+  color: #261d15 !important;
+}
+[data-theme="earth-cream"] .theme-textarea-wrapper span[style*="textShadow"] {
+  -webkit-text-stroke: 0.65px #261d15 !important;
+  text-shadow: 0 0 1px #261d15, 0 0 6px rgba(184, 115, 51, 0.25) !important;
+  background-color: rgba(184, 115, 51, 0.18) !important;
+  box-shadow: 0 0 0 2px rgba(184, 115, 51, 0.22) !important;
+  color: #261d15 !important;
+}
+
+[data-theme="earth-cream"] select option {
+  background-color: #ffffff !important;
+  color: #261d15 !important;
+}
+[data-theme="earth-cream"] .text-\[\#faedd9\]\/70,
+[data-theme="earth-cream"] .text-\[\#faedd9\]\/80,
+[data-theme="earth-cream"] .text-\[\#faedd9\]\/85,
+[data-theme="earth-cream"] .text-\[\#c4b5fd\]\/70,
+[data-theme="earth-cream"] .text-\[\#c4b5fd\]\/60 {
+  color: #6e553f !important;
+}
+[data-theme="earth-cream"] .text-\[\#faedd9\] {
+  color: #8c531e !important;
+}
+[data-theme="earth-cream"] .text-\[\#fffdfa\] {
+  color: #261d15 !important;
+}
+[data-theme="earth-cream"] .bg-\[\#faedd9\] {
+  background-color: #ebdcca !important;
+  color: #261d15 !important;
+}
+
+/* -------------------------------------------------------------
+   EXHAUSTIVE THEME OVERRIDES FOR SEA THEME (NLS LOGO)
+   ------------------------------------------------------------- */
+[data-theme="sea-nls"] body,
+[data-theme="sea-nls"] .theme-app-shell {
+  background-color: #06152b !important;
+  color: #f0f9ff !important;
+}
+
+[data-theme="sea-nls"] .theme-nav-strip {
+  background-color: #030d1c !important;
+  border-color: rgba(0, 163, 224, 0.18) !important;
+}
+
+[data-theme="sea-nls"] .theme-nav-bar {
+  background-color: #081d38 !important;
+  border-color: rgba(0, 163, 224, 0.20) !important;
+}
+
+[data-theme="sea-nls"] .chrome-tab {
+  color: #7dd3fc !important;
+}
+[data-theme="sea-nls"] .chrome-tab:hover {
+  background: rgba(0, 163, 224, 0.1) !important;
+  color: #ffffff !important;
+}
+[data-theme="sea-nls"] .chrome-tab.active {
+  background: #0d2e57 !important;
+  color: #ffffff !important;
+  border-top: 2px solid #00A3E0 !important;
+  border-left: 1px solid rgba(0, 163, 224, 0.25) !important;
+  border-right: 1px solid rgba(0, 163, 224, 0.25) !important;
+  box-shadow: 0 -2px 14px rgba(0, 163, 224, 0.25) !important;
+}
+
+[data-theme="sea-nls"] .theme-brand-name {
+  color: #ffffff !important;
+}
+[data-theme="sea-nls"] .theme-brand-subtitle {
+  color: #38bdf8 !important;
+}
+
+[data-theme="sea-nls"] .theme-sidebar {
+  background-color: #081d38 !important;
+  border-color: rgba(0, 163, 224, 0.2) !important;
+  color: #f0f9ff !important;
+}
+
+[data-theme="sea-nls"] .theme-preview-area {
+  background-color: #040e1e !important;
+}
+
+[data-theme="sea-nls"] .theme-preview-toolbar {
+  background-color: #081d38 !important;
+  border-color: rgba(0, 163, 224, 0.2) !important;
+  color: #ffffff !important;
+}
+
+[data-theme="sea-nls"] .liquid-card,
+[data-theme="sea-nls"] .theme-card {
+  background: rgba(10, 32, 61, 0.65) !important;
+  border-color: rgba(0, 163, 224, 0.22) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 20px rgba(0, 10, 30, 0.4) !important;
+}
+
+[data-theme="sea-nls"] .liquid-card:hover {
+  border-color: #00A3E0 !important;
+  box-shadow: 0 8px 30px rgba(0, 163, 224, 0.25) !important;
+}
+
+[data-theme="sea-nls"] .liquid-input {
+  background: rgba(4, 16, 33, 0.9) !important;
+  border-color: rgba(0, 163, 224, 0.25) !important;
+  color: #ffffff !important;
+}
+[data-theme="sea-nls"] .liquid-input:focus {
+  border-color: #00A3E0 !important;
+  box-shadow: 0 0 0 3px rgba(0, 163, 224, 0.28) !important;
+  background: rgba(6, 22, 45, 0.95) !important;
+}
+
+[data-theme="sea-nls"] .liquid-hero-glass {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.10) 0%, rgba(10, 32, 61, 0.88) 40%, rgba(4, 15, 31, 0.98) 100%) !important;
+  border-color: rgba(0, 163, 224, 0.3) !important;
+  box-shadow: 0 35px 95px -20px rgba(0, 163, 224, 0.35), 0 0 80px rgba(0, 59, 115, 0.3) !important;
+}
+
+[data-theme="sea-nls"] .liquid-glass-pill {
+  background: rgba(12, 39, 75, 0.75) !important;
+  border-color: rgba(0, 163, 224, 0.3) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 10px rgba(0, 163, 224, 0.15) !important;
+}
+[data-theme="sea-nls"] .liquid-glass-pill:hover {
+  background: rgba(16, 50, 95, 0.9) !important;
+  border-color: #00A3E0 !important;
+}
+
+[data-theme="sea-nls"] .theme-hero-headline {
+  color: #ffffff !important;
+}
+[data-theme="sea-nls"] .theme-hero-sub {
+  color: #bae6fd !important;
+}
+[data-theme="sea-nls"] .theme-badge {
+  background-color: rgba(12, 39, 75, 0.8) !important;
+  border-color: rgba(0, 163, 224, 0.35) !important;
+  color: #e0f2fe !important;
+}
+[data-theme="sea-nls"] .theme-btn-primary {
+  background: linear-gradient(135deg, #00A3E0 0%, #003B73 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(56, 189, 248, 0.5) !important;
+  box-shadow: 0 8px 24px rgba(0, 163, 224, 0.35) !important;
+}
+[data-theme="sea-nls"] .theme-btn-primary:hover {
+  filter: brightness(1.15) !important;
+}
+[data-theme="sea-nls"] .theme-text-light {
+  color: #ffffff !important;
+}
+[data-theme="sea-nls"] .theme-text-muted {
+  color: #7dd3fc !important;
+}
+
+[data-theme="sea-nls"] textarea {
+  caret-color: #00A3E0 !important;
+}
+[data-theme="sea-nls"] textarea::placeholder {
+  color: rgba(125, 211, 252, 0.5) !important;
+}
+[data-theme="sea-nls"] .theme-textarea-wrapper span {
+  color: #ffffff !important;
+}
+[data-theme="sea-nls"] .theme-textarea-wrapper span[style*="textShadow"] {
+  -webkit-text-stroke: 0.65px #ffffff !important;
+  text-shadow: 0 0 1px #ffffff, 0 0 8px rgba(0, 163, 224, 0.4) !important;
+  background-color: rgba(0, 163, 224, 0.25) !important;
+  box-shadow: 0 0 0 2px rgba(0, 163, 224, 0.3) !important;
+  color: #ffffff !important;
+}
+
+[data-theme="sea-nls"] select option {
+  background-color: #06152b !important;
+  color: #ffffff !important;
+}
+[data-theme="sea-nls"] .text-\[\#c4b5fd\]\/70,
+[data-theme="sea-nls"] .text-\[\#c4b5fd\]\/60 {
+  color: #7dd3fc !important;
+}
+[data-theme="sea-nls"] .text-\[\#faedd9\] {
+  color: #38bdf8 !important;
+}
+[data-theme="sea-nls"] .bg-\[\#faedd9\] {
+  background-color: #00A3E0 !important;
+  color: #001f3f !important;
 }
 
 /* Chrome Browser Tabs - Girly Purple & Cream */
