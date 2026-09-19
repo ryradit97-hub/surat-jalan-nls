@@ -139,41 +139,12 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             <button
               type="button"
-              onClick={onOpenPresets}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-[#faedd9]/90 bg-[#faedd9]/8 hover:bg-[#faedd9]/15 border border-[#faedd9]/12 transition-all active:scale-95"
-            >
-              <Bookmark className="w-3.5 h-3.5 text-[#d8b4fe]" />
-              <span>Templat</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={onOpenBatchModal}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-[#faedd9]/90 bg-[#faedd9]/8 hover:bg-[#faedd9]/15 border border-[#faedd9]/12 transition-all active:scale-95"
-            >
-              <FileSpreadsheet className="w-3.5 h-3.5 text-[#d8b4fe]" />
-              <span>Batch Excel</span>
-            </button>
-
-            <button
-              type="button"
               onClick={onResetDocument}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-[#c4b5fd]/70 hover:text-[#fffdfa] transition-all"
               title="Reset ke data awal"
             >
               <RefreshCw className="w-3 h-3" />
               <span className="hidden sm:inline">Reset</span>
-            </button>
-
-            <div className="h-4 w-px bg-[#faedd9]/10 mx-0.5 hidden sm:block" />
-
-            <button
-              type="button"
-              onClick={onExportExcel}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-[#faedd9] bg-[#2d1b40] hover:bg-[#392352] border border-[#faedd9]/15 transition-all active:scale-95"
-            >
-              <Download className="w-3.5 h-3.5 text-[#faedd9]" />
-              <span>Excel</span>
             </button>
 
             <button
