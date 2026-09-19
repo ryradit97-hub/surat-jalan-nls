@@ -1,4 +1,4 @@
-export type AppTheme = 'yoga-purple' | 'earth-cream' | 'sea-nls';
+export type AppTheme = 'venus' | 'yoga-purple' | 'earth-cream' | 'sea-nls' | 'white-moon';
 
 export interface ThemeConfig {
   id: AppTheme;
@@ -12,10 +12,10 @@ export interface ThemeConfig {
 
 export const THEMES: ThemeConfig[] = [
   {
-    id: 'yoga-purple',
-    name: 'The Yoga Purple',
-    subtitle: 'Meditative Purple & Soft Cream',
-    badge: '🧘‍♀️ Purple',
+    id: 'venus',
+    name: 'Venus Theme',
+    subtitle: 'Mystical Purple, Lavender & Soft Cream',
+    badge: '🪐 Venus',
     primaryColor: '#d8b4fe',
     secondaryColor: '#faedd9',
     accentColor: '#a855f7',
@@ -37,5 +37,14 @@ export const THEMES: ThemeConfig[] = [
     primaryColor: '#00A3E0',
     secondaryColor: '#003B73',
     accentColor: '#38bdf8',
+  },
+  {
+    id: 'white-moon',
+    name: 'White Moon',
+    subtitle: 'Minimalist Porcelain White & Jet Black Accents',
+    badge: '🌕 White Moon',
+    primaryColor: '#0a0a0a',
+    secondaryColor: '#ffffff',
+    accentColor: '#525252',
   },
 ];

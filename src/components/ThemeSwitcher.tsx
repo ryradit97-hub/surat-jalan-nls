@@ -34,7 +34,7 @@ export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ currentTheme, onSe
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold theme-btn-trigger transition-all cursor-pointer active:scale-95 border shadow-sm"
-        title="Ganti Tema Aplikasi (The Yoga Purple, Earth Cream, Sea NLS)"
+        title="Ganti Tema Aplikasi (Venus Theme, Earth Cream, Sea NLS, White Moon)"
       >
         {/* Two-tone theme preview dot */}
         <span className="relative flex w-3.5 h-3.5 rounded-full overflow-hidden shrink-0 ring-1 ring-white/20 shadow-inner">
@@ -85,7 +85,7 @@ export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ currentTheme, onSe
                     }}
                   >
                     <span className="text-xs drop-shadow-sm select-none">
-                      {theme.id === 'yoga-purple' ? '🧘' : theme.id === 'earth-cream' ? '🌾' : '🌊'}
+                      {theme.id === 'venus' || theme.id === 'yoga-purple' ? '🪐' : theme.id === 'earth-cream' ? '🌾' : theme.id === 'sea-nls' ? '🌊' : '🌕'}
                     </span>
                   </div>
 

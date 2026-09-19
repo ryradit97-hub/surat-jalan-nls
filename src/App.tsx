@@ -11,6 +11,7 @@ import { SuratJalanPreview } from './components/SuratJalanPreview';
 import { BatchImportModal } from './components/BatchImportModal';
 import { PresetsModal } from './components/PresetsModal';
 import { SuccessCelebrationModal } from './components/SuccessCelebrationModal';
+import { RainModal } from './components/RainModal';
 import { openWhatsAppDirect } from './utils/whatsappHelper';
 import { extractMultipleSuratJalanWithAI, applyAIExtractionToDocument } from './services/geminiService';
 import html2canvas from 'html2canvas-pro';
@@ -30,6 +31,9 @@ export const App: React.FC = () => {
 
   // Success Celebration Modal State with Fireworks
   const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
+
+  // Rain Easter Egg Modal Dialogue State
+  const [isRainModalOpen, setIsRainModalOpen] = useState<boolean>(false);
 
   // Batch Export & Print All States
   const [isBatchExporting, setIsBatchExporting] = useState<boolean>(false);
@@ -89,13 +93,14 @@ export const App: React.FC = () => {
   const [zoomLevel, setZoomLevel] = useState<number>(100);
   const [activeDropdown, setActiveDropdown] = useState<'download' | 'print' | 'whatsapp' | null>(null);
 
-  // Theme Switcher State ('yoga-purple' | 'earth-cream' | 'sea-nls')
+  // Theme Switcher State ('venus' | 'earth-cream' | 'sea-nls' | 'white-moon')
   const [theme, setTheme] = useState<AppTheme>(() => {
     const saved = localStorage.getItem('nls_app_theme') as AppTheme;
-    if (saved && (saved === 'yoga-purple' || saved === 'earth-cream' || saved === 'sea-nls')) {
+    if (saved === 'yoga-purple') return 'venus';
+    if (saved && (saved === 'venus' || saved === 'earth-cream' || saved === 'sea-nls' || saved === 'white-moon')) {
       return saved;
     }
-    return 'yoga-purple';
+    return 'venus';
   });
 
   useEffect(() => {
@@ -581,21 +586,21 @@ export const App: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setViewState('hero-prompt')}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#faedd9] bg-[#faedd9]/10 hover:bg-[#faedd9]/15 border border-[#faedd9]/15 transition-all cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold theme-btn-back transition-all cursor-pointer border"
                 title="Kembali ke Jendela Prompt Penuh"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>Prompt Penuh</span>
               </button>
 
-              <div className="liquid-card rounded-2xl p-1 flex-1 flex items-center gap-1 border border-[#faedd9]/12 shadow-sm bg-[#231730]">
+              <div className="theme-workflow-bar rounded-2xl p-1 flex-1 flex items-center gap-1 border shadow-sm">
                 <button
                   type="button"
                   onClick={() => setWorkflowMode('ai')}
                   className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     workflowMode === 'ai'
-                      ? 'bg-[#faedd9] text-[#181022] shadow-sm'
-                      : 'text-[#c4b5fd]/70 hover:text-white hover:bg-white/[0.03]'
+                      ? 'theme-workflow-btn-active shadow-sm'
+                      : 'theme-workflow-btn-inactive'
                   }`}
                 >
                   <Sparkles className="w-3.5 h-3.5" />
@@ -607,8 +612,8 @@ export const App: React.FC = () => {
                   onClick={() => setWorkflowMode('manual')}
                   className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     workflowMode === 'manual'
-                      ? 'bg-[#faedd9] text-[#181022] shadow-sm'
-                      : 'text-[#c4b5fd]/70 hover:text-white hover:bg-white/[0.03]'
+                      ? 'theme-workflow-btn-active shadow-sm'
+                      : 'theme-workflow-btn-inactive'
                   }`}
                 >
                   <Sliders className="w-3.5 h-3.5" />
@@ -636,37 +641,37 @@ export const App: React.FC = () => {
           </div>
 
           {/* Right Column: Live Document Preview Canvas */}
-          <div className="preview-card-container liquid-glass rounded-3xl p-4 md:p-6 flex flex-col items-center overflow-hidden relative shadow-xl border border-[#faedd9]/12 bg-[#21142e]/90">
+          <div className="preview-card-container theme-preview-container rounded-3xl p-4 md:p-6 flex flex-col items-center overflow-hidden relative shadow-xl border">
             {/* Canvas Floating Top Toolbar */}
-            <div className="w-full flex items-center justify-between pb-3.5 mb-3.5 border-b border-[#faedd9]/10 no-print">
+            <div className="w-full flex items-center justify-between pb-3.5 mb-3.5 border-b theme-toolbar-divider no-print">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-lg bg-[#faedd9]/15 flex items-center justify-center text-[#faedd9]">
-                  <Eye className="w-3.5 h-3.5" />
+                <div className="w-6 h-6 rounded-lg theme-toolbar-icon-box flex items-center justify-center">
+                  <Eye className="w-3.5 h-3.5 theme-toolbar-icon" />
                 </div>
                 <div>
-                  <span className="text-xs font-bold text-[#fffdfa]">Preview Dokumen Cetak</span>
-                  <span className="text-[10px] text-[#faedd9]/70 ml-2 hidden sm:inline">Standar A4 Portrait</span>
+                  <span className="text-xs font-bold theme-toolbar-title">Preview Dokumen Cetak</span>
+                  <span className="text-[10px] theme-toolbar-subtitle ml-2 hidden sm:inline">Standar A4 Portrait</span>
                 </div>
               </div>
 
               {/* Zoom & Action Controls */}
               <div className="flex items-center gap-2">
-                <div className="hidden sm:flex items-center gap-1 bg-[#faedd9]/6 p-1 rounded-xl border border-[#faedd9]/10">
+                <div className="hidden sm:flex items-center gap-1 theme-zoom-box p-1 rounded-xl border">
                   <button
                     type="button"
                     onClick={() => setZoomLevel((prev) => Math.max(60, prev - 10))}
-                    className="p-1 rounded-lg text-[#c4b5fd]/70 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer"
+                    className="p-1 rounded-lg theme-zoom-btn hover:scale-105 transition-all cursor-pointer"
                     title="Zoom Out"
                   >
                     <ZoomOut className="w-3.5 h-3.5" />
                   </button>
-                  <span className="text-[11px] font-mono px-2 text-[#faedd9] select-none">
+                  <span className="text-[11px] font-mono px-2 theme-zoom-val select-none">
                     {zoomLevel}%
                   </span>
                   <button
                     type="button"
                     onClick={() => setZoomLevel((prev) => Math.min(130, prev + 10))}
-                    className="p-1 rounded-lg text-[#c4b5fd]/70 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer"
+                    className="p-1 rounded-lg theme-zoom-btn hover:scale-105 transition-all cursor-pointer"
                     title="Zoom In"
                   >
                     <ZoomIn className="w-3.5 h-3.5" />
@@ -674,7 +679,7 @@ export const App: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setZoomLevel(100)}
-                    className="p-1 rounded-lg text-[#c4b5fd]/70 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer ml-0.5"
+                    className="p-1 rounded-lg theme-zoom-btn hover:scale-105 transition-all cursor-pointer ml-0.5"
                     title="Reset Zoom"
                   >
                     <RotateCcw className="w-3 h-3" />
@@ -692,14 +697,12 @@ export const App: React.FC = () => {
                         handleDownloadPdf();
                       }
                     }}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer active:scale-95 border ${
-                      activeDropdown === 'download'
-                        ? 'bg-[#faedd9]/20 text-[#faedd9] border-[#faedd9]/40 shadow-sm'
-                        : 'text-[#faedd9] bg-[#faedd9]/8 hover:bg-[#faedd9]/15 border-[#faedd9]/15'
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer active:scale-95 border theme-btn-download ${
+                      activeDropdown === 'download' ? 'theme-btn-download-active ring-2 ring-amber-400/40' : ''
                     }`}
                     title={documents.length > 1 ? 'Pilihan unduh PDF (Tab ini atau Semua)' : 'Unduh berkas PDF'}
                   >
-                    <Download className="w-3.5 h-3.5 text-[#faedd9]" />
+                    <Download className="w-3.5 h-3.5 theme-btn-download-icon" />
                     <span>Download PDF</span>
                     {documents.length > 1 && (
                       <ChevronDown
@@ -712,8 +715,8 @@ export const App: React.FC = () => {
 
                   {/* Dropdown Menu */}
                   {activeDropdown === 'download' && documents.length > 1 && (
-                    <div className="absolute right-0 top-full mt-2 w-72 bg-[#1b1026]/98 backdrop-blur-xl border border-white/15 rounded-2xl p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
-                      <div className="px-3 py-1.5 text-[10px] uppercase font-bold tracking-wider text-[#c4b5fd]/70 border-b border-white/10 mb-1">
+                    <div className="absolute right-0 top-full mt-2 w-72 theme-toolbar-dropdown backdrop-blur-xl border rounded-2xl p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
+                      <div className="px-3 py-1.5 text-[10px] uppercase font-bold tracking-wider theme-dropdown-header border-b mb-1">
                         Pilihan Unduh PDF
                       </div>
                       <button
@@ -722,17 +725,17 @@ export const App: React.FC = () => {
                           setActiveDropdown(null);
                           handleDownloadPdf();
                         }}
-                        className="w-full text-left flex items-start gap-3 p-2.5 rounded-xl hover:bg-white/[0.08] transition-colors group cursor-pointer"
+                        className="w-full text-left flex items-start gap-3 p-2.5 rounded-xl theme-dropdown-item transition-colors group cursor-pointer"
                       >
-                        <div className="p-2 rounded-lg bg-white/[0.06] text-[#faedd9] group-hover:bg-[#faedd9] group-hover:text-[#181022] transition-colors">
+                        <div className="p-2 rounded-lg theme-dropdown-icon-box transition-colors">
                           <Download className="w-4 h-4" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="text-xs font-semibold text-[#faedd9] flex items-center justify-between">
+                          <div className="text-xs font-semibold theme-dropdown-text flex items-center justify-between">
                             <span>Tab Ini Saja</span>
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-white/70 font-mono">1 PDF</span>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded theme-dropdown-badge font-mono">1 PDF</span>
                           </div>
-                          <p className="text-[11px] text-white/50 truncate mt-0.5 font-mono">
+                          <p className="text-[11px] theme-dropdown-subtext truncate mt-0.5 font-mono">
                             B/L: {currentDoc.blNumber || 'Draft'}
                           </p>
                         </div>
@@ -744,19 +747,19 @@ export const App: React.FC = () => {
                           handleDownloadBatchPdf();
                         }}
                         disabled={isBatchExporting}
-                        className="w-full text-left flex items-start gap-3 p-2.5 rounded-xl hover:bg-white/[0.08] transition-colors group cursor-pointer disabled:opacity-50"
+                        className="w-full text-left flex items-start gap-3 p-2.5 rounded-xl theme-dropdown-item transition-colors group cursor-pointer disabled:opacity-50"
                       >
-                        <div className="p-2 rounded-lg bg-purple-500/20 text-purple-300 group-hover:bg-[#faedd9] group-hover:text-[#181022] transition-colors">
+                        <div className="p-2 rounded-lg theme-dropdown-icon-box transition-colors">
                           <Layers className="w-4 h-4" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="text-xs font-semibold text-[#faedd9] flex items-center justify-between">
+                          <div className="text-xs font-semibold theme-dropdown-text flex items-center justify-between">
                             <span>Download Semua</span>
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/30 text-purple-200 font-mono font-bold">
+                            <span className="text-[10px] px-1.5 py-0.5 rounded theme-dropdown-badge font-mono font-bold">
                               {documents.length} PDF
                             </span>
                           </div>
-                          <p className="text-[11px] text-white/50 mt-0.5">
+                          <p className="text-[11px] theme-dropdown-subtext mt-0.5">
                             {documents.length} file PDF terpisah sekaligus
                           </p>
                         </div>
@@ -776,14 +779,12 @@ export const App: React.FC = () => {
                         handlePrintPdf();
                       }
                     }}
-                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm ${
-                      activeDropdown === 'print'
-                        ? 'bg-[#fffdfa] text-[#181022] ring-2 ring-[#faedd9]/60 shadow-md'
-                        : 'text-[#181022] bg-[#faedd9] hover:bg-[#fffdfa] hover:shadow-md'
+                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm border theme-btn-print ${
+                      activeDropdown === 'print' ? 'ring-2 ring-amber-400/40 shadow-md' : ''
                     }`}
                     title={documents.length > 1 ? 'Pilihan cetak dokumen (Tab ini atau Semua)' : 'Cetak surat jalan'}
                   >
-                    <Printer className="w-3.5 h-3.5 text-[#181022]" />
+                    <Printer className="w-3.5 h-3.5 theme-btn-print-icon" />
                     <span>Cetak</span>
                     {documents.length > 1 && (
                       <ChevronDown
@@ -796,8 +797,8 @@ export const App: React.FC = () => {
 
                   {/* Dropdown Menu */}
                   {activeDropdown === 'print' && documents.length > 1 && (
-                    <div className="absolute right-0 top-full mt-2 w-72 bg-[#1b1026]/98 backdrop-blur-xl border border-white/15 rounded-2xl p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
-                      <div className="px-3 py-1.5 text-[10px] uppercase font-bold tracking-wider text-[#c4b5fd]/70 border-b border-white/10 mb-1">
+                    <div className="absolute right-0 top-full mt-2 w-72 theme-toolbar-dropdown backdrop-blur-xl border rounded-2xl p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
+                      <div className="px-3 py-1.5 text-[10px] uppercase font-bold tracking-wider theme-dropdown-header border-b mb-1">
                         Pilihan Cetak Dokumen
                       </div>
                       <button
@@ -806,17 +807,17 @@ export const App: React.FC = () => {
                           setActiveDropdown(null);
                           handlePrintPdf();
                         }}
-                        className="w-full text-left flex items-start gap-3 p-2.5 rounded-xl hover:bg-white/[0.08] transition-colors group cursor-pointer"
+                        className="w-full text-left flex items-start gap-3 p-2.5 rounded-xl theme-dropdown-item transition-colors group cursor-pointer"
                       >
-                        <div className="p-2 rounded-lg bg-white/[0.06] text-[#faedd9] group-hover:bg-[#faedd9] group-hover:text-[#181022] transition-colors">
+                        <div className="p-2 rounded-lg theme-dropdown-icon-box transition-colors">
                           <Printer className="w-4 h-4" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="text-xs font-semibold text-[#faedd9] flex items-center justify-between">
+                          <div className="text-xs font-semibold theme-dropdown-text flex items-center justify-between">
                             <span>Cetak Tab Ini Saja</span>
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-white/70 font-mono">1 Lembar</span>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded theme-dropdown-badge font-mono">1 Lembar</span>
                           </div>
-                          <p className="text-[11px] text-white/50 truncate mt-0.5 font-mono">
+                          <p className="text-[11px] theme-dropdown-subtext truncate mt-0.5 font-mono">
                             B/L: {currentDoc.blNumber || 'Draft'}
                           </p>
                         </div>
@@ -827,19 +828,19 @@ export const App: React.FC = () => {
                           setActiveDropdown(null);
                           handlePrintAllBatch();
                         }}
-                        className="w-full text-left flex items-start gap-3 p-2.5 rounded-xl hover:bg-white/[0.08] transition-colors group cursor-pointer"
+                        className="w-full text-left flex items-start gap-3 p-2.5 rounded-xl theme-dropdown-item transition-colors group cursor-pointer"
                       >
-                        <div className="p-2 rounded-lg bg-amber-500/20 text-amber-300 group-hover:bg-amber-400 group-hover:text-[#181022] transition-colors">
+                        <div className="p-2 rounded-lg theme-dropdown-icon-box transition-colors">
                           <Printer className="w-4 h-4" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="text-xs font-semibold text-[#faedd9] flex items-center justify-between">
+                          <div className="text-xs font-semibold theme-dropdown-text flex items-center justify-between">
                             <span>Cetak Semua Sekaligus</span>
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/30 text-amber-200 font-mono font-bold">
+                            <span className="text-[10px] px-1.5 py-0.5 rounded theme-dropdown-badge font-mono font-bold">
                               {documents.length} Dok
                             </span>
                           </div>
-                          <p className="text-[11px] text-white/50 mt-0.5">
+                          <p className="text-[11px] theme-dropdown-subtext mt-0.5">
                             Cetak {documents.length} surat jalan secara berurutan
                           </p>
                         </div>
@@ -859,14 +860,12 @@ export const App: React.FC = () => {
                         handleSendSingleDocPdfWhatsApp();
                       }
                     }}
-                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-white transition-all cursor-pointer active:scale-95 shadow-sm border ${
-                      activeDropdown === 'whatsapp'
-                        ? 'bg-emerald-500 border-emerald-300 shadow-emerald-500/30 ring-2 ring-emerald-400/40'
-                        : 'bg-emerald-600 hover:bg-emerald-500 border-emerald-400/40 hover:shadow-emerald-500/20'
+                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-white transition-all cursor-pointer active:scale-95 shadow-sm border theme-btn-wa ${
+                      activeDropdown === 'whatsapp' ? 'ring-2 ring-emerald-400/40' : ''
                     }`}
                     title={documents.length > 1 ? 'Kirim PDF ke WhatsApp (Tab ini atau Semua)' : 'Kirim berkas PDF ke WhatsApp'}
                   >
-                    <MessageSquare className="w-3.5 h-3.5 text-emerald-100" />
+                    <MessageSquare className="w-3.5 h-3.5" />
                     <span>Kirim ke WA</span>
                     {documents.length > 1 && (
                       <ChevronDown
@@ -879,10 +878,10 @@ export const App: React.FC = () => {
 
                   {/* Dropdown Menu */}
                   {activeDropdown === 'whatsapp' && documents.length > 1 && (
-                    <div className="absolute right-0 top-full mt-2 w-80 bg-[#1b1026]/98 backdrop-blur-xl border border-white/15 rounded-2xl p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
-                      <div className="px-3 py-1.5 text-[10px] uppercase font-bold tracking-wider text-emerald-400/80 border-b border-white/10 mb-1 flex items-center justify-between">
+                    <div className="absolute right-0 top-full mt-2 w-80 theme-toolbar-dropdown backdrop-blur-xl border rounded-2xl p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
+                      <div className="px-3 py-1.5 text-[10px] uppercase font-bold tracking-wider text-emerald-400 border-b theme-dropdown-header mb-1 flex items-center justify-between">
                         <span>Kirim PDF ke WhatsApp</span>
-                        <span className="text-[10px] font-mono text-white/50">{currentDoc.phoneNo || 'Kontak'}</span>
+                        <span className="text-[10px] font-mono opacity-60">{currentDoc.phoneNo || 'Kontak'}</span>
                       </div>
                       <button
                         type="button"
@@ -890,17 +889,17 @@ export const App: React.FC = () => {
                           setActiveDropdown(null);
                           handleSendSingleDocPdfWhatsApp();
                         }}
-                        className="w-full text-left flex items-start gap-3 p-2.5 rounded-xl hover:bg-white/[0.08] transition-colors group cursor-pointer"
+                        className="w-full text-left flex items-start gap-3 p-2.5 rounded-xl theme-dropdown-item transition-colors group cursor-pointer"
                       >
-                        <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-300 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
+                        <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 transition-colors">
                           <MessageSquare className="w-4 h-4" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="text-xs font-semibold text-[#faedd9] flex items-center justify-between">
+                          <div className="text-xs font-semibold theme-dropdown-text flex items-center justify-between">
                             <span>Kirim Tab Ini Saja</span>
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-white/70 font-mono">1 PDF</span>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded theme-dropdown-badge font-mono">1 PDF</span>
                           </div>
-                          <p className="text-[11px] text-white/50 truncate mt-0.5 font-mono">
+                          <p className="text-[11px] theme-dropdown-subtext truncate mt-0.5 font-mono">
                             B/L: {currentDoc.blNumber || 'Draft'}
                           </p>
                         </div>
@@ -912,19 +911,19 @@ export const App: React.FC = () => {
                           handleSendAllDocsPdfWhatsApp();
                         }}
                         disabled={isBatchExporting}
-                        className="w-full text-left flex items-start gap-3 p-2.5 rounded-xl hover:bg-white/[0.08] transition-colors group cursor-pointer disabled:opacity-50"
+                        className="w-full text-left flex items-start gap-3 p-2.5 rounded-xl theme-dropdown-item transition-colors group cursor-pointer disabled:opacity-50"
                       >
-                        <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-300 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
+                        <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-400 transition-colors">
                           <Layers className="w-4 h-4" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="text-xs font-semibold text-emerald-300 group-hover:text-emerald-200 flex items-center justify-between">
+                          <div className="text-xs font-semibold text-emerald-400 flex items-center justify-between">
                             <span>Kirim Semua ({documents.length}) PDF</span>
                             <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/30 text-emerald-100 font-mono font-bold">
                               Semua
                             </span>
                           </div>
-                          <p className="text-[11px] text-white/50 mt-0.5">
+                          <p className="text-[11px] theme-dropdown-subtext mt-0.5">
                             Kirim seluruh {documents.length} berkas PDF via WhatsApp
                           </p>
                         </div>
@@ -1015,7 +1014,15 @@ export const App: React.FC = () => {
       <footer className="no-print py-4 text-center text-xs text-[#faedd9]/70 flex items-center justify-center gap-1.5 select-none tracking-wide">
         <span>Made for Jean</span>
         <span className="text-[#f472b6] text-sm">♥</span>
-        <span>From 🌧️</span>
+        <button
+          type="button"
+          onClick={() => setIsRainModalOpen(true)}
+          className="inline-flex items-center gap-1 hover:text-white hover:scale-110 active:scale-95 transition-all cursor-pointer group"
+          title="🌧️ Rain • Jean's AI Assistant"
+        >
+          <span>From</span>
+          <span className="text-base group-hover:scale-125 transition-transform duration-200">🌧️</span>
+        </button>
       </footer>
 
       {/* FULL-SCREEN AI LOADING OVERLAY ANIMATION */}
@@ -1047,6 +1054,12 @@ export const App: React.FC = () => {
         onDownloadBatchPdf={handleDownloadBatchPdf}
         onPrintAllBatch={handlePrintAllBatch}
         onOpenWhatsApp={handleSendAllDocsPdfWhatsApp}
+      />
+
+      {/* RAIN EASTER EGG MODAL DIALOGUE */}
+      <RainModal
+        isOpen={isRainModalOpen}
+        onClose={() => setIsRainModalOpen(false)}
       />
     </div>
   );
