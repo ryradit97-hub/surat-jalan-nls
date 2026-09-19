@@ -1,0 +1,512 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --bg-base: #181022;
+    --bg-surface: #231730;
+    --bg-card: #2c1e3d;
+    --cream-light: #fffdfa;
+    --cream-soft: #faedd9;
+    --cream-muted: #e8d9c4;
+    --purple-light: #f3e8ff;
+    --purple-pastel: #d8b4fe;
+    --purple-main: #a855f7;
+    --purple-deep: #7e22ce;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: #181022;
+    color: #faf5ee;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* Chrome Browser Tabs - Girly Purple & Cream */
+.chrome-tab-strip {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  padding: 8px 12px 0 12px;
+  background: #140d1c;
+  border-bottom: 1px solid rgba(250, 237, 217, 0.1);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.chrome-tab-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.chrome-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px;
+  max-width: 220px;
+  min-width: 130px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #c4b5fd;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  background: transparent;
+}
+
+.chrome-tab:hover {
+  background: rgba(216, 180, 254, 0.08);
+  color: #fff9f0;
+}
+
+.chrome-tab.active {
+  background: #251736;
+  color: #faedd9;
+  font-weight: 600;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.25);
+  border-top: 1px solid #d8b4fe;
+  border-left: 1px solid rgba(250, 237, 217, 0.08);
+  border-right: 1px solid rgba(250, 237, 217, 0.08);
+}
+
+.chrome-tab-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  color: #c4b5fd;
+  margin-left: auto;
+  transition: all 0.12s ease;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.chrome-tab-close:hover {
+  background: rgba(244, 114, 182, 0.2);
+  color: #f472b6;
+}
+
+.chrome-new-tab-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  margin-bottom: 4px;
+  margin-left: 4px;
+  color: #d8b4fe;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.chrome-new-tab-btn:hover {
+  background: rgba(216, 180, 254, 0.12);
+  color: #fffdfa;
+}
+
+/* Girly Purple & Cream Glass Panels */
+.liquid-glass {
+  background: rgba(35, 23, 48, 0.75);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(250, 237, 217, 0.14);
+  box-shadow: 0 16px 40px rgba(18, 10, 26, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.liquid-card {
+  background: rgba(44, 30, 61, 0.5);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(250, 237, 217, 0.1);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.liquid-card:hover {
+  border-color: rgba(216, 180, 254, 0.35);
+  box-shadow: 0 12px 30px rgba(22, 12, 33, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Liquid Hero Specular Glass - Delicate Hairline Border */
+.liquid-hero-glass {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.10) 0%, rgba(36, 21, 53, 0.82) 40%, rgba(22, 11, 36, 0.96) 100%);
+  backdrop-filter: blur(36px);
+  -webkit-backdrop-filter: blur(36px);
+  border: 0.5px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 
+    0 35px 95px -20px rgba(168, 85, 247, 0.30),
+    0 0 70px rgba(250, 237, 217, 0.08),
+    inset 0 1px 1px rgba(255, 255, 255, 0.25),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.35);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.liquid-hero-glass:focus-within {
+  border: 0.5px solid rgba(250, 237, 217, 0.28);
+  box-shadow: 
+    0 45px 120px -15px rgba(168, 85, 247, 0.40),
+    0 0 90px rgba(250, 237, 217, 0.15),
+    inset 0 1px 1.5px rgba(255, 255, 255, 0.35),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.liquid-glass-pill {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 0.5px solid rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.22), 0 4px 16px rgba(0, 0, 0, 0.12);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.liquid-glass-pill:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(250, 237, 217, 0.40);
+  box-shadow: inset 0 1px 1.5px rgba(255, 255, 255, 0.35), 0 8px 25px rgba(168, 85, 247, 0.20);
+}
+
+@keyframes liquid-float {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.02);
+  }
+}
+
+.animate-liquid-float {
+  animation: liquid-float 6s ease-in-out infinite;
+}
+
+@keyframes shimmer-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+.animate-shimmer-slide {
+  animation: shimmer-slide 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.liquid-input {
+  background: rgba(24, 16, 34, 0.85);
+  border: 1px solid rgba(250, 237, 217, 0.12);
+  color: #fffdfa;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.liquid-input:focus {
+  outline: none;
+  border-color: #d8b4fe;
+  box-shadow: 0 0 0 3px rgba(216, 180, 254, 0.2), 0 1px 2px rgba(0, 0, 0, 0.2);
+  background: rgba(28, 18, 40, 0.95);
+}
+
+/* Exact Reference Surat Jalan PDF Paper View (Corporate Standard Black & White on A4) */
+.surat-jalan-document {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 10mm 15mm 12mm 15mm;
+  background-color: #ffffff;
+  color: #000000;
+  box-shadow: 0 20px 50px -10px rgba(18, 10, 26, 0.6);
+  font-family: Arial, Helvetica, sans-serif;
+  box-sizing: border-box;
+  position: relative;
+  border-radius: 2px;
+}
+
+/* Header Image Banner - Top Left Corner Positioned */
+.sj-header-banner-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.sj-header-banner-img {
+  width: 380px;
+  max-width: 48%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.sj-title {
+  text-align: center;
+  font-size: 21px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-decoration: underline;
+  margin-bottom: 1.6rem;
+  margin-top: 0.5rem;
+  color: #000000;
+}
+
+.sj-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 1.25rem;
+  font-size: 11px;
+}
+
+.sj-info-left {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sj-info-row {
+  display: grid;
+  grid-template-columns: 155px 1fr;
+  gap: 4px;
+}
+
+.sj-info-label {
+  font-weight: 400;
+  color: #000000;
+}
+
+.sj-info-val {
+  font-weight: 400;
+  color: #000000;
+}
+
+.sj-info-right-box {
+  border: 1px solid #000000;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 105px;
+}
+
+.sj-shipper-title {
+  font-size: 11px;
+}
+
+.sj-shipper-address {
+  font-size: 10.5px;
+  line-height: 1.35;
+  white-space: pre-line;
+}
+
+.sj-delivery-title {
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.sj-delivery-val {
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.sj-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 2px solid #000000;
+  margin-bottom: 1.25rem;
+  font-size: 11px;
+}
+
+.sj-table th, .sj-table td {
+  border: 1px solid #000000;
+  padding: 6px 8px;
+}
+
+.sj-table th {
+  font-weight: 700;
+  text-align: center;
+  background-color: #ffffff;
+}
+
+.sj-table th .sub-header {
+  font-weight: 400;
+  font-size: 9.5px;
+}
+
+.sj-dates-section {
+  font-size: 11px;
+  margin-top: 1rem;
+  margin-bottom: 3.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sj-date-row {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+}
+
+.sj-date-label {
+  font-weight: 400;
+}
+
+.sj-date-val {
+  font-weight: 400;
+}
+
+.sj-signatures {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  text-align: center;
+  font-size: 11px;
+  margin-top: 2rem;
+}
+
+.sj-sig-line {
+  margin-top: 80px;
+  border-bottom: 1px solid #000000;
+  width: 85%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* PRINT MEDIA RULES - PERFECT A4 PRINT & PDF EXPORT */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    overflow: visible !important;
+    width: 100% !important;
+    height: auto !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Force hide all non-print UI elements */
+  .no-print,
+  header,
+  footer,
+  aside,
+  nav,
+  button,
+  input,
+  .liquid-hero-glass,
+  .fixed {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Reset layout structure for print */
+  #root,
+  .min-h-screen,
+  main,
+  .studio-main-grid,
+  .preview-card-container,
+  .preview-scroll-container,
+  .preview-zoom-wrapper {
+    display: block !important;
+    visibility: visible !important;
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+    transform: none !important; /* CRITICAL: Remove zoom scale so browser prints correctly */
+  }
+
+  /* The actual Surat Jalan A4 Document */
+  .surat-jalan-document {
+    display: block !important;
+    visibility: visible !important;
+    position: relative !important;
+    width: 210mm !important;
+    min-height: 297mm !important;
+    margin: 0 auto !important;
+    padding: 10mm 15mm 12mm 15mm !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-sizing: border-box !important;
+    page-break-inside: avoid !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .batch-print-page {
+    display: block !important;
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+
+  .batch-print-page:last-child {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  .surat-jalan-document * {
+    visibility: visible !important;
+    color: #000000 !important;
+  }
+
+  .sj-header-banner-wrapper {
+    display: flex !important;
+    width: 100% !important;
+    justify-content: flex-start !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  .sj-header-banner-img {
+    display: block !important;
+    width: 380px !important;
+    max-width: 48% !important;
+    height: auto !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .sj-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    border: 2px solid #000000 !important;
+  }
+
+  .sj-table th, .sj-table td {
+    border: 1px solid #000000 !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  .sj-info-right-box {
+    border: 1px solid #000000 !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+}
