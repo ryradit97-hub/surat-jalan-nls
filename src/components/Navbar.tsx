@@ -1,6 +1,7 @@
 import React from 'react';
-import { Printer, Download, Plus, RefreshCw, X, FileText, Sparkles, FileSpreadsheet, Bookmark, Layers } from 'lucide-react';
+import { Plus, RefreshCw, X, Sparkles, FileText } from 'lucide-react';
 import { SuratJalanData } from '../types/suratJalan';
+import nlsLogo from '../assets/nlslogo.png';
 
 interface NavbarProps {
   currentDocument: SuratJalanData;
@@ -9,14 +10,8 @@ interface NavbarProps {
   onNewDocument: () => void;
   onResetDocument: () => void;
   onDeleteDocument: (id: string) => void;
-  onPrintPdf: () => void;
-  onExportExcel: () => void;
-  onOpenPresets: () => void;
-  onOpenBatchModal: () => void;
   onOpenPromptView: () => void;
   isStudioView: boolean;
-  onDownloadBatchPdf?: () => void;
-  onPrintAllBatch?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -26,14 +21,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onNewDocument,
   onResetDocument,
   onDeleteDocument,
-  onPrintPdf,
-  onExportExcel,
-  onOpenPresets,
-  onOpenBatchModal,
   onOpenPromptView,
   isStudioView,
-  onDownloadBatchPdf,
-  onPrintAllBatch,
 }) => {
   return (
     <header className="sticky top-0 z-40 no-print flex flex-col bg-[#140d1c] border-b border-[#faedd9]/10 shadow-lg">
@@ -113,60 +102,43 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 bg-[#1e132b]/95">
         {/* Brand identity - ALWAYS VISIBLE */}
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#c084fc] to-[#a855f7] flex items-center justify-center font-bold text-[#181022] text-sm shadow-sm">
-            N
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span className="font-bold text-sm text-[#fffdfa] tracking-tight">NLS LOGISTIK</span>
-            </div>
-            <p className="text-[10px] text-[#faedd9]/70 font-medium">Surat Jalan Trucking</p>
+          <img
+            src={nlsLogo}
+            alt="PT NIAGA LOGISTICS SEJAHTERA"
+            className="w-9 h-9 object-contain drop-shadow-md shrink-0"
+          />
+          <div className="flex flex-col justify-center leading-none select-none">
+            <span className="font-black text-xs sm:text-[13px] text-[#fffdfa] tracking-wider uppercase">
+              PT NIAGA LOGISTICS
+            </span>
+            <span className="font-bold text-[10.5px] sm:text-[11px] text-[#faedd9] tracking-[0.18em] uppercase mt-0.5">
+              SEJAHTERA
+            </span>
           </div>
         </div>
 
         {/* Toolbar Actions - ONLY VISIBLE IN STUDIO VIEW */}
         {isStudioView && (
-          <div className="flex items-center gap-2 flex-wrap">
-            <button
-              type="button"
-              onClick={onOpenPromptView}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-[#181022] bg-[#faedd9] hover:bg-[#fffdfa] transition-all active:scale-95 shadow-sm"
-              title="Buka Form Prompt AI Penuh"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-[#a855f7]" />
-              <span>Prompt AI Baru</span>
-            </button>
-
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={onResetDocument}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-[#c4b5fd]/70 hover:text-[#fffdfa] transition-all"
-              title="Reset ke data awal"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-[#c4b5fd]/70 hover:text-[#fffdfa] hover:bg-white/[0.06] transition-all cursor-pointer"
+              title="Reset formulir aktif ke data awal"
             >
               <RefreshCw className="w-3 h-3" />
-              <span className="hidden sm:inline">Reset</span>
+              <span>Reset</span>
             </button>
 
             <button
               type="button"
-              onClick={onPrintPdf}
-              className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-semibold text-[#181022] bg-gradient-to-r from-[#e9d5ff] via-[#d8b4fe] to-[#c084fc] hover:brightness-105 shadow-sm transition-all active:scale-95 cursor-pointer"
+              onClick={onOpenPromptView}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-[#181022] bg-[#faedd9] hover:bg-[#fffdfa] transition-all active:scale-95 shadow-sm cursor-pointer"
+              title="Buka Form Prompt AI Penuh"
             >
-              <Printer className="w-3.5 h-3.5" />
-              <span>Cetak / PDF</span>
+              <Sparkles className="w-3.5 h-3.5 text-[#7e22ce]" />
+              <span>Prompt AI Baru</span>
             </button>
-
-            {documents.length > 1 && onDownloadBatchPdf && (
-              <button
-                type="button"
-                onClick={onDownloadBatchPdf}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-[#181022] bg-gradient-to-r from-[#faedd9] via-[#fff5e8] to-[#faedd9] hover:shadow-md transition-all active:scale-95 cursor-pointer shadow-sm"
-                title="Download seluruh surat jalan (1 file PDF terpisah per surat jalan)"
-              >
-                <Layers className="w-3.5 h-3.5 text-[#7e22ce]" />
-                <span>Batch PDF ({documents.length} File)</span>
-              </button>
-            )}
           </div>
         )}
       </div>

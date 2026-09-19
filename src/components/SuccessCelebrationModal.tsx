@@ -12,7 +12,8 @@ import {
   Truck,
   Flame,
   Layers,
-  FileText
+  FileText,
+  MessageSquare
 } from 'lucide-react';
 import { SuratJalanData } from '../types/suratJalan';
 
@@ -26,6 +27,7 @@ interface SuccessCelebrationModalProps {
   onDownloadPdf: () => void;
   onDownloadBatchPdf?: () => void;
   onPrintAllBatch?: () => void;
+  onOpenWhatsApp?: () => void;
 }
 
 export const triggerFireworks = () => {
@@ -89,6 +91,7 @@ export const SuccessCelebrationModal: React.FC<SuccessCelebrationModalProps> = (
   onDownloadPdf,
   onDownloadBatchPdf,
   onPrintAllBatch,
+  onOpenWhatsApp,
 }) => {
   useEffect(() => {
     if (isOpen) {
@@ -317,6 +320,25 @@ export const SuccessCelebrationModal: React.FC<SuccessCelebrationModalProps> = (
               <span>Download Tab Ini</span>
             </button>
           </div>
+
+          {/* WhatsApp Direct Share Button */}
+          {onOpenWhatsApp && (
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+                setTimeout(() => onOpenWhatsApp(), 200);
+              }}
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-emerald-600 via-emerald-500 to-emerald-600 hover:from-emerald-500 hover:to-emerald-400 border border-emerald-400/40 shadow-[0_4px_16px_rgba(16,185,129,0.25)] hover:shadow-emerald-500/40 transition-all cursor-pointer active:scale-98"
+            >
+              <MessageSquare className="w-3.5 h-3.5 text-emerald-100" />
+              <span>
+                {isMulti
+                  ? `Kirim Semua (${documents.length}) PDF ke WhatsApp Supir 💬`
+                  : 'Kirim PDF ke WhatsApp Supir 💬'}
+              </span>
+            </button>
+          )}
 
           {/* Re-trigger Fireworks Button */}
           <div className="pt-1 text-center">

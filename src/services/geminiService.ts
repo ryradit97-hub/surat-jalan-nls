@@ -149,11 +149,9 @@ export const parseIndonesianPromptLocally = (prompt: string): AIExtractionResult
     result.description = goodsMatch[1].trim().toUpperCase();
   }
 
-  // 8. Container / Seal
+  // 8. Container / Seal (Default empty if not specified in prompt)
   const containerMatch = prompt.match(/(?:container|kontainer|seal)[\s:]*([A-Za-z0-9\/\s\-]+?)(?=(?:,\s*(?:barang|weight|remarks|po|bl))|$)/i);
-  if (containerMatch) {
-    result.containerSeal = containerMatch[1].trim().toUpperCase();
-  }
+  result.containerSeal = containerMatch ? containerMatch[1].trim().toUpperCase() : '';
 
   // 9. Shipper
   if (p.includes('cotti') || p.includes('kopi')) {
@@ -247,7 +245,7 @@ Keluarkan HANYA format JSON valid tanpa teks lain dengan struktur:
       "weightKg": "Berat dengan satuan contoh: 22000 KGS atau 8732,5 KGS",
       "remarks": "Contoh: 1 X 40 HR atau 1 X 40 HC",
       "deliveryDate": "Contoh: 18 Maret 2026 atau 14 Sep 2026",
-      "containerSeal": "Nomor container/seal jika ada",
+      "containerSeal": "Nomor container/seal jika ADA di prompt. Jika TIDAK DISEBUTKAN, WAJIB kosongkan string \"\"",
       "packageQty": "Jumlah kemasan jika ada",
       "unitType": "Trailer 40ft / Trailer 20ft / Tronton",
       "driverName": "Nama supir jika ada",
@@ -261,6 +259,7 @@ Keluarkan HANYA format JSON valid tanpa teks lain dengan struktur:
 }
 
 Aturan Penanganan:
+- Bidang "containerSeal" (Nomor Kontainer / Seal) seringkali kosong. Jika pengguna tidak menyebutkannya di prompt, WAJIB kosongkan string: "". JANGAN pernah mengisi nilai default atau mengarang nomor kontainer.
 - Jika pengguna meminta beberapa surat jalan (misal: "buatkan 4 surat jalan", atau ada beberapa nomor BL/PO/rincian bernomor 1-4):
   Buatkan objek terpisah dalam array "documents" untuk SETIAP surat jalan.
 - Jika alamat tujuan atau tanggal hanya disebutkan satu kali secara umum untuk semua pengiriman, wariskan alamat dan tanggal tersebut ke SEMUA objek dalam array "documents".
@@ -341,7 +340,7 @@ Aturan Penanganan:
             weightKg: firstItem.weightKg || firstItem.weight || firstItem.berat || '20000 KGS',
             remarks: firstItem.remarks || firstItem.keterangan || '1 X 40 HR',
             deliveryDate: root.deliveryDate || root.delivery_date || root.tanggal || root.tanggal_kirim || globalDate,
-            containerSeal: firstItem.containerSeal || firstItem.container_seal || firstItem.container || root.containerSeal,
+            containerSeal: (firstItem.containerSeal || firstItem.container_seal || firstItem.container || root.containerSeal || '').trim(),
             packageQty: firstItem.packageQty || firstItem.package_qty || root.packageQty,
             unitType: root.unitType || root.unit_type || root.tipe_unit || 'Trailer 40ft',
             driverName: root.driverName || root.driver_name || root.nama_supir || globalDriver,
@@ -401,7 +400,8 @@ export const applyAIExtractionToDocument = (
     if (aiData.description) item0.description = aiData.description;
     if (aiData.weightKg) item0.weightKg = aiData.weightKg;
     if (aiData.remarks) item0.remarks = aiData.remarks;
-    if (aiData.containerSeal) item0.containerSeal = aiData.containerSeal;
+    // CONTAINER/SEAL defaults to empty unless explicitly provided
+    item0.containerSeal = aiData.containerSeal ? aiData.containerSeal.trim() : '';
     if (aiData.packageQty) item0.packageQty = aiData.packageQty;
     updated.items[0] = item0;
   }

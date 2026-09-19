@@ -10,11 +10,12 @@ import { SuratJalanPreview } from './components/SuratJalanPreview';
 import { BatchImportModal } from './components/BatchImportModal';
 import { PresetsModal } from './components/PresetsModal';
 import { SuccessCelebrationModal } from './components/SuccessCelebrationModal';
+import { openWhatsAppDirect } from './utils/whatsappHelper';
 import { extractMultipleSuratJalanWithAI, applyAIExtractionToDocument } from './services/geminiService';
 import html2canvas from 'html2canvas-pro';
 import { jsPDF } from 'jspdf';
 import * as XLSX from 'xlsx';
-import { Printer, Download, Eye, Sparkles, Sliders, ZoomIn, ZoomOut, RotateCcw, ArrowLeft, Layers } from 'lucide-react';
+import { Printer, Download, Eye, Sparkles, Sliders, ZoomIn, ZoomOut, RotateCcw, ArrowLeft, Layers, MessageSquare, X, ChevronDown, Check } from 'lucide-react';
 
 export const App: React.FC = () => {
   // First window is fully prompt form ('hero-prompt' | 'studio')
@@ -33,13 +34,29 @@ export const App: React.FC = () => {
   const [isBatchExporting, setIsBatchExporting] = useState<boolean>(false);
   const [batchExportProgress, setBatchExportProgress] = useState<{ current: number; total: number } | null>(null);
   const [isPrintingAll, setIsPrintingAll] = useState<boolean>(false);
+  const [exportMode, setExportMode] = useState<'batch' | 'whatsapp'>('batch');
+  const [whatsappToastInfo, setWhatsappToastInfo] = useState<{
+    isOpen: boolean;
+    count: number;
+    phone: string;
+  } | null>(null);
 
   // Saved documents list state
   const [documents, setDocuments] = useState<SuratJalanData[]>(() => {
     const saved = localStorage.getItem('nls_surat_jalan_docs');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map((doc: SuratJalanData) => ({
+            ...doc,
+            items: doc.items.map((it) => ({
+              ...it,
+              // Strip lingering sample OTPU container seal
+              containerSeal: it.containerSeal?.includes('OTPU6617747') ? '' : (it.containerSeal || ''),
+            })),
+          }));
+        }
       } catch (e) {
         console.error(e);
       }
@@ -47,10 +64,45 @@ export const App: React.FC = () => {
     return [createEmptySuratJalan()];
   });
 
+  // Auto-clean any legacy sample OTPU containerSeal on mount
+  useEffect(() => {
+    setDocuments((prev) => {
+      let modified = false;
+      const cleaned = prev.map((doc) => ({
+        ...doc,
+        items: doc.items.map((it) => {
+          if (it.containerSeal && it.containerSeal.includes('OTPU6617747')) {
+            modified = true;
+            return { ...it, containerSeal: '' };
+          }
+          return it;
+        }),
+      }));
+      return modified ? cleaned : prev;
+    });
+  }, []);
+
   const [currentId, setCurrentId] = useState<string>(documents[0]?.id || '');
   const [isPresetsOpen, setIsPresetsOpen] = useState<boolean>(false);
   const [isBatchOpen, setIsBatchOpen] = useState<boolean>(false);
   const [zoomLevel, setZoomLevel] = useState<number>(100);
+  const [activeDropdown, setActiveDropdown] = useState<'download' | 'print' | 'whatsapp' | null>(null);
+
+  // Dismiss toolbar dropdown when clicked outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target?.closest('.toolbar-dropdown-container')) {
+        setActiveDropdown(null);
+      }
+    };
+    if (activeDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [activeDropdown]);
 
   const documentRef = useRef<HTMLDivElement>(null);
 
@@ -153,6 +205,188 @@ export const App: React.FC = () => {
     }
   };
 
+  // SEND ALL DOCS OF PDF VIA WHATSAPP (Separate PDF files for all Surat Jalan)
+  const handleSendAllDocsPdfWhatsApp = async () => {
+    if (documents.length === 0) return;
+
+    let phone = currentDoc.phoneNo?.trim() || '';
+    if (!phone) {
+      const inputPhone = window.prompt(
+        'Nomor kontak supir di Surat Jalan ini belum diisi.\nMasukkan nomor WhatsApp tujuan (contoh: 08123456789):',
+        ''
+      );
+      if (inputPhone === null) return; // user cancelled
+      phone = inputPhone.trim();
+    }
+
+    setExportMode('whatsapp');
+    setIsBatchExporting(true);
+    const pdfFiles: File[] = [];
+
+    try {
+      for (let i = 0; i < documents.length; i++) {
+        setBatchExportProgress({ current: i + 1, total: documents.length });
+        const doc = documents[i];
+
+        let canvas: HTMLCanvasElement | null = null;
+        const el = document.getElementById(`batch-export-doc-${doc.id}`);
+        if (el) {
+          const targetEl = (el.querySelector('.surat-jalan-document') as HTMLElement) || el;
+          canvas = await html2canvas(targetEl, {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            backgroundColor: '#ffffff',
+            onclone: (clonedDoc) => {
+              const container = clonedDoc.getElementById('batch-export-container');
+              if (container) {
+                container.style.position = 'static';
+                container.style.left = '0';
+                container.style.top = '0';
+              }
+            },
+          });
+        } else if (documentRef.current && doc.id === currentDoc.id) {
+          canvas = await html2canvas(documentRef.current, {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            backgroundColor: '#ffffff',
+          });
+        }
+
+        if (!canvas) continue;
+
+        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+
+        const blClean = (doc.blNumber || `SJ_${i + 1}`).replace(/[\\/:*?"<>|]/g, '_');
+        const fileName = `Surat_Jalan_${blClean}.pdf`;
+
+        const blob = pdf.output('blob');
+        const file = new File([blob], fileName, { type: 'application/pdf' });
+        pdfFiles.push(file);
+
+        // Download file locally to Downloads shelf
+        pdf.save(fileName);
+
+        if (i < documents.length - 1) {
+          await new Promise((resolve) => setTimeout(resolve, 350));
+        }
+      }
+
+      // 1. Try native Web Share API (Supported on Mobile browsers, iOS Safari, Mac Safari/Chrome)
+      let sharedViaNative = false;
+      if (
+        typeof navigator !== 'undefined' &&
+        typeof (navigator as any).canShare === 'function' &&
+        pdfFiles.length > 0
+      ) {
+        try {
+          if ((navigator as any).canShare({ files: pdfFiles })) {
+            await navigator.share({
+              files: pdfFiles,
+              title: `Surat Jalan NLS (${pdfFiles.length} Dokumen PDF)`,
+              text: `Berikut ${pdfFiles.length} berkas PDF Surat Jalan resmi PT Niaga Logistics Sejahtera.`
+            });
+            sharedViaNative = true;
+          }
+        } catch (shareErr: any) {
+          if (shareErr.name !== 'AbortError') {
+            console.warn('Native share failed, using WhatsApp Web fallback:', shareErr);
+          }
+        }
+      }
+
+      // 2. Fallback: Open WhatsApp directly to driver's phone number and show guide toast
+      if (!sharedViaNative) {
+        openWhatsAppDirect(phone);
+        setWhatsappToastInfo({
+          isOpen: true,
+          count: pdfFiles.length,
+          phone: phone,
+        });
+      }
+    } catch (err) {
+      console.error('Gagal menyiapkan PDF untuk WhatsApp:', err);
+      alert('Gagal menyiapkan berkas PDF: ' + err);
+    } finally {
+      setIsBatchExporting(false);
+      setBatchExportProgress(null);
+    }
+  };
+
+  // SEND SINGLE DOC PDF VIA WHATSAPP (Current Tab Document Only)
+  const handleSendSingleDocPdfWhatsApp = async () => {
+    let phone = currentDoc.phoneNo?.trim() || '';
+    if (!phone) {
+      const inputPhone = window.prompt(
+        'Nomor kontak supir di Surat Jalan ini belum diisi.\nMasukkan nomor WhatsApp tujuan (contoh: 08123456789):',
+        ''
+      );
+      if (inputPhone === null) return;
+      phone = inputPhone.trim();
+    }
+
+    if (!documentRef.current) return;
+    try {
+      const canvas = await html2canvas(documentRef.current, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff',
+      });
+      const imgData = canvas.toDataURL('image/jpeg', 1.0);
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+
+      const blClean = (currentDoc.blNumber || 'NLS').replace(/[\\/:*?"<>|]/g, '_');
+      const fileName = `Surat_Jalan_${blClean}.pdf`;
+      const blob = pdf.output('blob');
+      const file = new File([blob], fileName, { type: 'application/pdf' });
+
+      let sharedViaNative = false;
+      if (
+        navigator.share &&
+        typeof (navigator as any).canShare === 'function' &&
+        /Mobi|Android|iPhone|iPad|Macintosh/i.test(navigator.userAgent)
+      ) {
+        try {
+          if ((navigator as any).canShare({ files: [file] })) {
+            await navigator.share({
+              files: [file],
+              title: `Surat Jalan NLS (${fileName})`,
+              text: `Berikut berkas PDF Surat Jalan resmi PT Niaga Logistics Sejahtera (B/L: ${currentDoc.blNumber || '-'}).`,
+            });
+            sharedViaNative = true;
+          }
+        } catch (shareErr: any) {
+          if (shareErr.name !== 'AbortError') {
+            console.warn('Native share failed, using WhatsApp fallback:', shareErr);
+          }
+        }
+      }
+
+      if (!sharedViaNative) {
+        pdf.save(fileName);
+        openWhatsAppDirect(phone);
+        setWhatsappToastInfo({
+          isOpen: true,
+          count: 1,
+          phone: phone,
+        });
+      }
+    } catch (err) {
+      console.error('Gagal mengirim PDF ke WhatsApp:', err);
+      alert('Gagal menyiapkan PDF: ' + err);
+    }
+  };
+
   // PRINT / EXPORT PDF METHOD (Active Document)
   const handlePrintPdf = () => {
     setIsPrintingAll(false);
@@ -208,6 +442,7 @@ export const App: React.FC = () => {
   // DOWNLOAD BATCH SEPARATE PDFs (1 PDF file per Surat Jalan, all exported in batch)
   const handleDownloadBatchPdf = async () => {
     if (documents.length === 0) return;
+    setExportMode('batch');
     setIsBatchExporting(true);
     try {
       for (let i = 0; i < documents.length; i++) {
@@ -306,14 +541,8 @@ export const App: React.FC = () => {
         onNewDocument={handleCreateNewDoc}
         onDeleteDocument={handleDeleteDocument}
         onResetDocument={handleResetCurrentDoc}
-        onPrintPdf={handlePrintPdf}
-        onExportExcel={handleExportExcel}
-        onOpenPresets={() => setIsPresetsOpen(true)}
-        onOpenBatchModal={() => setIsBatchOpen(true)}
         onOpenPromptView={() => setViewState('hero-prompt')}
         isStudioView={viewState === 'studio'}
-        onDownloadBatchPdf={handleDownloadBatchPdf}
-        onPrintAllBatch={handlePrintAllBatch}
       />
 
       {/* VIEW STATE 1: FULL PROMPT FORM WINDOW (FIRST WINDOW) */}
@@ -435,50 +664,257 @@ export const App: React.FC = () => {
                   </button>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={handleDownloadPdf}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-[#faedd9] bg-[#faedd9]/8 hover:bg-[#faedd9]/15 border border-[#faedd9]/15 transition-all cursor-pointer"
-                  title="Download surat jalan yang sedang aktif"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Direct PDF</span>
-                </button>
+                {/* Unified Action 1: Download PDF */}
+                <div className="relative toolbar-dropdown-container">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (documents.length > 1) {
+                        setActiveDropdown(activeDropdown === 'download' ? null : 'download');
+                      } else {
+                        handleDownloadPdf();
+                      }
+                    }}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer active:scale-95 border ${
+                      activeDropdown === 'download'
+                        ? 'bg-[#faedd9]/20 text-[#faedd9] border-[#faedd9]/40 shadow-sm'
+                        : 'text-[#faedd9] bg-[#faedd9]/8 hover:bg-[#faedd9]/15 border-[#faedd9]/15'
+                    }`}
+                    title={documents.length > 1 ? 'Pilihan unduh PDF (Tab ini atau Semua)' : 'Unduh berkas PDF'}
+                  >
+                    <Download className="w-3.5 h-3.5 text-[#faedd9]" />
+                    <span>Download PDF</span>
+                    {documents.length > 1 && (
+                      <ChevronDown
+                        className={`w-3.5 h-3.5 opacity-70 transition-transform duration-200 ${
+                          activeDropdown === 'download' ? 'rotate-180' : ''
+                        }`}
+                      />
+                    )}
+                  </button>
 
-                <button
-                  type="button"
-                  onClick={handlePrintPdf}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-[#181022] bg-[#faedd9] hover:bg-[#fffdfa] hover:shadow-md transition-all cursor-pointer"
-                  title="Cetak tab surat jalan aktif"
-                >
-                  <Printer className="w-3.5 h-3.5" />
-                  <span>Cetak / PDF</span>
-                </button>
+                  {/* Dropdown Menu */}
+                  {activeDropdown === 'download' && documents.length > 1 && (
+                    <div className="absolute right-0 top-full mt-2 w-72 bg-[#1b1026]/98 backdrop-blur-xl border border-white/15 rounded-2xl p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
+                      <div className="px-3 py-1.5 text-[10px] uppercase font-bold tracking-wider text-[#c4b5fd]/70 border-b border-white/10 mb-1">
+                        Pilihan Unduh PDF
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActiveDropdown(null);
+                          handleDownloadPdf();
+                        }}
+                        className="w-full text-left flex items-start gap-3 p-2.5 rounded-xl hover:bg-white/[0.08] transition-colors group cursor-pointer"
+                      >
+                        <div className="p-2 rounded-lg bg-white/[0.06] text-[#faedd9] group-hover:bg-[#faedd9] group-hover:text-[#181022] transition-colors">
+                          <Download className="w-4 h-4" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-xs font-semibold text-[#faedd9] flex items-center justify-between">
+                            <span>Tab Ini Saja</span>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-white/70 font-mono">1 PDF</span>
+                          </div>
+                          <p className="text-[11px] text-white/50 truncate mt-0.5 font-mono">
+                            B/L: {currentDoc.blNumber || 'Draft'}
+                          </p>
+                        </div>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActiveDropdown(null);
+                          handleDownloadBatchPdf();
+                        }}
+                        disabled={isBatchExporting}
+                        className="w-full text-left flex items-start gap-3 p-2.5 rounded-xl hover:bg-white/[0.08] transition-colors group cursor-pointer disabled:opacity-50"
+                      >
+                        <div className="p-2 rounded-lg bg-purple-500/20 text-purple-300 group-hover:bg-[#faedd9] group-hover:text-[#181022] transition-colors">
+                          <Layers className="w-4 h-4" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-xs font-semibold text-[#faedd9] flex items-center justify-between">
+                            <span>Download Semua</span>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/30 text-purple-200 font-mono font-bold">
+                              {documents.length} PDF
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-white/50 mt-0.5">
+                            {documents.length} file PDF terpisah sekaligus
+                          </p>
+                        </div>
+                      </button>
+                    </div>
+                  )}
+                </div>
 
-                {documents.length > 1 && (
-                  <>
-                    <button
-                      type="button"
-                      onClick={handleDownloadBatchPdf}
-                      disabled={isBatchExporting}
-                      className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-[#181022] bg-gradient-to-r from-[#faedd9] via-[#fff5e8] to-[#faedd9] hover:shadow-md transition-all cursor-pointer active:scale-95 shadow-sm disabled:opacity-50"
-                      title="Download seluruh surat jalan (1 file PDF terpisah per surat jalan)"
-                    >
-                      <Layers className="w-3.5 h-3.5 text-[#7e22ce]" />
-                      <span>Batch PDF ({documents.length} File)</span>
-                    </button>
+                {/* Unified Action 2: Cetak */}
+                <div className="relative toolbar-dropdown-container">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (documents.length > 1) {
+                        setActiveDropdown(activeDropdown === 'print' ? null : 'print');
+                      } else {
+                        handlePrintPdf();
+                      }
+                    }}
+                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm ${
+                      activeDropdown === 'print'
+                        ? 'bg-[#fffdfa] text-[#181022] ring-2 ring-[#faedd9]/60 shadow-md'
+                        : 'text-[#181022] bg-[#faedd9] hover:bg-[#fffdfa] hover:shadow-md'
+                    }`}
+                    title={documents.length > 1 ? 'Pilihan cetak dokumen (Tab ini atau Semua)' : 'Cetak surat jalan'}
+                  >
+                    <Printer className="w-3.5 h-3.5 text-[#181022]" />
+                    <span>Cetak</span>
+                    {documents.length > 1 && (
+                      <ChevronDown
+                        className={`w-3.5 h-3.5 opacity-70 transition-transform duration-200 ${
+                          activeDropdown === 'print' ? 'rotate-180' : ''
+                        }`}
+                      />
+                    )}
+                  </button>
 
-                    <button
-                      type="button"
-                      onClick={handlePrintAllBatch}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-[#faedd9] bg-white/[0.08] hover:bg-white/[0.14] border border-[#faedd9]/20 transition-all cursor-pointer active:scale-95"
-                      title="Cetak semua surat jalan sekaligus"
-                    >
-                      <Printer className="w-3.5 h-3.5 text-[#d8b4fe]" />
-                      <span className="hidden sm:inline">Cetak Semua</span>
-                    </button>
-                  </>
-                )}
+                  {/* Dropdown Menu */}
+                  {activeDropdown === 'print' && documents.length > 1 && (
+                    <div className="absolute right-0 top-full mt-2 w-72 bg-[#1b1026]/98 backdrop-blur-xl border border-white/15 rounded-2xl p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
+                      <div className="px-3 py-1.5 text-[10px] uppercase font-bold tracking-wider text-[#c4b5fd]/70 border-b border-white/10 mb-1">
+                        Pilihan Cetak Dokumen
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActiveDropdown(null);
+                          handlePrintPdf();
+                        }}
+                        className="w-full text-left flex items-start gap-3 p-2.5 rounded-xl hover:bg-white/[0.08] transition-colors group cursor-pointer"
+                      >
+                        <div className="p-2 rounded-lg bg-white/[0.06] text-[#faedd9] group-hover:bg-[#faedd9] group-hover:text-[#181022] transition-colors">
+                          <Printer className="w-4 h-4" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-xs font-semibold text-[#faedd9] flex items-center justify-between">
+                            <span>Cetak Tab Ini Saja</span>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-white/70 font-mono">1 Lembar</span>
+                          </div>
+                          <p className="text-[11px] text-white/50 truncate mt-0.5 font-mono">
+                            B/L: {currentDoc.blNumber || 'Draft'}
+                          </p>
+                        </div>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActiveDropdown(null);
+                          handlePrintAllBatch();
+                        }}
+                        className="w-full text-left flex items-start gap-3 p-2.5 rounded-xl hover:bg-white/[0.08] transition-colors group cursor-pointer"
+                      >
+                        <div className="p-2 rounded-lg bg-amber-500/20 text-amber-300 group-hover:bg-amber-400 group-hover:text-[#181022] transition-colors">
+                          <Printer className="w-4 h-4" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-xs font-semibold text-[#faedd9] flex items-center justify-between">
+                            <span>Cetak Semua Sekaligus</span>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/30 text-amber-200 font-mono font-bold">
+                              {documents.length} Dok
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-white/50 mt-0.5">
+                            Cetak {documents.length} surat jalan secara berurutan
+                          </p>
+                        </div>
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Unified Action 3: WhatsApp Action */}
+                <div className="relative toolbar-dropdown-container">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (documents.length > 1) {
+                        setActiveDropdown(activeDropdown === 'whatsapp' ? null : 'whatsapp');
+                      } else {
+                        handleSendSingleDocPdfWhatsApp();
+                      }
+                    }}
+                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-white transition-all cursor-pointer active:scale-95 shadow-sm border ${
+                      activeDropdown === 'whatsapp'
+                        ? 'bg-emerald-500 border-emerald-300 shadow-emerald-500/30 ring-2 ring-emerald-400/40'
+                        : 'bg-emerald-600 hover:bg-emerald-500 border-emerald-400/40 hover:shadow-emerald-500/20'
+                    }`}
+                    title={documents.length > 1 ? 'Kirim PDF ke WhatsApp supir (Tab ini atau Semua)' : 'Kirim berkas PDF ke WhatsApp'}
+                  >
+                    <MessageSquare className="w-3.5 h-3.5 text-emerald-100" />
+                    <span>Kirim ke WA</span>
+                    {documents.length > 1 && (
+                      <ChevronDown
+                        className={`w-3.5 h-3.5 opacity-70 transition-transform duration-200 ${
+                          activeDropdown === 'whatsapp' ? 'rotate-180' : ''
+                        }`}
+                      />
+                    )}
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {activeDropdown === 'whatsapp' && documents.length > 1 && (
+                    <div className="absolute right-0 top-full mt-2 w-80 bg-[#1b1026]/98 backdrop-blur-xl border border-white/15 rounded-2xl p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
+                      <div className="px-3 py-1.5 text-[10px] uppercase font-bold tracking-wider text-emerald-400/80 border-b border-white/10 mb-1 flex items-center justify-between">
+                        <span>Kirim PDF ke WhatsApp</span>
+                        <span className="text-[10px] font-mono text-white/50">{currentDoc.phoneNo || 'Driver'}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActiveDropdown(null);
+                          handleSendSingleDocPdfWhatsApp();
+                        }}
+                        className="w-full text-left flex items-start gap-3 p-2.5 rounded-xl hover:bg-white/[0.08] transition-colors group cursor-pointer"
+                      >
+                        <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-300 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
+                          <MessageSquare className="w-4 h-4" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-xs font-semibold text-[#faedd9] flex items-center justify-between">
+                            <span>Kirim Tab Ini Saja</span>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-white/70 font-mono">1 PDF</span>
+                          </div>
+                          <p className="text-[11px] text-white/50 truncate mt-0.5 font-mono">
+                            B/L: {currentDoc.blNumber || 'Draft'}
+                          </p>
+                        </div>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActiveDropdown(null);
+                          handleSendAllDocsPdfWhatsApp();
+                        }}
+                        disabled={isBatchExporting}
+                        className="w-full text-left flex items-start gap-3 p-2.5 rounded-xl hover:bg-white/[0.08] transition-colors group cursor-pointer disabled:opacity-50"
+                      >
+                        <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-300 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
+                          <Layers className="w-4 h-4" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-xs font-semibold text-emerald-300 group-hover:text-emerald-200 flex items-center justify-between">
+                            <span>Kirim Semua ({documents.length}) PDF</span>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/30 text-emerald-100 font-mono font-bold">
+                              Semua
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-white/50 mt-0.5">
+                            Kirim seluruh {documents.length} berkas PDF ke supir
+                          </p>
+                        </div>
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -524,7 +960,7 @@ export const App: React.FC = () => {
         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3.5 px-6 py-4 rounded-3xl liquid-hero-glass border-[0.5px] border-[#faedd9]/30 shadow-2xl backdrop-blur-2xl animate-fade-in text-[#fffdfa]">
           <div className="w-5 h-5 border-2 border-[#faedd9]/30 border-t-[#faedd9] rounded-full animate-spin shrink-0" />
           <div className="text-xs sm:text-sm font-semibold">
-            <span>Mengekspor Batch PDF: </span>
+            <span>{exportMode === 'whatsapp' ? 'Menyiapkan PDF untuk WhatsApp: ' : 'Mengekspor Batch PDF: '}</span>
             <span className="text-[#faedd9] font-bold font-mono">
               File {batchExportProgress?.current || 1} dari {batchExportProgress?.total || documents.length} (File Terpisah)
             </span>
@@ -533,10 +969,36 @@ export const App: React.FC = () => {
         </div>
       )}
 
+      {/* FLOATING WHATSAPP PDF DOWNLOAD & CHAT GUIDE TOAST */}
+      {whatsappToastInfo?.isOpen && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3.5 px-5 py-3.5 rounded-3xl liquid-hero-glass border border-emerald-400/40 shadow-2xl backdrop-blur-2xl animate-fade-in text-[#fffdfa] max-w-lg">
+          <div className="w-9 h-9 rounded-2xl bg-emerald-500/25 border border-emerald-400/50 flex items-center justify-center shrink-0">
+            <MessageSquare className="w-4 h-4 text-emerald-300" />
+          </div>
+          <div className="text-xs flex-1">
+            <p className="font-bold text-emerald-300">
+              Chat WA Terbuka & {whatsappToastInfo.count} File PDF Siap!
+            </p>
+            <p className="text-[#faedd9]/80 text-[11px] mt-0.5 leading-snug">
+              Semua file PDF surat jalan telah terunduh ke perangkat Anda. Cukup seret (drag & drop) file atau klik lampiran (📎) di WhatsApp untuk mengirimnya.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setWhatsappToastInfo(null)}
+            className="p-1 rounded-xl text-[#faedd9]/60 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            title="Tutup pemberitahuan"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
       {/* CUTE SIMPLE FOOTER */}
       <footer className="no-print py-4 text-center text-xs text-[#faedd9]/70 flex items-center justify-center gap-1.5 select-none tracking-wide">
         <span>Made for Jean</span>
         <span className="text-[#f472b6] text-sm">♥</span>
+        <span>From 🌧️</span>
       </footer>
 
       {/* FULL-SCREEN AI LOADING OVERLAY ANIMATION */}
@@ -567,6 +1029,7 @@ export const App: React.FC = () => {
         onDownloadPdf={handleDownloadPdf}
         onDownloadBatchPdf={handleDownloadBatchPdf}
         onPrintAllBatch={handlePrintAllBatch}
+        onOpenWhatsApp={handleSendAllDocsPdfWhatsApp}
       />
     </div>
   );

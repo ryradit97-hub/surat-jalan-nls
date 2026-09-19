@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { paraphraseLogisticsPrompt } from '../services/geminiService';
 import { HighlightedPromptTextarea } from './HighlightedPromptTextarea';
+import nlsLogo from '../assets/nlslogo.png';
 
 interface HeroPromptViewProps {
   onSubmitPrompt: (promptText: string) => void;
@@ -122,8 +123,8 @@ export const HeroPromptView: React.FC<HeroPromptViewProps> = ({
 
         {/* Title Header */}
         <div className="text-center mb-8 sm:mb-10 relative z-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.06] border border-[#faedd9]/20 text-[#faedd9] text-xs sm:text-sm font-semibold mb-4 backdrop-blur-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.15)]">
-            <Sparkles className="w-4 h-4 text-[#d8b4fe] animate-spin-slow" />
+          <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.06] border border-[#faedd9]/20 text-[#faedd9] text-xs sm:text-sm font-semibold mb-4 backdrop-blur-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.15)]">
+            <img src={nlsLogo} alt="NLS" className="w-4 h-4 object-contain rounded-full shadow-sm" />
             <span>Asisten Cerdas Surat Jalan</span>
           </div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-[#fffdfa] tracking-tight leading-tight">

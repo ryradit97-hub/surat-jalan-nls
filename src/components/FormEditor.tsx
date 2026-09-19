@@ -306,15 +306,27 @@ export const FormEditor: React.FC<FormEditorProps> = ({
               {/* Container Seal & Description */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
                 <div>
-                  <label className="block text-[10px] font-semibold text-[#faedd9]/70 mb-1">
-                    Container / Seal
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-[10px] font-semibold text-[#faedd9]/70">
+                      Container / Seal (Opsional)
+                    </label>
+                    {item.containerSeal && (
+                      <button
+                        type="button"
+                        onClick={() => handleItemChange(index, 'containerSeal', '')}
+                        className="text-[9.5px] text-[#f472b6] hover:text-[#fb7185] hover:underline cursor-pointer"
+                        title="Kosongkan Container / Seal"
+                      >
+                        ✕ Kosongkan
+                      </button>
+                    )}
+                  </div>
                   <input
                     type="text"
                     className="w-full liquid-input px-2.5 py-1.5 rounded-lg text-xs font-mono"
                     value={item.containerSeal}
                     onChange={(e) => handleItemChange(index, 'containerSeal', e.target.value)}
-                    placeholder="e.g. OTPU6617747 / SITF124419"
+                    placeholder="Biarkan kosong jika belum ada container"
                   />
                 </div>
                 <div>
