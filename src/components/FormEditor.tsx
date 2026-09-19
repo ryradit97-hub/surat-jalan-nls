@@ -22,6 +22,59 @@ export const FormEditor: React.FC<FormEditorProps> = ({
     defaultShippers.find(s => s.name === data.shipperName)?.id || 'custom'
   );
 
+  // Month mapping for Indonesian & English dates
+  const monthMap: Record<string, string> = {
+    jan: '01', januari: '01', january: '01',
+    feb: '02', februari: '02', february: '02',
+    mar: '03', maret: '03', march: '03',
+    apr: '04', april: '04',
+    mei: '05', may: '05',
+    jun: '06', juni: '06', june: '06',
+    jul: '07', juli: '07', july: '07',
+    agu: '08', agt: '08', agustus: '08', aug: '08', august: '08',
+    sep: '09', september: '09',
+    okt: '10', oktober: '10', october: '10',
+    nov: '11', november: '11',
+    des: '12', desember: '12', dec: '12', december: '12'
+  };
+
+  const toISODate = (str?: string): string => {
+    if (!str) return '';
+    const trimmed = str.trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return trimmed;
+
+    const match = trimmed.match(/^(\d{1,2})\s+([a-zA-Z]+)\s+(\d{4})/);
+    if (match) {
+      const day = match[1].padStart(2, '0');
+      const monthStr = match[2].toLowerCase();
+      const month = monthMap[monthStr] || '01';
+      const year = match[3];
+      return `${year}-${month}-${day}`;
+    }
+
+    const d = new Date(trimmed);
+    if (!isNaN(d.getTime())) {
+      return d.toISOString().slice(0, 10);
+    }
+    return '';
+  };
+
+  const formatToDisplayDate = (isoStr?: string): string => {
+    if (!isoStr) return '';
+    const parts = isoStr.split('-');
+    if (parts.length !== 3) return isoStr;
+    const year = parts[0];
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+    const monthIdx = parseInt(parts[1], 10) - 1;
+    const day = parseInt(parts[2], 10);
+    return `${day} ${monthNames[monthIdx] || parts[1]} ${year}`;
+  };
+
+  const handleDateChange = (field: 'deliveryDate' | 'arrivedDate' | 'dischargeDate', isoValue: string) => {
+    const formatted = formatToDisplayDate(isoValue);
+    handleTextChange(field, formatted);
+  };
+
   const handleTextChange = (field: keyof SuratJalanData, value: any) => {
     onChange({
       ...data,
@@ -172,19 +225,38 @@ export const FormEditor: React.FC<FormEditorProps> = ({
           </div>
         </div>
 
-        {/* Delivery Date */}
+        {/* Delivery Date / Tanggal Kirim using Date Picker */}
         <div>
-          <label className="block text-[10.5px] font-semibold tracking-wider text-[#faedd9]/80 uppercase mb-1 flex items-center gap-1">
-            <Calendar className="w-3 h-3 text-[#d8b4fe]" />
-            <span>Delivery Date / Tanggal Kirim</span>
-          </label>
-          <input
-            type="text"
-            className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs font-medium text-[#fffdfa]"
-            value={data.deliveryDate}
-            onChange={(e) => handleTextChange('deliveryDate', e.target.value)}
-            placeholder="e.g. 14 Sep 2026"
-          />
+          <div className="flex items-center justify-between mb-1">
+            <label className="text-[10.5px] font-semibold tracking-wider text-[#faedd9]/80 uppercase flex items-center gap-1">
+              <Calendar className="w-3 h-3 text-[#d8b4fe]" />
+              <span>Delivery Date / Tanggal Kirim</span>
+            </label>
+            <button
+              type="button"
+              onClick={() => {
+                const today = new Date().toISOString().slice(0, 10);
+                handleDateChange('deliveryDate', today);
+              }}
+              className="text-[10px] text-[#d8b4fe] hover:text-[#faedd9] hover:underline cursor-pointer transition-colors"
+              title="Set tanggal hari ini"
+            >
+              Set Hari Ini
+            </button>
+          </div>
+          <div className="relative flex items-center gap-2">
+            <input
+              type="date"
+              className="w-full liquid-input px-3 py-2 rounded-xl text-xs font-semibold text-[#fffdfa] cursor-pointer [color-scheme:dark]"
+              value={toISODate(data.deliveryDate)}
+              onChange={(e) => handleDateChange('deliveryDate', e.target.value)}
+            />
+            {data.deliveryDate && (
+              <span className="shrink-0 text-[11px] font-mono px-2.5 py-1.5 rounded-xl bg-[#faedd9]/10 text-[#faedd9] border border-[#faedd9]/15 shadow-sm">
+                {data.deliveryDate}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
@@ -434,27 +506,51 @@ export const FormEditor: React.FC<FormEditorProps> = ({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           <div>
-            <label className="block text-[10px] font-semibold text-[#faedd9]/70 mb-1">
-              Arrived Date / Tanggal Tiba
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-[10px] font-semibold text-[#faedd9]/70 flex items-center gap-1">
+                <Calendar className="w-2.5 h-2.5 text-[#d8b4fe]" />
+                <span>Arrived Date / Tanggal Tiba</span>
+              </label>
+              {data.arrivedDate && (
+                <button
+                  type="button"
+                  onClick={() => handleTextChange('arrivedDate', '')}
+                  className="text-[9.5px] text-[#f472b6] hover:underline cursor-pointer"
+                  title="Hapus tanggal tiba"
+                >
+                  Hapus
+                </button>
+              )}
+            </div>
             <input
-              type="text"
-              className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs text-[#fffdfa]"
-              value={data.arrivedDate}
-              onChange={(e) => handleTextChange('arrivedDate', e.target.value)}
-              placeholder="Kosongkan bila belum tiba"
+              type="date"
+              className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs text-[#fffdfa] cursor-pointer [color-scheme:dark]"
+              value={toISODate(data.arrivedDate)}
+              onChange={(e) => handleDateChange('arrivedDate', e.target.value)}
             />
           </div>
           <div>
-            <label className="block text-[10px] font-semibold text-[#faedd9]/70 mb-1">
-              Discharge / Tanggal Bongkar
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-[10px] font-semibold text-[#faedd9]/70 flex items-center gap-1">
+                <Calendar className="w-2.5 h-2.5 text-[#d8b4fe]" />
+                <span>Discharge / Tanggal Bongkar</span>
+              </label>
+              {data.dischargeDate && (
+                <button
+                  type="button"
+                  onClick={() => handleTextChange('dischargeDate', '')}
+                  className="text-[9.5px] text-[#f472b6] hover:underline cursor-pointer"
+                  title="Hapus tanggal bongkar"
+                >
+                  Hapus
+                </button>
+              )}
+            </div>
             <input
-              type="text"
-              className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs text-[#fffdfa]"
-              value={data.dischargeDate}
-              onChange={(e) => handleTextChange('dischargeDate', e.target.value)}
-              placeholder="Kosongkan jika belum muat"
+              type="date"
+              className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs text-[#fffdfa] cursor-pointer [color-scheme:dark]"
+              value={toISODate(data.dischargeDate)}
+              onChange={(e) => handleDateChange('dischargeDate', e.target.value)}
             />
           </div>
         </div>
