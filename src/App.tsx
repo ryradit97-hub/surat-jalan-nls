@@ -212,7 +212,7 @@ export const App: React.FC = () => {
     let phone = currentDoc.phoneNo?.trim() || '';
     if (!phone) {
       const inputPhone = window.prompt(
-        'Nomor kontak supir di Surat Jalan ini belum diisi.\nMasukkan nomor WhatsApp tujuan (contoh: 08123456789):',
+        'Nomor kontak WhatsApp tujuan belum diisi.\nMasukkan nomor WhatsApp tujuan (contoh: 08123456789):',
         ''
       );
       if (inputPhone === null) return; // user cancelled
@@ -324,7 +324,7 @@ export const App: React.FC = () => {
     let phone = currentDoc.phoneNo?.trim() || '';
     if (!phone) {
       const inputPhone = window.prompt(
-        'Nomor kontak supir di Surat Jalan ini belum diisi.\nMasukkan nomor WhatsApp tujuan (contoh: 08123456789):',
+        'Nomor kontak WhatsApp tujuan belum diisi.\nMasukkan nomor WhatsApp tujuan (contoh: 08123456789):',
         ''
       );
       if (inputPhone === null) return;
@@ -847,7 +847,7 @@ export const App: React.FC = () => {
                         ? 'bg-emerald-500 border-emerald-300 shadow-emerald-500/30 ring-2 ring-emerald-400/40'
                         : 'bg-emerald-600 hover:bg-emerald-500 border-emerald-400/40 hover:shadow-emerald-500/20'
                     }`}
-                    title={documents.length > 1 ? 'Kirim PDF ke WhatsApp supir (Tab ini atau Semua)' : 'Kirim berkas PDF ke WhatsApp'}
+                    title={documents.length > 1 ? 'Kirim PDF ke WhatsApp (Tab ini atau Semua)' : 'Kirim berkas PDF ke WhatsApp'}
                   >
                     <MessageSquare className="w-3.5 h-3.5 text-emerald-100" />
                     <span>Kirim ke WA</span>
@@ -865,7 +865,7 @@ export const App: React.FC = () => {
                     <div className="absolute right-0 top-full mt-2 w-80 bg-[#1b1026]/98 backdrop-blur-xl border border-white/15 rounded-2xl p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
                       <div className="px-3 py-1.5 text-[10px] uppercase font-bold tracking-wider text-emerald-400/80 border-b border-white/10 mb-1 flex items-center justify-between">
                         <span>Kirim PDF ke WhatsApp</span>
-                        <span className="text-[10px] font-mono text-white/50">{currentDoc.phoneNo || 'Driver'}</span>
+                        <span className="text-[10px] font-mono text-white/50">{currentDoc.phoneNo || 'Kontak'}</span>
                       </div>
                       <button
                         type="button"
@@ -908,7 +908,7 @@ export const App: React.FC = () => {
                             </span>
                           </div>
                           <p className="text-[11px] text-white/50 mt-0.5">
-                            Kirim seluruh {documents.length} berkas PDF ke supir
+                            Kirim seluruh {documents.length} berkas PDF via WhatsApp
                           </p>
                         </div>
                       </button>

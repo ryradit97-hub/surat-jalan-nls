@@ -75,7 +75,7 @@ export const PresetsModal: React.FC<PresetsModalProps> = ({
           <div>
             <h4 className="text-[10.5px] font-bold uppercase tracking-wider text-[#faedd9] flex items-center gap-1.5 mb-2">
               <Truck className="w-3 h-3 text-[#d8b4fe]" />
-              <span>Driver & Armadah</span>
+              <span>Armada & Pengiriman</span>
             </h4>
             <div className="space-y-1.5">
               {defaultDrivers.map((driver) => (

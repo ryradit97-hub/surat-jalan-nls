@@ -458,7 +458,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
             <Truck className="w-3.5 h-3.5" />
           </div>
           <div>
-            <h3 className="text-xs font-bold text-[#fffdfa]">Pengemudi & Armadah</h3>
+            <h3 className="text-xs font-bold text-[#fffdfa]">Pengemudi & Armada</h3>
           </div>
         </div>
 

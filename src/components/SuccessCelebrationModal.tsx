@@ -334,8 +334,8 @@ export const SuccessCelebrationModal: React.FC<SuccessCelebrationModalProps> = (
               <MessageSquare className="w-3.5 h-3.5 text-emerald-100" />
               <span>
                 {isMulti
-                  ? `Kirim Semua (${documents.length}) PDF ke WhatsApp Supir 💬`
-                  : 'Kirim PDF ke WhatsApp Supir 💬'}
+                  ? `Kirim Semua (${documents.length}) PDF ke WhatsApp 💬`
+                  : 'Kirim PDF ke WhatsApp 💬'}
               </span>
             </button>
           )}

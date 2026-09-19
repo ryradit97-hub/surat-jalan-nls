@@ -36,7 +36,7 @@ export const HeroPromptView: React.FC<HeroPromptViewProps> = ({
     },
     {
       title: '☕ Cotti Coffee ke TPK Bitung',
-      text: 'Buatkan surat jalan untuk tanggal 15 Maret 2026 tujuan Terminal Petikemas Bitung (TPK Bitung), BL number SITRBISH160334, barang COCONUT WATER, berat 22000 KGS, remarks 1 X 40 HR, supir Ahmad Supardi, unit Trailer 40ft',
+      text: 'Buatkan surat jalan untuk tanggal 15 Maret 2026 tujuan Terminal Petikemas Bitung (TPK Bitung), BL number SITRBISH160334, barang COCONUT WATER, berat 22000 KGS, remarks 1 X 40 HR, unit Trailer 40ft',
     },
     {
       title: '📦 Plastic Ware ke Mustika Alam',
@@ -44,7 +44,7 @@ export const HeroPromptView: React.FC<HeroPromptViewProps> = ({
     },
     {
       title: '💬 Format Chat WhatsApp Klien',
-      text: 'Pagi tim NLS, tolong buat surat jalan tanggal 20 Maret 2026. Alamat kirim: New Priok Container Terminal One (NPCT1). BL: NPCT-90123. PO: PO-JKT-88. Muatan: FROZEN TUNA, berat: 24500 KGS, remarks: 1 X 40 REEFER. Supir: Budi Santoso (B 9123 NLS).',
+      text: 'Pagi tim NLS, tolong buat surat jalan tanggal 20 Maret 2026. Alamat kirim: New Priok Container Terminal One (NPCT1). BL: NPCT-90123. PO: PO-JKT-88. Muatan: FROZEN TUNA, berat: 24500 KGS, remarks: 1 X 40 REEFER.',
     },
   ];
 
