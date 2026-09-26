@@ -515,31 +515,49 @@
   background: #047857 !important;
 }
 [data-theme="earth-cream"] .theme-toolbar-dropdown {
-  background: #ffffff !important;
-  border-color: rgba(138, 103, 71, 0.25) !important;
-  box-shadow: 0 16px 36px rgba(74, 52, 32, 0.15) !important;
+  background: #fffdfa !important;
+  border-color: rgba(138, 103, 71, 0.3) !important;
+  box-shadow: 0 18px 45px rgba(74, 52, 32, 0.25), 0 2px 8px rgba(74, 52, 32, 0.1) !important;
 }
 [data-theme="earth-cream"] .theme-dropdown-header {
-  color: #6e553f !important;
-  border-color: rgba(138, 103, 71, 0.15) !important;
+  color: #5c3513 !important;
+  border-color: rgba(138, 103, 71, 0.18) !important;
 }
 [data-theme="earth-cream"] .theme-dropdown-item:hover {
-  background: #faf6f0 !important;
+  background: #f7efe6 !important;
 }
 [data-theme="earth-cream"] .theme-dropdown-icon-box {
-  background: #f0e7d9 !important;
-  color: #8c531e !important;
+  background: #ebe0d3 !important;
+  color: #5c3513 !important;
 }
 [data-theme="earth-cream"] .theme-dropdown-text {
-  color: #261d15 !important;
+  color: #1e130a !important;
   font-weight: 700 !important;
 }
 [data-theme="earth-cream"] .theme-dropdown-subtext {
-  color: #6e553f !important;
+  color: #5c3513 !important;
 }
 [data-theme="earth-cream"] .theme-dropdown-badge {
-  background: #e2d6c6 !important;
-  color: #261d15 !important;
+  background: #8c531e !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+}
+[data-theme="earth-cream"] .theme-dropdown-wa-header {
+  color: #065f46 !important;
+  border-color: rgba(5, 150, 105, 0.2) !important;
+}
+[data-theme="earth-cream"] .theme-dropdown-wa-icon-box {
+  background: #d1fae5 !important;
+  color: #065f46 !important;
+}
+[data-theme="earth-cream"] .theme-dropdown-wa-title {
+  color: #065f46 !important;
+  font-weight: 700 !important;
+}
+[data-theme="earth-cream"] .theme-dropdown-wa-badge {
+  background: #059669 !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
 }
 
 /* -------------------------------------------------------------
@@ -832,6 +850,54 @@
 [data-theme="sea-nls"] .theme-btn-print:hover {
   background: #38bdf8 !important;
 }
+
+/* Sea NLS Theme: Toolbar Action Dropdowns */
+[data-theme="sea-nls"] .theme-toolbar-dropdown {
+  background: #06152b !important;
+  border-color: rgba(0, 163, 224, 0.35) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 163, 224, 0.15) !important;
+}
+[data-theme="sea-nls"] .theme-dropdown-header {
+  color: #38bdf8 !important;
+  border-color: rgba(0, 163, 224, 0.2) !important;
+}
+[data-theme="sea-nls"] .theme-dropdown-item:hover {
+  background: rgba(0, 163, 224, 0.12) !important;
+}
+[data-theme="sea-nls"] .theme-dropdown-icon-box {
+  background: rgba(0, 163, 224, 0.18) !important;
+  color: #38bdf8 !important;
+}
+[data-theme="sea-nls"] .theme-dropdown-text {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+[data-theme="sea-nls"] .theme-dropdown-subtext {
+  color: #94a3b8 !important;
+}
+[data-theme="sea-nls"] .theme-dropdown-badge {
+  background: #00A3E0 !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+}
+[data-theme="sea-nls"] .theme-dropdown-wa-header {
+  color: #34d399 !important;
+  border-color: rgba(52, 211, 153, 0.25) !important;
+}
+[data-theme="sea-nls"] .theme-dropdown-wa-icon-box {
+  background: rgba(16, 185, 129, 0.2) !important;
+  color: #34d399 !important;
+}
+[data-theme="sea-nls"] .theme-dropdown-wa-title {
+  color: #34d399 !important;
+  font-weight: 700 !important;
+}
+[data-theme="sea-nls"] .theme-dropdown-wa-badge {
+  background: rgba(16, 185, 129, 0.25) !important;
+  color: #a7f3d0 !important;
+  font-weight: 800 !important;
+}
+
 /* =============================================================
    EXHAUSTIVE THEME OVERRIDES FOR WHITE MOON (MINIMALIST WHITE & BLACK)
    ============================================================= */
@@ -1160,30 +1226,48 @@
 }
 [data-theme="white-moon"] .theme-toolbar-dropdown {
   background: #ffffff !important;
-  border-color: #e5e7eb !important;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12) !important;
+  border-color: #d1d5db !important;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.08) !important;
 }
 [data-theme="white-moon"] .theme-dropdown-header {
-  color: #525252 !important;
-  border-color: #f3f4f6 !important;
+  color: #374151 !important;
+  border-color: #e5e7eb !important;
 }
 [data-theme="white-moon"] .theme-dropdown-item:hover {
-  background: #f8f9fa !important;
+  background: #f3f4f6 !important;
 }
 [data-theme="white-moon"] .theme-dropdown-icon-box {
-  background: #0a0a0a !important;
+  background: #111827 !important;
   color: #ffffff !important;
 }
 [data-theme="white-moon"] .theme-dropdown-text {
-  color: #0a0a0a !important;
+  color: #0f172a !important;
   font-weight: 700 !important;
 }
 [data-theme="white-moon"] .theme-dropdown-subtext {
-  color: #525252 !important;
+  color: #4b5563 !important;
 }
 [data-theme="white-moon"] .theme-dropdown-badge {
-  background: #0a0a0a !important;
+  background: #0f172a !important;
   color: #ffffff !important;
+  font-weight: 800 !important;
+}
+[data-theme="white-moon"] .theme-dropdown-wa-header {
+  color: #047857 !important;
+  border-color: rgba(5, 150, 105, 0.2) !important;
+}
+[data-theme="white-moon"] .theme-dropdown-wa-icon-box {
+  background: #d1fae5 !important;
+  color: #047857 !important;
+}
+[data-theme="white-moon"] .theme-dropdown-wa-title {
+  color: #047857 !important;
+  font-weight: 700 !important;
+}
+[data-theme="white-moon"] .theme-dropdown-wa-badge {
+  background: #059669 !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
 }
 
 /* White Moon Utility Overrides */
@@ -1362,6 +1446,67 @@
 }
 .theme-btn-wa:hover {
   background: #10b981;
+}
+
+/* Default / Venus Theme Toolbar Action Dropdowns (Download PDF, Print, WhatsApp) */
+.theme-toolbar-dropdown,
+[data-theme="venus"] .theme-toolbar-dropdown {
+  background: #1c1126 !important;
+  border-color: rgba(250, 237, 217, 0.22) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 1px 1px rgba(250, 237, 217, 0.1) !important;
+}
+.theme-dropdown-header,
+[data-theme="venus"] .theme-dropdown-header {
+  color: #e9d5ff !important;
+  border-color: rgba(250, 237, 217, 0.12) !important;
+}
+.theme-dropdown-item:hover,
+[data-theme="venus"] .theme-dropdown-item:hover {
+  background: rgba(250, 237, 217, 0.08) !important;
+}
+.theme-dropdown-icon-box,
+[data-theme="venus"] .theme-dropdown-icon-box {
+  background: rgba(250, 237, 217, 0.12) !important;
+  color: #faedd9 !important;
+}
+.theme-dropdown-text,
+[data-theme="venus"] .theme-dropdown-text {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+.theme-dropdown-subtext,
+[data-theme="venus"] .theme-dropdown-subtext {
+  color: #faedd9 !important;
+  opacity: 0.85 !important;
+}
+.theme-dropdown-badge,
+[data-theme="venus"] .theme-dropdown-badge {
+  background: #faedd9 !important;
+  color: #1a0f26 !important;
+  font-weight: 800 !important;
+}
+
+/* WhatsApp dropdown elements - Default / Venus */
+.theme-dropdown-wa-header,
+[data-theme="venus"] .theme-dropdown-wa-header {
+  color: #34d399 !important;
+  border-color: rgba(52, 211, 153, 0.25) !important;
+}
+.theme-dropdown-wa-icon-box,
+[data-theme="venus"] .theme-dropdown-wa-icon-box {
+  background: rgba(16, 185, 129, 0.18) !important;
+  color: #34d399 !important;
+}
+.theme-dropdown-wa-title,
+[data-theme="venus"] .theme-dropdown-wa-title {
+  color: #34d399 !important;
+  font-weight: 700 !important;
+}
+.theme-dropdown-wa-badge,
+[data-theme="venus"] .theme-dropdown-wa-badge {
+  background: rgba(16, 185, 129, 0.25) !important;
+  color: #a7f3d0 !important;
+  font-weight: 800 !important;
 }
 
 /* Comprehensive dark purple class overrides for Earth Theme */
@@ -1594,13 +1739,13 @@
   width: 100%;
   display: flex;
   justify-content: flex-start;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.85rem;
 }
 
 .sj-header-banner-img {
-  width: 380px;
-  max-width: 48%;
-  height: auto;
+  height: 70px;
+  width: auto;
+  max-width: 40%;
   display: block;
   object-fit: contain;
 }
@@ -1727,10 +1872,24 @@
   text-align: center;
   font-size: 11px;
   margin-top: 2rem;
+  align-items: stretch;
+}
+
+.sj-sig-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.sj-sig-header {
+  min-height: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .sj-sig-line {
-  margin-top: 80px;
+  margin-top: 70px;
   border-bottom: 1px solid #000000;
   width: 85%;
   margin-left: auto;
@@ -1839,14 +1998,15 @@
     display: flex !important;
     width: 100% !important;
     justify-content: flex-start !important;
-    margin-bottom: 1.25rem !important;
+    margin-bottom: 0.75rem !important;
   }
 
   .sj-header-banner-img {
     display: block !important;
-    width: 380px !important;
-    max-width: 48% !important;
-    height: auto !important;
+    height: 68px !important;
+    width: auto !important;
+    max-width: 40% !important;
+    object-fit: contain !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }

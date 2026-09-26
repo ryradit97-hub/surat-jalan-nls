@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { SuratJalanData, SuratJalanItem } from '../types/suratJalan';
-import { defaultDeliveryAddresses, defaultShippers } from '../utils/defaultData';
+import { defaultDeliveryAddresses, defaultShippers, defaultGoodsDescriptions } from '../utils/defaultData';
 import { Plus, Trash2, MapPin, Package, Truck, User, Calendar, Hash, Tag } from 'lucide-react';
 
 interface FormEditorProps {
@@ -330,16 +330,57 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-semibold text-[#faedd9] mb-1">
-                    Description of Goods (Nama Barang)
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-[10px] font-semibold text-[#faedd9]">
+                      Description of Goods (Nama Barang)
+                    </label>
+                    <span className="text-[9px] text-[#faedd9]/60">Preset / Manual</span>
+                  </div>
+
+                  <select
+                    className="w-full liquid-input px-2.5 py-1.5 rounded-lg text-xs font-medium mb-1.5 cursor-pointer bg-[#181022] text-[#fffdfa]"
+                    value={defaultGoodsDescriptions.includes(item.description) ? item.description : 'custom'}
+                    onChange={(e) => {
+                      if (e.target.value !== 'custom') {
+                        handleItemChange(index, 'description', e.target.value);
+                      }
+                    }}
+                  >
+                    <option value="custom" className="bg-[#181022] text-[#d8b4fe]">
+                      ✏️ Ketik Manual / Barang Lainnya...
+                    </option>
+                    {defaultGoodsDescriptions.map((desc, dIdx) => (
+                      <option key={dIdx} value={desc} className="bg-[#181022] text-[#fffdfa]">
+                        📦 {desc}
+                      </option>
+                    ))}
+                  </select>
+
                   <input
                     type="text"
                     className="w-full liquid-input px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#fffdfa]"
                     value={item.description}
                     onChange={(e) => handleItemChange(index, 'description', e.target.value)}
-                    placeholder="e.g. PLASTIC KITCHEN WARE"
+                    placeholder="e.g. PLASTIC KITCHEN WARE atau COCONUT WATER"
                   />
+
+                  <div className="flex flex-wrap gap-1 mt-1.5">
+                    {['PLASTIC KITCHEN WARE', 'COCONUT WATER'].map((preset) => (
+                      <button
+                        key={preset}
+                        type="button"
+                        onClick={() => handleItemChange(index, 'description', preset)}
+                        className={`text-[9.5px] px-2 py-0.5 rounded-md border transition-all cursor-pointer ${
+                          item.description === preset
+                            ? 'bg-[#faedd9]/25 text-[#faedd9] border-[#faedd9]/50 font-bold'
+                            : 'bg-[#faedd9]/8 hover:bg-[#faedd9]/15 text-[#faedd9]/80 border-[#faedd9]/15'
+                        }`}
+                        title={`Pilih ${preset}`}
+                      >
+                        + {preset}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 

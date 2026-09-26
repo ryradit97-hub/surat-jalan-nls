@@ -879,7 +879,7 @@ export const App: React.FC = () => {
                   {/* Dropdown Menu */}
                   {activeDropdown === 'whatsapp' && documents.length > 1 && (
                     <div className="absolute right-0 top-full mt-2 w-80 theme-toolbar-dropdown backdrop-blur-xl border rounded-2xl p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
-                      <div className="px-3 py-1.5 text-[10px] uppercase font-bold tracking-wider text-emerald-400 border-b theme-dropdown-header mb-1 flex items-center justify-between">
+                      <div className="px-3 py-1.5 text-[10px] uppercase font-bold tracking-wider border-b theme-dropdown-header theme-dropdown-wa-header mb-1 flex items-center justify-between">
                         <span>Kirim PDF ke WhatsApp</span>
                         <span className="text-[10px] font-mono opacity-60">{currentDoc.phoneNo || 'Kontak'}</span>
                       </div>
@@ -891,7 +891,7 @@ export const App: React.FC = () => {
                         }}
                         className="w-full text-left flex items-start gap-3 p-2.5 rounded-xl theme-dropdown-item transition-colors group cursor-pointer"
                       >
-                        <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 transition-colors">
+                        <div className="p-2 rounded-lg theme-dropdown-wa-icon-box transition-colors">
                           <MessageSquare className="w-4 h-4" />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -913,13 +913,13 @@ export const App: React.FC = () => {
                         disabled={isBatchExporting}
                         className="w-full text-left flex items-start gap-3 p-2.5 rounded-xl theme-dropdown-item transition-colors group cursor-pointer disabled:opacity-50"
                       >
-                        <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-400 transition-colors">
+                        <div className="p-2 rounded-lg theme-dropdown-wa-icon-box transition-colors">
                           <Layers className="w-4 h-4" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="text-xs font-semibold text-emerald-400 flex items-center justify-between">
+                          <div className="text-xs font-semibold theme-dropdown-wa-title flex items-center justify-between">
                             <span>Kirim Semua ({documents.length}) PDF</span>
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/30 text-emerald-100 font-mono font-bold">
+                            <span className="text-[10px] px-1.5 py-0.5 rounded theme-dropdown-wa-badge font-mono font-bold">
                               Semua
                             </span>
                           </div>

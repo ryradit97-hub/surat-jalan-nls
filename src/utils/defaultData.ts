@@ -8,6 +8,14 @@ export const defaultDeliveryAddresses: string[] = [
   'JAKARTA INTERNATIONAL CONTAINER TERMINAL'
 ];
 
+export const defaultGoodsDescriptions: string[] = [
+  'PLASTIC KITCHEN WARE',
+  'COCONUT WATER',
+  'FROZEN TUNA',
+  'PALM WAX',
+  'GENERAL CARGO'
+];
+
 export const defaultShippers: ShipperPreset[] = [
   {
     id: 'ship-1',

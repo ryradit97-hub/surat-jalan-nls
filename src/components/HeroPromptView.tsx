@@ -8,9 +8,12 @@ import {
   MessageSquare,
   Sliders,
   Check,
+  Loader2,
 } from 'lucide-react';
 import { paraphraseLogisticsPrompt } from '../services/geminiService';
 import { HighlightedPromptTextarea } from './HighlightedPromptTextarea';
+import { VoiceInputIndicator } from './VoiceInputIndicator';
+import { useSpeechToText } from '../utils/useSpeechToText';
 import nlsLogo from '../assets/nlslogo.png';
 
 interface HeroPromptViewProps {
@@ -26,10 +29,65 @@ export const HeroPromptView: React.FC<HeroPromptViewProps> = ({
     'Buatkan saya surat jalan untuk tanggal 18 Maret 2026 dengan delivery address ke Terminal Peti Kemas Koja (UTC3), dengan BL number SITR160334, PO number PO-2026/089, barang COCONUT WATER, Weight 22000 KGS, Remarks 1 X 40 HR'
   );
   const [isParaphrasing, setIsParaphrasing] = useState<boolean>(false);
-  const [isListening, setIsListening] = useState<boolean>(false);
+
+  // High-Precision Universal Speech-to-Text (Web Speech API + Gemini AI fallback)
+  const {
+    isListening,
+    isTranscribing,
+    recordingSeconds,
+    interimTranscript,
+    errorMessage,
+    mode,
+    toggleListening,
+    stopListening,
+    clearError,
+  } = useSpeechToText({
+    onTranscript: (newText) => {
+      setPrompt((prev) => (prev ? `${prev} ${newText}` : newText));
+    },
+  });
 
   // Suggested Prompts
   const suggestedPrompts = [
+    {
+      title: '📋 Template Shorthand (DO / NPCT / Koja / JICT)',
+      text: `1.
+BL: COSU6464000430
+PO : 337497 ( 436-68286)
+Tanggal kirim : 28 September 2026
+Delivery addres: jict
+Gross weight: 9695 kg
+
+2.
+DO EGLV080600620033
+PO 1437021
+Npct
+19.000 kg
+
+3.
+DO ONEYJKTG70872500
+PO 147530
+Koja
+10,000 kg
+
+4.
+DO ONEYJKTG70876900
+PO 147556
+Koja
+10,000 kg
+
+5.
+DO ONEYJKTG58931700
+PO MDL-2644285
+7191 kg
+Koja
+
+6.
+DO JKTG84430700
+PO ABI-2603
+Npct
+16.000 kg`,
+    },
     {
       title: '⚡ Batch 4 Surat Jalan (Koja UTC3)',
       text: 'Buatkan saya 4 surat jalan untuk tanggal 18 Maret 2026 dengan delivery address ke Terminal Peti Kemas Koja (UTC3):\n1. BL SITR160334, PO PO-2026/089, barang COCONUT WATER, Weight 22000 KGS, Remarks 1 X 40 HR\n2. BL SITR160335, PO PO-2026/090, barang COCONUT WATER, Weight 21800 KGS, Remarks 1 X 40 HR\n3. BL SITR160336, PO PO-2026/091, barang PALM WAX, Weight 19500 KGS, Remarks 1 X 20 FT\n4. BL SITR160337, PO PO-2026/092, barang PLASTIC WARE, Weight 8500 KGS, Remarks 1 X 40 HC',
@@ -47,50 +105,6 @@ export const HeroPromptView: React.FC<HeroPromptViewProps> = ({
       text: 'Pagi tim NLS, tolong buat surat jalan tanggal 20 Maret 2026. Alamat kirim: New Priok Container Terminal One (NPCT1). BL: NPCT-90123. PO: PO-JKT-88. Muatan: FROZEN TUNA, berat: 24500 KGS, remarks: 1 X 40 REEFER.',
     },
   ];
-
-  // Speech Recognition (Bahasa Indonesia)
-  const handleToggleVoice = () => {
-    const SpeechRecognition =
-      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      alert('Browser Anda belum mendukung input suara Web Speech API. Silakan gunakan Google Chrome.');
-      return;
-    }
-
-    if (isListening) {
-      setIsListening(false);
-      return;
-    }
-
-    try {
-      const recognition = new SpeechRecognition();
-      recognition.lang = 'id-ID';
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-
-      setIsListening(true);
-
-      recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        setPrompt((prev) => (prev ? `${prev} ${transcript}` : transcript));
-        setIsListening(false);
-      };
-
-      recognition.onerror = () => {
-        setIsListening(false);
-      };
-
-      recognition.onend = () => {
-        setIsListening(false);
-      };
-
-      recognition.start();
-    } catch (e) {
-      console.error(e);
-      setIsListening(false);
-    }
-  };
 
   // Paraphrase Prompt
   const handleParaphrase = async () => {
@@ -153,6 +167,19 @@ export const HeroPromptView: React.FC<HeroPromptViewProps> = ({
               />
             </div>
 
+            {/* Active Voice Input Wave / Indicator / Error Diagnostic */}
+            <VoiceInputIndicator
+              isListening={isListening}
+              isTranscribing={isTranscribing}
+              recordingSeconds={recordingSeconds}
+              interimTranscript={interimTranscript}
+              errorMessage={errorMessage}
+              mode={mode}
+              onStop={stopListening}
+              onClearError={clearError}
+              className="pt-2"
+            />
+
             {/* Bottom Controls Bar Inside Prompt Form */}
             <div className="flex flex-wrap items-center justify-between gap-4 pt-4 sm:pt-6 border-t border-white/[0.06]">
               {/* LEFT BOTTOM CORNER: LIQUID PARAPHRASE BUTTON */}
@@ -182,15 +209,29 @@ export const HeroPromptView: React.FC<HeroPromptViewProps> = ({
               <div className="flex items-center gap-3">
                 <button
                   type="button"
-                  onClick={handleToggleVoice}
+                  onClick={toggleListening}
                   className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center transition-all cursor-pointer liquid-glass-pill ${
                     isListening
                       ? '!bg-[#f472b6] text-white animate-bounce shadow-lg shadow-pink-500/40 border-pink-400'
+                      : isTranscribing
+                      ? '!bg-purple-600 text-white animate-pulse'
                       : 'text-[#faedd9] hover:scale-105 active:scale-95'
                   }`}
-                  title={isListening ? 'Mendengarkan...' : 'Dikte Suara'}
+                  title={
+                    isListening
+                      ? 'Klik untuk Selesai Dikte'
+                      : isTranscribing
+                      ? 'AI sedang mentranskripsi...'
+                      : 'Dikte Suara (Mikrofon)'
+                  }
                 >
-                  {isListening ? <MicOff className="w-5 h-5 sm:w-6 sm:h-6" /> : <Mic className="w-5 h-5 sm:w-6 sm:h-6 text-[#d8b4fe]" />}
+                  {isTranscribing ? (
+                    <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin text-white" />
+                  ) : isListening ? (
+                    <MicOff className="w-5 h-5 sm:w-6 sm:h-6" />
+                  ) : (
+                    <Mic className="w-5 h-5 sm:w-6 sm:h-6 text-[#d8b4fe]" />
+                  )}
                 </button>
 
                 {prompt && (

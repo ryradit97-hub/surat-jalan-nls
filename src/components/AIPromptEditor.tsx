@@ -13,9 +13,12 @@ import {
   CheckCircle2,
   ArrowRight,
   MessageSquare,
-  RotateCcw
+  RotateCcw,
+  Loader2,
 } from 'lucide-react';
 import { HighlightedPromptTextarea } from './HighlightedPromptTextarea';
+import { VoiceInputIndicator } from './VoiceInputIndicator';
+import { useSpeechToText } from '../utils/useSpeechToText';
 
 interface AIPromptEditorProps {
   currentDoc: SuratJalanData;
@@ -36,10 +39,65 @@ export const AIPromptEditor: React.FC<AIPromptEditorProps> = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [isParaphrasing, setIsParaphrasing] = useState<boolean>(false);
   const [lastResult, setLastResult] = useState<AIExtractionResult | null>(null);
-  const [isListening, setIsListening] = useState<boolean>(false);
+
+  // High-Precision Universal Speech-to-Text (Web Speech API + Gemini AI fallback)
+  const {
+    isListening,
+    isTranscribing,
+    recordingSeconds,
+    interimTranscript,
+    errorMessage,
+    mode,
+    toggleListening,
+    stopListening,
+    clearError,
+  } = useSpeechToText({
+    onTranscript: (newText) => {
+      setPrompt((prev) => (prev ? `${prev} ${newText}` : newText));
+    },
+  });
 
   // Suggested Prompts
   const suggestedPrompts = [
+    {
+      title: '📋 Template Shorthand (DO / NPCT / Koja / JICT)',
+      text: `1.
+BL: COSU6464000430
+PO : 337497 ( 436-68286)
+Tanggal kirim : 28 September 2026
+Delivery addres: jict
+Gross weight: 9695 kg
+
+2.
+DO EGLV080600620033
+PO 1437021
+Npct
+19.000 kg
+
+3.
+DO ONEYJKTG70872500
+PO 147530
+Koja
+10,000 kg
+
+4.
+DO ONEYJKTG70876900
+PO 147556
+Koja
+10,000 kg
+
+5.
+DO ONEYJKTG58931700
+PO MDL-2644285
+7191 kg
+Koja
+
+6.
+DO JKTG84430700
+PO ABI-2603
+Npct
+16.000 kg`,
+    },
     {
       title: '☕ Cotti Coffee ke TPK Bitung',
       text: 'Buatkan surat jalan untuk tanggal 15 Maret 2026 tujuan Terminal Petikemas Bitung (TPK Bitung), BL number SITRBISH160334, barang COCONUT WATER, berat 22000 KGS, remarks 1 X 40 HR, unit Trailer 40ft',
@@ -58,49 +116,7 @@ export const AIPromptEditor: React.FC<AIPromptEditorProps> = ({
     },
   ];
 
-  // Speech Recognition (Bahasa Indonesia)
-  const handleToggleVoice = () => {
-    const SpeechRecognition =
-      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
-    if (!SpeechRecognition) {
-      alert('Browser Anda belum mendukung input suara Web Speech API. Silakan gunakan Google Chrome.');
-      return;
-    }
-
-    if (isListening) {
-      setIsListening(false);
-      return;
-    }
-
-    try {
-      const recognition = new SpeechRecognition();
-      recognition.lang = 'id-ID';
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-
-      setIsListening(true);
-
-      recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        setPrompt((prev) => (prev ? `${prev} ${transcript}` : transcript));
-        setIsListening(false);
-      };
-
-      recognition.onerror = () => {
-        setIsListening(false);
-      };
-
-      recognition.onend = () => {
-        setIsListening(false);
-      };
-
-      recognition.start();
-    } catch (e) {
-      console.error(e);
-      setIsListening(false);
-    }
-  };
 
   const handleParaphrase = async () => {
     if (!prompt.trim() || isParaphrasing) return;
@@ -176,15 +192,29 @@ export const AIPromptEditor: React.FC<AIPromptEditorProps> = ({
           <div className="absolute right-2.5 bottom-2.5 flex items-center gap-1">
             <button
               type="button"
-              onClick={handleToggleVoice}
+              onClick={toggleListening}
               className={`p-1.5 rounded-xl text-xs transition-all cursor-pointer ${
                 isListening
                   ? 'bg-[#f472b6] text-white animate-bounce'
+                  : isTranscribing
+                  ? 'bg-purple-600 text-white animate-pulse'
                   : 'bg-[#faedd9]/10 hover:bg-[#faedd9]/20 text-[#faedd9]'
               }`}
-              title={isListening ? 'Mendengarkan...' : 'Dikte Suara'}
+              title={
+                isListening
+                  ? 'Klik untuk Selesai Dikte'
+                  : isTranscribing
+                  ? 'AI sedang mentranskripsi...'
+                  : 'Dikte Suara'
+              }
             >
-              {isListening ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+              {isTranscribing ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+              ) : isListening ? (
+                <MicOff className="w-3.5 h-3.5" />
+              ) : (
+                <Mic className="w-3.5 h-3.5" />
+              )}
             </button>
             {prompt && (
               <button
@@ -198,6 +228,19 @@ export const AIPromptEditor: React.FC<AIPromptEditorProps> = ({
             )}
           </div>
         </div>
+
+        {/* Active Voice Input Wave / Indicator / Error Diagnostic */}
+        <VoiceInputIndicator
+          isListening={isListening}
+          isTranscribing={isTranscribing}
+          recordingSeconds={recordingSeconds}
+          interimTranscript={interimTranscript}
+          errorMessage={errorMessage}
+          mode={mode}
+          onStop={stopListening}
+          onClearError={clearError}
+          className="mb-3"
+        />
 
         {/* Action Buttons: Paraphrase on Left, Submit on Right */}
         <div className="flex items-center justify-between gap-2">

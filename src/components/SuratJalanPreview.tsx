@@ -1,6 +1,6 @@
 import React from 'react';
 import { SuratJalanData } from '../types/suratJalan';
-import headerImg from '../assets/nls-header.png';
+import headerImg from '../source/logoheadernls.png';
 
 interface SuratJalanPreviewProps {
   data: SuratJalanData;
@@ -153,18 +153,25 @@ export const SuratJalanPreview: React.FC<SuratJalanPreviewProps> = ({ data, docu
 
       {/* SIGNATURE SECTION */}
       <div className="sj-signatures">
-        <div>
-          <div style={{ fontWeight: '700' }}>DRIVER/Supir:</div>
-          <div style={{ fontSize: '10px', color: '#000' }}>(SIGN/Tanda Tangan)</div>
+        <div className="sj-sig-col">
+          <div className="sj-sig-header">
+            <div style={{ fontWeight: '700' }}>DRIVER/Supir:</div>
+            <div style={{ fontSize: '10px', color: '#000' }}>(SIGN/Tanda Tangan)</div>
+          </div>
           <div className="sj-sig-line"></div>
         </div>
-        <div>
-          <div style={{ fontWeight: '700', fontSize: '11px', marginTop: '4px' }}>NLS</div>
+        <div className="sj-sig-col">
+          <div className="sj-sig-header">
+            <div style={{ fontWeight: '700', fontSize: '11px' }}>NLS</div>
+            <div style={{ fontSize: '10px', color: '#000', visibility: 'hidden' }} aria-hidden="true">(SIGN/Tanda Tangan)</div>
+          </div>
           <div className="sj-sig-line"></div>
         </div>
-        <div>
-          <div style={{ fontWeight: '700' }}>RECEIVED BY/Penerima:</div>
-          <div style={{ fontSize: '10px', color: '#000' }}>(SIGN/Tanda Tangan)</div>
+        <div className="sj-sig-col">
+          <div className="sj-sig-header">
+            <div style={{ fontWeight: '700' }}>RECEIVED BY/Penerima:</div>
+            <div style={{ fontSize: '10px', color: '#000' }}>(SIGN/Tanda Tangan)</div>
+          </div>
           <div className="sj-sig-line"></div>
         </div>
       </div>
