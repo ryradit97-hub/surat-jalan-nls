@@ -26,7 +26,7 @@ export const HeroPromptView: React.FC<HeroPromptViewProps> = ({
   onGoToManual,
 }) => {
   const [prompt, setPrompt] = useState<string>(
-    'Buatkan saya surat jalan untuk tanggal 18 Maret 2026 dengan delivery address ke Terminal Peti Kemas Koja (UTC3), dengan BL number SITR160334, PO number PO-2026/089, barang COCONUT WATER, Weight 22000 KGS, Remarks 1 X 40 HR'
+    'Buatkan saya surat jalan untuk tanggal 18 Maret 2026 dengan delivery address ke Terminal Peti Kemas Koja (UTC3), dengan BL number SITR160334, PO number PO-2026/089, barang PLASTIC KITCHEN WARE, Weight 22000 KGS, Remarks 1 X 40 HC'
   );
   const [isParaphrasing, setIsParaphrasing] = useState<boolean>(false);
 

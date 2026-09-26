@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { SuratJalanData, SuratJalanItem } from '../types/suratJalan';
 import { defaultDeliveryAddresses, defaultShippers, defaultGoodsDescriptions } from '../utils/defaultData';
-import { Plus, Trash2, MapPin, Package, Truck, User, Calendar, Hash, Tag } from 'lucide-react';
+import { Plus, Trash2, MapPin, Package, Truck, User, Calendar, Hash, Tag, Copy, FileText, Check } from 'lucide-react';
 
 interface FormEditorProps {
   data: SuratJalanData;
@@ -106,10 +106,17 @@ export const FormEditor: React.FC<FormEditorProps> = ({
   };
 
   const handleItemChange = (index: number, field: keyof SuratJalanItem, value: string) => {
+    let cleanVal = value;
+    if (field === 'remarks') {
+      // Auto-normalize: always written 1 X 40 HC even if 1 X 40 HR is typed/pasted
+      if (cleanVal.toUpperCase().includes('40 HR') || cleanVal.toUpperCase().includes('40HR') || cleanVal.toUpperCase().includes('40-HR')) {
+        cleanVal = cleanVal.replace(/40\s*[-]?\s*HR/gi, '40 HC');
+      }
+    }
     const updatedItems = [...data.items];
     updatedItems[index] = {
       ...updatedItems[index],
-      [field]: value,
+      [field]: cleanVal,
     };
     onChange({
       ...data,
@@ -123,14 +130,29 @@ export const FormEditor: React.FC<FormEditorProps> = ({
       id: 'item-' + Date.now(),
       no: data.items.length + 1,
       containerSeal: '',
-      description: '',
+      description: 'PLASTIC KITCHEN WARE',
       packageQty: '',
       weightKg: '',
-      remarks: '',
+      remarks: '1 X 40 HC',
     };
     onChange({
       ...data,
       items: [...data.items, newItem],
+      updatedAt: new Date().toISOString(),
+    });
+  };
+
+  const duplicateItemRow = (index: number) => {
+    const source = data.items[index];
+    const newItem: SuratJalanItem = {
+      ...source,
+      id: 'item-' + Date.now(),
+      no: data.items.length + 1,
+    };
+    onChange({
+      ...data,
+      items: [...data.items, newItem],
+      updatedAt: new Date().toISOString(),
     });
   };
 
@@ -140,6 +162,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
     onChange({
       ...data,
       items: updatedItems.map((item, idx) => ({ ...item, no: idx + 1 })),
+      updatedAt: new Date().toISOString(),
     });
   };
 
@@ -262,53 +285,198 @@ export const FormEditor: React.FC<FormEditorProps> = ({
 
       {/* SECTION 2: DETAIL BARANG & KONTAINER */}
       <div className="liquid-card rounded-2xl p-4 md:p-5 shadow-sm border border-[#faedd9]/12 bg-[#251736]/70">
-        <div className="flex items-center justify-between mb-3 pb-2 border-b border-[#faedd9]/10">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-lg bg-[#faedd9]/15 flex items-center justify-center text-[#faedd9]">
-              <Package className="w-3.5 h-3.5" />
+        <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#faedd9]/10">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-xl bg-[#faedd9]/15 flex items-center justify-center text-[#faedd9] shadow-sm">
+              <Package className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-xs font-bold text-[#fffdfa]">Detail Barang & Kargo</h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-xs font-bold text-[#fffdfa] uppercase tracking-wider">Detail Barang & Kargo</h3>
+                <span className="px-2 py-0.5 rounded-full text-[9.5px] font-bold bg-[#faedd9]/15 text-[#faedd9] border border-[#faedd9]/20">
+                  {data.items.length} {data.items.length > 1 ? 'Items' : 'Item'}
+                </span>
+              </div>
+              <p className="text-[10px] text-[#c4b5fd]/70 mt-0.5">Kelola muatan barang kargo, spesifikasi kontainer, dan keterangan surat jalan</p>
             </div>
           </div>
           <button
             type="button"
             onClick={addItemRow}
-            className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold text-[#faedd9] bg-[#faedd9]/12 hover:bg-[#faedd9]/20 border border-[#faedd9]/20 transition-all cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-[#faedd9] bg-[#faedd9]/12 hover:bg-[#faedd9]/20 border border-[#faedd9]/25 transition-all cursor-pointer shadow-sm active:scale-95"
           >
-            <Plus className="w-3 h-3" />
+            <Plus className="w-3.5 h-3.5" />
             <span>Tambah Baris</span>
           </button>
         </div>
 
-        <div className="space-y-2.5">
+        <div className="space-y-3.5">
           {data.items.map((item, index) => (
             <div
               key={item.id}
-              className="p-3 rounded-xl bg-[#faedd9]/4 border border-[#faedd9]/8 hover:border-[#faedd9]/20 transition-all"
+              className="p-3.5 sm:p-4 rounded-2xl bg-[#1e132b]/85 border border-[#faedd9]/15 hover:border-[#faedd9]/30 transition-all shadow-sm space-y-3.5"
             >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold text-[#faedd9] flex items-center gap-1">
-                  Baris #{index + 1}
-                </span>
-                {data.items.length > 1 && (
+              {/* Row Header & Actions */}
+              <div className="flex items-center justify-between pb-2.5 border-b border-[#faedd9]/10">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold font-mono bg-[#faedd9]/20 text-[#faedd9] border border-[#faedd9]/30 shrink-0">
+                    BARIS #{index + 1}
+                  </span>
+                  <span className="text-[11px] font-bold text-[#fffdfa] truncate">
+                    {item.description || 'PLASTIC KITCHEN WARE'}
+                  </span>
+                  <span className="text-[10.5px] text-[#faedd9]/80 font-mono shrink-0 hidden sm:inline">
+                    • {item.remarks || '1 X 40 HC'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0">
                   <button
                     type="button"
-                    onClick={() => removeItemRow(index)}
-                    className="p-1 rounded-md text-[#c4b5fd]/60 hover:text-[#f472b6] transition-colors"
-                    title="Hapus baris ini"
+                    onClick={() => duplicateItemRow(index)}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-medium text-[#c4b5fd]/90 hover:text-[#faedd9] bg-white/5 hover:bg-white/10 border border-white/10 transition-colors cursor-pointer"
+                    title="Duplikasi baris ini"
                   >
-                    <Trash2 className="w-3 h-3" />
+                    <Copy className="w-3 h-3" />
+                    <span className="hidden sm:inline">Salin</span>
                   </button>
-                )}
+                  {data.items.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeItemRow(index)}
+                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-medium text-[#f472b6] hover:text-[#fb7185] bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 transition-colors cursor-pointer"
+                      title="Hapus baris ini"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                      <span className="hidden sm:inline">Hapus</span>
+                    </button>
+                  )}
+                </div>
               </div>
 
-              {/* Container Seal & Description */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
+              {/* Top Row: Description of Goods & Remarks */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                {/* Description of Goods */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10.5px] font-bold tracking-wider text-[#faedd9]/90 uppercase flex items-center gap-1">
+                      <Package className="w-3 h-3 text-[#d8b4fe]" />
+                      <span>Description of Goods (Nama Barang)</span>
+                    </label>
+                  </div>
+
+                  {/* Preset Badges for Goods */}
+                  <div className="flex flex-wrap gap-1">
+                    {defaultGoodsDescriptions.map((desc) => {
+                      const isSelected = (item.description || 'PLASTIC KITCHEN WARE') === desc;
+                      return (
+                        <button
+                          key={desc}
+                          type="button"
+                          onClick={() => handleItemChange(index, 'description', desc)}
+                          className={`text-[9.5px] px-2 py-0.5 rounded-lg border transition-all cursor-pointer flex items-center gap-1 ${
+                            isSelected
+                              ? 'bg-[#faedd9] text-[#1f132b] border-[#faedd9] font-bold shadow-sm'
+                              : 'bg-[#faedd9]/8 hover:bg-[#faedd9]/15 text-[#faedd9]/80 border-[#faedd9]/15'
+                          }`}
+                        >
+                          {isSelected && <Check className="w-2.5 h-2.5" />}
+                          <span>{desc}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <input
+                    type="text"
+                    className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs font-semibold text-[#fffdfa]"
+                    value={item.description}
+                    onChange={(e) => handleItemChange(index, 'description', e.target.value)}
+                    placeholder="e.g. PLASTIC KITCHEN WARE"
+                  />
+                </div>
+
+                {/* Remarks */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10.5px] font-bold tracking-wider text-[#faedd9]/90 uppercase flex items-center gap-1">
+                      <FileText className="w-3 h-3 text-[#d8b4fe]" />
+                      <span>Remarks (Keterangan Kontainer)</span>
+                    </label>
+                    <span className="text-[9px] text-[#faedd9]/60 font-mono">Default: 1 X 40 HC</span>
+                  </div>
+
+                  {/* Preset Badges for Remarks */}
+                  <div className="flex flex-wrap gap-1">
+                    {['1 X 40 HC', '1 X 20 FT', '2 X 20 FT', '1 X 40 REEFER'].map((preset) => {
+                      const isSelected = (item.remarks || '1 X 40 HC') === preset;
+                      return (
+                        <button
+                          key={preset}
+                          type="button"
+                          onClick={() => handleItemChange(index, 'remarks', preset)}
+                          className={`text-[9.5px] px-2 py-0.5 rounded-lg border transition-all cursor-pointer flex items-center gap-1 ${
+                            isSelected
+                              ? 'bg-[#faedd9] text-[#1f132b] border-[#faedd9] font-bold shadow-sm'
+                              : 'bg-[#faedd9]/8 hover:bg-[#faedd9]/15 text-[#faedd9]/80 border-[#faedd9]/15'
+                          }`}
+                        >
+                          {isSelected && <Check className="w-2.5 h-2.5" />}
+                          <span>{preset}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <input
+                    type="text"
+                    className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs font-mono font-semibold text-[#fffdfa]"
+                    value={item.remarks}
+                    onChange={(e) => handleItemChange(index, 'remarks', e.target.value)}
+                    placeholder="e.g. 1 X 40 HC"
+                  />
+                </div>
+              </div>
+
+              {/* Bottom Row: Weight, Package, Container/Seal */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-[#faedd9]/10">
+                {/* Gross Weight */}
+                <div>
+                  <label className="block text-[10px] font-bold tracking-wider text-[#faedd9]/80 uppercase mb-1">
+                    Gross Weight
+                  </label>
+                  <div className="relative flex items-center">
+                    <input
+                      type="text"
+                      className="w-full liquid-input px-3 py-1.5 pr-12 rounded-xl text-xs font-mono font-bold text-[#faedd9]"
+                      value={item.weightKg}
+                      onChange={(e) => handleItemChange(index, 'weightKg', e.target.value)}
+                      placeholder="e.g. 8732,5"
+                    />
+                    <span className="absolute right-2.5 text-[10px] font-bold text-[#faedd9]/70 pointer-events-none">
+                      KGS
+                    </span>
+                  </div>
+                </div>
+
+                {/* Package Qty */}
+                <div>
+                  <label className="block text-[10px] font-bold tracking-wider text-[#faedd9]/80 uppercase mb-1">
+                    Package (Kemasan)
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs text-[#fffdfa]"
+                    value={item.packageQty}
+                    onChange={(e) => handleItemChange(index, 'packageQty', e.target.value)}
+                    placeholder="e.g. 100 CTN / 1 LOT"
+                  />
+                </div>
+
+                {/* Container / Seal */}
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="block text-[10px] font-semibold text-[#faedd9]/70">
-                      Container / Seal (Opsional)
+                    <label className="block text-[10px] font-bold tracking-wider text-[#faedd9]/80 uppercase">
+                      Container / Seal
                     </label>
                     {item.containerSeal && (
                       <button
@@ -323,103 +491,10 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                   </div>
                   <input
                     type="text"
-                    className="w-full liquid-input px-2.5 py-1.5 rounded-lg text-xs font-mono"
+                    className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs font-mono text-[#fffdfa]"
                     value={item.containerSeal}
                     onChange={(e) => handleItemChange(index, 'containerSeal', e.target.value)}
-                    placeholder="Biarkan kosong jika belum ada container"
-                  />
-                </div>
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="block text-[10px] font-semibold text-[#faedd9]">
-                      Description of Goods (Nama Barang)
-                    </label>
-                    <span className="text-[9px] text-[#faedd9]/60">Preset / Manual</span>
-                  </div>
-
-                  <select
-                    className="w-full liquid-input px-2.5 py-1.5 rounded-lg text-xs font-medium mb-1.5 cursor-pointer bg-[#181022] text-[#fffdfa]"
-                    value={defaultGoodsDescriptions.includes(item.description) ? item.description : 'custom'}
-                    onChange={(e) => {
-                      if (e.target.value !== 'custom') {
-                        handleItemChange(index, 'description', e.target.value);
-                      }
-                    }}
-                  >
-                    <option value="custom" className="bg-[#181022] text-[#d8b4fe]">
-                      ✏️ Ketik Manual / Barang Lainnya...
-                    </option>
-                    {defaultGoodsDescriptions.map((desc, dIdx) => (
-                      <option key={dIdx} value={desc} className="bg-[#181022] text-[#fffdfa]">
-                        📦 {desc}
-                      </option>
-                    ))}
-                  </select>
-
-                  <input
-                    type="text"
-                    className="w-full liquid-input px-2.5 py-1.5 rounded-lg text-xs font-semibold text-[#fffdfa]"
-                    value={item.description}
-                    onChange={(e) => handleItemChange(index, 'description', e.target.value)}
-                    placeholder="e.g. PLASTIC KITCHEN WARE atau COCONUT WATER"
-                  />
-
-                  <div className="flex flex-wrap gap-1 mt-1.5">
-                    {['PLASTIC KITCHEN WARE', 'COCONUT WATER'].map((preset) => (
-                      <button
-                        key={preset}
-                        type="button"
-                        onClick={() => handleItemChange(index, 'description', preset)}
-                        className={`text-[9.5px] px-2 py-0.5 rounded-md border transition-all cursor-pointer ${
-                          item.description === preset
-                            ? 'bg-[#faedd9]/25 text-[#faedd9] border-[#faedd9]/50 font-bold'
-                            : 'bg-[#faedd9]/8 hover:bg-[#faedd9]/15 text-[#faedd9]/80 border-[#faedd9]/15'
-                        }`}
-                        title={`Pilih ${preset}`}
-                      >
-                        + {preset}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Package Qty, Weight, Remarks */}
-              <div className="grid grid-cols-3 gap-2">
-                <div>
-                  <label className="block text-[10px] font-semibold text-[#faedd9]/70 mb-1">
-                    Package (QTY)
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full liquid-input px-2 py-1.5 rounded-lg text-xs"
-                    value={item.packageQty}
-                    onChange={(e) => handleItemChange(index, 'packageQty', e.target.value)}
-                    placeholder="e.g. 100 CTN"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-semibold text-[#faedd9] mb-1">
-                    Weight (KG)
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full liquid-input px-2 py-1.5 rounded-lg text-xs font-semibold text-[#faedd9]"
-                    value={item.weightKg}
-                    onChange={(e) => handleItemChange(index, 'weightKg', e.target.value)}
-                    placeholder="e.g. 8732,5"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-semibold text-[#faedd9] mb-1">
-                    Remarks (Ket.)
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full liquid-input px-2 py-1.5 rounded-lg text-xs text-[#fffdfa]"
-                    value={item.remarks}
-                    onChange={(e) => handleItemChange(index, 'remarks', e.target.value)}
-                    placeholder="e.g. 1 X 40 HC"
+                    placeholder="Biarkan kosong jika belum ada"
                   />
                 </div>
               </div>

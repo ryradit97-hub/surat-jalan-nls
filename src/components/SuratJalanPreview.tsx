@@ -119,7 +119,7 @@ export const SuratJalanPreview: React.FC<SuratJalanPreviewProps> = ({ data, docu
                 {item.containerSeal}
               </td>
               <td style={{ textAlign: 'center', verticalAlign: 'middle', fontWeight: '600', padding: '0 10px' }}>
-                {item.description}
+                {item.description || 'PLASTIC KITCHEN WARE'}
               </td>
               <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                 {item.packageQty}
@@ -128,7 +128,7 @@ export const SuratJalanPreview: React.FC<SuratJalanPreviewProps> = ({ data, docu
                 {item.weightKg}
               </td>
               <td style={{ textAlign: 'center', verticalAlign: 'middle', fontWeight: '500' }}>
-                {item.remarks}
+                {(item.remarks || '1 X 40 HC').replace(/40\s*[-]?\s*HR/gi, '40 HC')}
               </td>
             </tr>
           ))}

@@ -55,7 +55,10 @@ export const BatchImportModal: React.FC<BatchImportModalProps> = ({
       const deliveryAddress = row['DELIVERY ADDRESS'] || row['Delivery Address'] || row['DELIVERY_ADDRESS'] || row['Tujuan'] || 'PT Terminal Mustika Alam Lestari';
       const description = row['DESCRIPTION OF GOODS'] || row['Description'] || row['Nama Barang'] || 'PLASTIC KITCHEN WARE';
       const weightKg = row['WEIGHT (KG)'] || row['Weight'] || row['Berat'] || '8732,5';
-      const remarks = row['REMARKS'] || row['Remarks'] || row['Keterangan'] || '1 X 40 HC';
+      const rawRemarks = (row['REMARKS'] || row['Remarks'] || row['Keterangan'] || '1 X 40 HC').toString().trim().toUpperCase();
+      const remarks = (rawRemarks.includes('40 HR') || rawRemarks.includes('40HR') || rawRemarks.includes('40-HR'))
+        ? rawRemarks.replace(/40\s*[-]?\s*HR/gi, '40 HC')
+        : (rawRemarks || '1 X 40 HC');
       const deliveryDate = row['Delivery Date'] || row['Tanggal Kirim'] || '14 Sep 2026';
       const containerSeal = row['CONTAINER/SEAL'] || row['Container'] || '';
       const driverName = row['DRIVER NAME'] || row['Driver'] || '';

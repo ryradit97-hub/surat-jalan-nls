@@ -23,12 +23,20 @@ export interface AIExtractionResult {
 // Internal secure configuration from environment
 const SECURE_AI_KEY = import.meta.env?.VITE_GEMINI_API_KEY || '';
 
+/**
+ * Robust Multi-Tier Gemini AI Fallback Chain (8-Tier Architecture)
+ * Automatically cycles through available models to prevent rate limits (HTTP 429),
+ * temporary service outages (HTTP 503), or quota exhaustion.
+ */
 const fallbackModels = [
-  'gemini-3.6-flash',
-  'gemini-flash-latest',
-  'gemini-3.5-flash',
-  'gemini-3.1-flash-lite',
-  'gemini-flash-lite-latest'
+  'gemini-3.8-flash',          // Tier 1: Primary Flagship Model (Fast, Highest Accuracy)
+  'gemini-3.7-flash',          // Tier 2: High-Speed Secondary Flagship
+  'gemini-3.5-flash-lite',     // Tier 3: Low-Latency Lite Model
+  'gemini-3.1-flash-lite',     // Tier 4: Stable Lightweight Tier
+  'gemini-flash-lite-latest',  // Tier 5: Automatically tracks latest flash-lite deployment
+  'gemini-3-flash-preview',    // Tier 6: Preview Tier
+  'gemini-3.6-flash',          // Tier 7: Alternative Flash
+  'gemini-flash-latest'        // Tier 8: General Latest Flash
 ];
 
 export const normalizeDeliveryAddress = (addr?: string): string => {
@@ -82,13 +90,18 @@ ATURAN NORMALISASI & PARAFRASE KHUSUS:
    - Sertakan nomor PO secara lengkap seperti "PO 337497 ( 436-68286)", "PO 1437021", "PO MDL-2644285", "PO ABI-2603".
 5. Tanggal Kirim:
    - Jika tanggal kirim disebutkan (misal: "Tanggal kirim : 28 September 2026"), sertakan informasi tanggal ini dengan jelas untuk seluruh pengiriman.
-6. Format Output Multi-Pengiriman:
+6. Description of Goods (Nama Barang):
+   - Jika barang tidak disebutkan secara spesifik, gunakan default: "barang PLASTIC KITCHEN WARE".
+7. Remarks (Keterangan Kontainer):
+   - Remarks WAJIB SELALU DITULIS: "remarks 1 X 40 HC".
+   - Sekalipun di input tertulis "1 X 40 HR", "40 HR", atau tidak disebutkan, WAJIB SELALU UBAH menjadi "remarks 1 X 40 HC".
+8. Format Output Multi-Pengiriman:
    - Jika input berupa daftar bernomor (1., 2., 3., dst.), susun kalimat instruksi yang sangat rapi dan bernomor.
    Contoh format hasil parafrase:
    "Tolong buatkan 6 surat jalan untuk tanggal pengiriman 28 September 2026:
-   1. BL COSU6464000430, PO 337497 ( 436-68286), delivery address JAKARTA INTERNATIONAL CONTAINER TERMINAL, berat 9695 KGS
-   2. BL EGLV080600620033, PO 1437021, delivery address New Priok Container Terminal One (NPCT1), berat 19.000 KGS
-   3. BL ONEYJKTG70872500, PO 147530, delivery address Terminal Peti Kemas Koja (UTC3), berat 10.000 KGS
+   1. BL COSU6464000430, PO 337497 ( 436-68286), delivery address JAKARTA INTERNATIONAL CONTAINER TERMINAL, berat 9695 KGS, barang PLASTIC KITCHEN WARE, remarks 1 X 40 HC
+   2. BL EGLV080600620033, PO 1437021, delivery address New Priok Container Terminal One (NPCT1), berat 19.000 KGS, barang PLASTIC KITCHEN WARE, remarks 1 X 40 HC
+   3. BL ONEYJKTG70872500, PO 147530, delivery address Terminal Peti Kemas Koja (UTC3), berat 10.000 KGS, barang PLASTIC KITCHEN WARE, remarks 1 X 40 HC
    ..."
 HANYA berikan teks hasil parafrase akhir tanpa tanda kutip, tanpa kata pengantar, dan tanpa catatan tambahan.`;
 
@@ -154,8 +167,13 @@ export const paraphraseOfflinePrompt = (rawPrompt: string): string => {
       if (item.poNumber) parts.push(`PO ${item.poNumber}`);
       if (item.deliveryAddress) parts.push(`delivery address ${item.deliveryAddress}`);
       if (item.weightKg) parts.push(`berat ${item.weightKg}`);
-      if (item.description && item.description !== 'GENERAL CARGO') parts.push(`barang ${item.description}`);
-      if (item.remarks) parts.push(`remarks ${item.remarks}`);
+      const desc = item.description || 'PLASTIC KITCHEN WARE';
+      parts.push(`barang ${desc}`);
+      let rem = item.remarks || '1 X 40 HC';
+      if (rem.includes('40 HR') || rem.includes('40HR') || rem.includes('40-HR')) {
+        rem = rem.replace(/40\s*[-]?\s*HR/gi, '40 HC');
+      }
+      parts.push(`remarks ${rem}`);
       if (item.deliveryDate && !dateStr) parts.push(`tanggal kirim ${item.deliveryDate}`);
       return `${idx + 1}. ${parts.join(', ')}`;
     });
@@ -169,9 +187,13 @@ export const paraphraseOfflinePrompt = (rawPrompt: string): string => {
   if (single.deliveryAddress) parts.push(`delivery address ${single.deliveryAddress}`);
   if (single.blNumber) parts.push(`BL ${single.blNumber}`);
   if (single.poNumber) parts.push(`PO ${single.poNumber}`);
-  if (single.description && single.description !== 'GENERAL CARGO') parts.push(`barang ${single.description}`);
+  parts.push(`barang ${single.description || 'PLASTIC KITCHEN WARE'}`);
   if (single.weightKg) parts.push(`berat ${single.weightKg}`);
-  if (single.remarks) parts.push(`remarks ${single.remarks}`);
+  let rem = single.remarks || '1 X 40 HC';
+  if (rem.includes('40 HR') || rem.includes('40HR') || rem.includes('40-HR')) {
+    rem = rem.replace(/40\s*[-]?\s*HR/gi, '40 HC');
+  }
+  parts.push(`remarks ${rem}`);
 
   if (parts.length > 0) {
     return `Buatkan saya surat jalan untuk ${parts.join(', ')}`;
@@ -288,16 +310,20 @@ export const parseIndonesianPromptLocally = (prompt: string): AIExtractionResult
     result.weightKg = w.toUpperCase();
   }
 
-  // 6. Remarks / Keterangan
+  // 6. Remarks / Keterangan (Always written 1 X 40 HC even if 1 X 40 HR is in template/prompt)
   const remarksMatch = prompt.match(/(?:remarks|keterangan|ket)[\s:]*([0-9]+\s*[xX]\s*[0-9]+(?:\s*[A-Za-z]+)?|[^,\n\.]+)/i);
-  if (remarksMatch) {
-    result.remarks = remarksMatch[1].trim().toUpperCase();
+  let rem = remarksMatch ? remarksMatch[1].trim().toUpperCase() : '1 X 40 HC';
+  if (rem.includes('40 HR') || rem.includes('40HR') || rem.includes('40-HR')) {
+    rem = rem.replace(/40\s*[-]?\s*HR/gi, '40 HC');
   }
+  result.remarks = rem || '1 X 40 HC';
 
-  // 7. Description of Goods / Barang
+  // 7. Description of Goods / Barang (Default: PLASTIC KITCHEN WARE)
   const goodsMatch = prompt.match(/(?:description of goods|nama barang|barang|goods|muatan|kargo)[\s:]+([^,\n\.]+?(?:(?=,\s*(?:weight|berat|po|bl|do|remarks))|$))/i);
   if (goodsMatch) {
     result.description = goodsMatch[1].trim().toUpperCase();
+  } else {
+    result.description = 'PLASTIC KITCHEN WARE';
   }
 
   // 8. Container / Seal (Default empty if not specified in prompt)
@@ -413,6 +439,11 @@ ATURAN NORMALISASI LOGISTIK (SANGAT PENTING):
    - Jika tanggal kirim (misal: "28 September 2026") hanya tertulis di nomor 1 atau secara umum, wariskan tanggal tersebut ke SEMUA dokumen surat jalan dalam daftar.
 6. Container Seal:
    - Bidang "containerSeal" seringkali kosong. Jika tidak disebutkan di prompt, WAJIB kosongkan string: "". JANGAN mengarang atau mengisi default.
+7. Description of Goods (Nama Barang):
+   - Jika nama barang tidak disebutkan di prompt/template, WAJIB gunakan: "PLASTIC KITCHEN WARE".
+8. Remarks (Keterangan Kontainer):
+   - Remarks WAJIB SELALU DITULIS: "1 X 40 HC".
+   - Sekalipun di teks instruksi tertulis "1 X 40 HR", "40 HR", atau tidak ada keterangan, WAJIB SELALU DITULIS SEBAGAI: "1 X 40 HC".
 
 Keluarkan HANYA format JSON valid tanpa teks lain dengan struktur:
 {
@@ -421,9 +452,9 @@ Keluarkan HANYA format JSON valid tanpa teks lain dengan struktur:
       "deliveryAddress": "Nama terminal resmi lengkap",
       "blNumber": "Nomor BL",
       "poNumber": "Nomor PO",
-      "description": "Nama barang kargo",
+      "description": "PLASTIC KITCHEN WARE (atau nama barang yang disebutkan)",
       "weightKg": "Berat dengan satuan contoh: 22000 KGS atau 8732,5 KGS",
-      "remarks": "Contoh: 1 X 40 HR atau 1 X 40 HC",
+      "remarks": "1 X 40 HC",
       "deliveryDate": "Contoh: 28 September 2026 atau 14 Sep 2026",
       "containerSeal": "",
       "packageQty": "Jumlah kemasan jika ada",
@@ -513,9 +544,15 @@ Keluarkan HANYA format JSON valid tanpa teks lain dengan struktur:
             deliveryAddress: normalizeDeliveryAddress(rawAddress),
             blNumber: root.blNumber || root.bl_number || root.doNumber || root.do_number || root.nomor_bl || root.nomor_do || `BL-AUTO-00${index + 1}`,
             poNumber: root.poNumber || root.po_number || root.nomor_po || `PO-2026/0${index + 1}`,
-            description: firstItem.description || firstItem.deskripsi || firstItem.item || firstItem.nama_barang || 'GENERAL CARGO',
+            description: firstItem.description || firstItem.deskripsi || firstItem.item || firstItem.nama_barang || 'PLASTIC KITCHEN WARE',
             weightKg: weightNormalized,
-            remarks: firstItem.remarks || firstItem.keterangan || '1 X 40 HR',
+            remarks: (() => {
+              let r = (firstItem.remarks || firstItem.keterangan || '1 X 40 HC').toString().trim().toUpperCase();
+              if (r.includes('40 HR') || r.includes('40HR') || r.includes('40-HR')) {
+                r = r.replace(/40\s*[-]?\s*HR/gi, '40 HC');
+              }
+              return r || '1 X 40 HC';
+            })(),
             deliveryDate: root.deliveryDate || root.delivery_date || root.tanggal || root.tanggal_kirim || globalDate,
             containerSeal: (firstItem.containerSeal || firstItem.container_seal || firstItem.container || root.containerSeal || '').trim(),
             packageQty: firstItem.packageQty || firstItem.package_qty || root.packageQty,
@@ -574,11 +611,15 @@ export const applyAIExtractionToDocument = (
 
   if (updated.items.length > 0) {
     const item0 = { ...updated.items[0] };
-    if (aiData.description) item0.description = aiData.description;
+    item0.description = aiData.description || item0.description || 'PLASTIC KITCHEN WARE';
     if (aiData.weightKg) item0.weightKg = aiData.weightKg;
-    if (aiData.remarks) item0.remarks = aiData.remarks;
+    let finalRemarks = (aiData.remarks || item0.remarks || '1 X 40 HC').toString().trim().toUpperCase();
+    if (finalRemarks.includes('40 HR') || finalRemarks.includes('40HR') || finalRemarks.includes('40-HR')) {
+      finalRemarks = finalRemarks.replace(/40\s*[-]?\s*HR/gi, '40 HC');
+    }
+    item0.remarks = finalRemarks || '1 X 40 HC';
     // CONTAINER/SEAL defaults to empty unless explicitly provided
-    item0.containerSeal = aiData.containerSeal ? aiData.containerSeal.trim() : '';
+    item0.containerSeal = aiData.containerSeal !== undefined ? aiData.containerSeal.trim() : item0.containerSeal;
     if (aiData.packageQty) item0.packageQty = aiData.packageQty;
     updated.items[0] = item0;
   }
