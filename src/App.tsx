@@ -131,9 +131,67 @@ export const App: React.FC = () => {
   }, [activeDropdown]);
 
   const documentRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Sync active document with list
   const currentDoc = documents.find((d) => d.id === currentId) || documents[0] || createEmptySuratJalan();
+
+  const [docHeight, setDocHeight] = useState<number>(1123);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const dragStartRef = useRef<{ x: number; y: number; scrollLeft: number; scrollTop: number }>({
+    x: 0,
+    y: 0,
+    scrollLeft: 0,
+    scrollTop: 0,
+  });
+
+  // Dynamically measure actual rendered height of Surat Jalan document
+  useEffect(() => {
+    if (!documentRef.current) return;
+    const updateHeight = () => {
+      if (documentRef.current) {
+        const h = Math.max(1123, documentRef.current.scrollHeight || documentRef.current.offsetHeight);
+        setDocHeight(h);
+      }
+    };
+    updateHeight();
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(documentRef.current);
+    return () => observer.disconnect();
+  }, [currentDoc]);
+
+  // Drag-to-pan mouse handlers across preview canvas
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0) return;
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    setIsDragging(true);
+    dragStartRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      scrollLeft: container.scrollLeft,
+      scrollTop: container.scrollTop,
+    };
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    e.preventDefault();
+    const dx = e.clientX - dragStartRef.current.x;
+    const dy = e.clientY - dragStartRef.current.y;
+    container.scrollLeft = dragStartRef.current.scrollLeft - dx;
+    container.scrollTop = dragStartRef.current.scrollTop - dy;
+  };
+
+  const handleMouseUp = () => {
+    if (isDragging) {
+      setIsDragging(false);
+    }
+  };
 
   // Save to local storage on edit
   useEffect(() => {
@@ -944,27 +1002,42 @@ export const App: React.FC = () => {
               </div>
             </div>
 
-            {/* Document Paper Container with Zoom Transform */}
-            <div className="preview-scroll-container overflow-x-auto w-full flex justify-center py-3 flex-1 scrollbar-thin">
-              <div
-                className={`preview-zoom-wrapper shrink-0 ${isPrintingAll ? 'no-print' : ''}`}
-                style={{
-                  width: `${(210 * zoomLevel) / 100}mm`,
-                  minHeight: `${(297 * zoomLevel) / 100}mm`,
-                  position: 'relative',
-                  transition: 'width 0.15s ease-out, min-height 0.15s ease-out',
-                }}
-              >
+            {/* Document Paper Container with Zoom Transform & Full 2D Drag-to-Pan */}
+            <div
+              ref={scrollContainerRef}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+              className={`preview-scroll-container overflow-auto w-full flex-1 max-h-[72vh] md:max-h-[82vh] xl:max-h-[calc(100vh-140px)] scrollbar-thin select-none overscroll-contain transition-colors ${
+                isDragging ? 'cursor-grabbing' : 'cursor-grab'
+              }`}
+              style={{
+                WebkitOverflowScrolling: 'touch',
+                touchAction: 'pan-x pan-y',
+              }}
+            >
+              <div className="w-fit min-w-full min-h-full flex justify-center items-start p-2 sm:p-5">
                 <div
+                  className={`preview-zoom-wrapper shrink-0 transition-all duration-150 ${isPrintingAll ? 'no-print' : ''}`}
                   style={{
-                    transform: `scale(${zoomLevel / 100})`,
-                    transformOrigin: 'top left',
-                    width: '210mm',
-                    minHeight: '297mm',
-                    transition: 'transform 0.15s ease-out',
+                    width: `${(210 * zoomLevel) / 100}mm`,
+                    height: `${(docHeight * zoomLevel) / 100}px`,
+                    position: 'relative',
                   }}
                 >
-                  <SuratJalanPreview data={currentDoc} documentRef={documentRef} />
+                  <div
+                    style={{
+                      transform: `scale(${zoomLevel / 100})`,
+                      transformOrigin: 'top left',
+                      width: '210mm',
+                      minHeight: '297mm',
+                      transition: 'transform 0.15s ease-out',
+                      pointerEvents: isDragging ? 'none' : 'auto',
+                    }}
+                  >
+                    <SuratJalanPreview data={currentDoc} documentRef={documentRef} />
+                  </div>
                 </div>
               </div>
             </div>
