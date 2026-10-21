@@ -492,6 +492,44 @@
   color: #7f1d1d !important;
 }
 
+/* Earth Theme Item Row & Form Controls */
+[data-theme="earth-cream"] .theme-item-row {
+  background-color: #faf5ed !important;
+  border-color: rgba(138, 103, 71, 0.22) !important;
+  box-shadow: 0 2px 8px rgba(74, 52, 32, 0.05) !important;
+}
+[data-theme="earth-cream"] .theme-item-row:hover {
+  border-color: rgba(184, 115, 51, 0.45) !important;
+}
+[data-theme="earth-cream"] .theme-badge-row {
+  background-color: #2b2118 !important;
+  color: #ffffff !important;
+  border: 1px solid #2b2118 !important;
+}
+[data-theme="earth-cream"] .theme-btn-ghost-box {
+  background-color: #ffffff !important;
+  color: #261d15 !important;
+  border-color: rgba(138, 103, 71, 0.28) !important;
+  font-weight: 600 !important;
+}
+[data-theme="earth-cream"] .theme-btn-ghost-box:hover {
+  background-color: #ede4d8 !important;
+  color: #b87333 !important;
+  border-color: #b87333 !important;
+}
+[data-theme="earth-cream"] .theme-label {
+  color: #3d2917 !important;
+  font-weight: 700 !important;
+}
+[data-theme="earth-cream"] .theme-text-main {
+  color: #261d15 !important;
+}
+[data-theme="earth-cream"] .bg-\[\#1e132b\]\/85,
+[data-theme="earth-cream"] .bg-\[\#1e132b\] {
+  background-color: #faf5ed !important;
+  border-color: rgba(138, 103, 71, 0.22) !important;
+}
+
 [data-theme="earth-cream"] .liquid-glass,
 [data-theme="earth-cream"] .theme-preview-container {
   background: #faf6f0 !important;
@@ -915,6 +953,42 @@
   color: #ffffff !important;
 }
 
+/* Sea NLS Item Row & Form Controls */
+[data-theme="sea-nls"] .theme-item-row {
+  background-color: rgba(6, 22, 45, 0.85) !important;
+  border-color: rgba(0, 163, 224, 0.22) !important;
+}
+[data-theme="sea-nls"] .theme-item-row:hover {
+  border-color: rgba(0, 163, 224, 0.45) !important;
+}
+[data-theme="sea-nls"] .theme-badge-row {
+  background-color: rgba(0, 163, 224, 0.2) !important;
+  color: #38bdf8 !important;
+  border: 1px solid rgba(0, 163, 224, 0.35) !important;
+}
+[data-theme="sea-nls"] .theme-btn-ghost-box {
+  background-color: rgba(12, 39, 75, 0.7) !important;
+  color: #bae6fd !important;
+  border-color: rgba(0, 163, 224, 0.25) !important;
+}
+[data-theme="sea-nls"] .theme-btn-ghost-box:hover {
+  background-color: rgba(16, 50, 95, 0.9) !important;
+  color: #ffffff !important;
+  border-color: #00A3E0 !important;
+}
+[data-theme="sea-nls"] .theme-label {
+  color: #e0f2fe !important;
+  font-weight: 600 !important;
+}
+[data-theme="sea-nls"] .theme-text-main {
+  color: #ffffff !important;
+}
+[data-theme="sea-nls"] .bg-\[\#1e132b\]\/85,
+[data-theme="sea-nls"] .bg-\[\#1e132b\] {
+  background-color: rgba(6, 22, 45, 0.85) !important;
+  border-color: rgba(0, 163, 224, 0.22) !important;
+}
+
 /* Sea Theme Toolbar & Action Buttons */
 [data-theme="sea-nls"] .theme-preview-container {
   background: rgba(8, 29, 56, 0.95) !important;
@@ -1261,6 +1335,44 @@
 [data-theme="white-moon"] .theme-chip-danger:hover {
   background-color: #fecaca !important;
   color: #7f1d1d !important;
+}
+
+/* White Moon Item Row & Form Controls */
+[data-theme="white-moon"] .theme-item-row {
+  background-color: #f8f9fa !important;
+  border-color: #e5e7eb !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04) !important;
+}
+[data-theme="white-moon"] .theme-item-row:hover {
+  border-color: #0a0a0a !important;
+}
+[data-theme="white-moon"] .theme-badge-row {
+  background-color: #0a0a0a !important;
+  color: #ffffff !important;
+  border: 1px solid #0a0a0a !important;
+}
+[data-theme="white-moon"] .theme-btn-ghost-box {
+  background-color: #ffffff !important;
+  color: #0a0a0a !important;
+  border-color: #d4d4d4 !important;
+  font-weight: 600 !important;
+}
+[data-theme="white-moon"] .theme-btn-ghost-box:hover {
+  background-color: #e5e7eb !important;
+  color: #0a0a0a !important;
+  border-color: #0a0a0a !important;
+}
+[data-theme="white-moon"] .theme-label {
+  color: #171717 !important;
+  font-weight: 700 !important;
+}
+[data-theme="white-moon"] .theme-text-main {
+  color: #0a0a0a !important;
+}
+[data-theme="white-moon"] .bg-\[\#1e132b\]\/85,
+[data-theme="white-moon"] .bg-\[\#1e132b\] {
+  background-color: #f8f9fa !important;
+  border-color: #e5e7eb !important;
 }
 
 [data-theme="white-moon"] .theme-text-light {
@@ -1616,6 +1728,43 @@
 [data-theme="venus"] .theme-chip-danger:hover {
   background-color: rgba(239, 68, 68, 0.25) !important;
   color: #ffffff !important;
+}
+
+/* Base / Venus Item Row & Form Controls */
+.theme-item-row,
+[data-theme="venus"] .theme-item-row {
+  background-color: rgba(30, 19, 43, 0.85);
+  border-color: rgba(250, 237, 217, 0.15);
+}
+.theme-item-row:hover,
+[data-theme="venus"] .theme-item-row:hover {
+  border-color: rgba(250, 237, 217, 0.3);
+}
+.theme-badge-row,
+[data-theme="venus"] .theme-badge-row {
+  background-color: rgba(250, 237, 217, 0.18);
+  color: #faedd9;
+  border: 1px solid rgba(250, 237, 217, 0.25);
+}
+.theme-btn-ghost-box,
+[data-theme="venus"] .theme-btn-ghost-box {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #d8b4fe;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.theme-btn-ghost-box:hover,
+[data-theme="venus"] .theme-btn-ghost-box:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: #fffdfa;
+  border-color: rgba(250, 237, 217, 0.25);
+}
+.theme-label,
+[data-theme="venus"] .theme-label {
+  color: rgba(250, 237, 217, 0.85);
+}
+.theme-text-main,
+[data-theme="venus"] .theme-text-main {
+  color: #fffdfa;
 }
 
 /* Default / Venus Theme Toolbar & Action Buttons */

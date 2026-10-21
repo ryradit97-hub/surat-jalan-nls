@@ -186,21 +186,21 @@ export const FormEditor: React.FC<FormEditorProps> = ({
 
         {/* Delivery Address Dropdown & Textarea */}
         <div className="mb-3">
-          <label className="block text-[10.5px] font-semibold tracking-wider text-[#faedd9]/80 uppercase mb-1 flex items-center justify-between">
+          <label className="block text-[10.5px] font-semibold tracking-wider uppercase mb-1 flex items-center justify-between theme-label">
             <span>DELIVERY ADDRESS (Alamat Tujuan)</span>
           </label>
           
           <select
-            className="w-full liquid-input px-3 py-2 rounded-xl text-xs font-medium mb-1.5 cursor-pointer bg-[#181022] text-[#fffdfa]"
+            className="w-full liquid-input px-3 py-2 rounded-xl text-xs font-medium mb-1.5 cursor-pointer"
             value={selectedAddressPreset}
             onChange={(e) => handleDeliveryAddressDropdown(e.target.value)}
           >
             {defaultDeliveryAddresses.map((addr, idx) => (
-              <option key={idx} value={addr} className="bg-[#181022] text-[#fffdfa]">
+              <option key={idx} value={addr}>
                 📍 {addr}
               </option>
             ))}
-            <option value="custom" className="bg-[#181022] text-[#d8b4fe]">
+            <option value="custom">
               ✏️ Ketik Manual / Alamat Lainnya...
             </option>
           </select>
@@ -220,13 +220,13 @@ export const FormEditor: React.FC<FormEditorProps> = ({
         {/* BL Number & PO Number */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-3">
           <div>
-            <label className="block text-[10.5px] font-semibold tracking-wider text-[#faedd9]/80 uppercase mb-1 flex items-center gap-1">
+            <label className="block text-[10.5px] font-semibold tracking-wider uppercase mb-1 flex items-center gap-1 theme-label">
               <Hash className="w-3 h-3 text-[#d8b4fe]" />
               <span>BL NUMBER</span>
             </label>
             <input
               type="text"
-              className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs font-mono font-semibold text-[#faedd9]"
+              className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs font-mono font-semibold"
               value={data.blNumber}
               onChange={(e) => handleTextChange('blNumber', e.target.value)}
               placeholder="e.g. JKTG58923800"
@@ -234,13 +234,13 @@ export const FormEditor: React.FC<FormEditorProps> = ({
           </div>
 
           <div>
-            <label className="block text-[10.5px] font-semibold tracking-wider text-[#faedd9]/80 uppercase mb-1 flex items-center gap-1">
+            <label className="block text-[10.5px] font-semibold tracking-wider uppercase mb-1 flex items-center gap-1 theme-label">
               <Tag className="w-3 h-3 text-[#c4b5fd]/60" />
               <span>PO NUMBER</span>
             </label>
             <input
               type="text"
-              className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs font-mono text-[#fffdfa]"
+              className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs font-mono"
               value={data.poNumber}
               onChange={(e) => handleTextChange('poNumber', e.target.value)}
               placeholder="e.g. MDL-2643957 (Opsional)"
@@ -251,7 +251,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
         {/* Delivery Date / Tanggal Kirim using Date Picker */}
         <div>
           <div className="flex items-center justify-between mb-1">
-            <label className="text-[10.5px] font-semibold tracking-wider text-[#faedd9]/80 uppercase flex items-center gap-1">
+            <label className="text-[10.5px] font-semibold tracking-wider uppercase flex items-center gap-1 theme-label">
               <Calendar className="w-3 h-3 text-[#d8b4fe]" />
               <span>Delivery Date / Tanggal Kirim</span>
             </label>
@@ -297,13 +297,13 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                   {data.items.length} {data.items.length > 1 ? 'Items' : 'Item'}
                 </span>
               </div>
-              <p className="text-[10px] text-[#c4b5fd]/70 mt-0.5">Kelola muatan barang kargo, spesifikasi kontainer, dan keterangan surat jalan</p>
+              <p className="text-[10px] theme-label mt-0.5">Kelola muatan barang kargo, spesifikasi kontainer, dan keterangan surat jalan</p>
             </div>
           </div>
           <button
             type="button"
             onClick={addItemRow}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-[#faedd9] bg-[#faedd9]/12 hover:bg-[#faedd9]/20 border border-[#faedd9]/25 transition-all cursor-pointer shadow-sm active:scale-95"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer shadow-sm active:scale-95 theme-btn-back"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Tambah Baris</span>
@@ -314,19 +314,19 @@ export const FormEditor: React.FC<FormEditorProps> = ({
           {data.items.map((item, index) => (
             <div
               key={item.id}
-              className="p-3.5 sm:p-4 rounded-2xl bg-[#1e132b]/85 border border-[#faedd9]/15 hover:border-[#faedd9]/30 transition-all shadow-sm space-y-3.5"
+              className="theme-item-row p-3.5 sm:p-4 rounded-2xl border transition-all shadow-sm space-y-3.5"
             >
               {/* Row Header & Actions */}
-              <div className="flex items-center justify-between pb-2.5 border-b border-[#faedd9]/10">
+              <div className="flex items-center justify-between pb-2.5 border-b border-black/10 dark:border-white/10">
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold font-mono bg-[#faedd9]/20 text-[#faedd9] border border-[#faedd9]/30 shrink-0">
+                  <span className="theme-badge-row px-2 py-0.5 rounded-md text-[10px] font-bold font-mono shrink-0">
                     BARIS #{index + 1}
                   </span>
-                  <span className="text-[11px] font-bold text-[#fffdfa] truncate">
+                  <span className="text-[11px] font-bold truncate theme-text-main">
                     {item.description || '(Nama barang kosong)'}
                   </span>
                   {item.remarks ? (
-                    <span className="text-[10.5px] text-[#faedd9]/80 font-mono shrink-0 hidden sm:inline">
+                    <span className="text-[10.5px] font-mono shrink-0 hidden sm:inline opacity-80 theme-label">
                       • {item.remarks}
                     </span>
                   ) : null}
@@ -335,7 +335,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                   <button
                     type="button"
                     onClick={() => duplicateItemRow(index)}
-                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-medium text-[#c4b5fd]/90 hover:text-[#faedd9] bg-white/5 hover:bg-white/10 border border-white/10 transition-colors cursor-pointer"
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-semibold border transition-all cursor-pointer theme-btn-ghost-box active:scale-95"
                     title="Duplikasi baris ini"
                   >
                     <Copy className="w-3 h-3" />
@@ -345,7 +345,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                     <button
                       type="button"
                       onClick={() => removeItemRow(index)}
-                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-medium text-[#f472b6] hover:text-[#fb7185] bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 transition-colors cursor-pointer"
+                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-semibold border transition-all cursor-pointer theme-chip-danger active:scale-95"
                       title="Hapus baris ini"
                     >
                       <Trash2 className="w-3 h-3" />
@@ -360,7 +360,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                 {/* Description of Goods */}
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <label className="text-[10.5px] font-bold tracking-wider text-[#faedd9]/90 uppercase flex items-center gap-1">
+                    <label className="text-[10.5px] font-bold tracking-wider uppercase flex items-center gap-1 theme-label">
                       <Package className="w-3 h-3 text-[#d8b4fe]" />
                       <span>Description of Goods (Nama Barang)</span>
                     </label>
@@ -400,7 +400,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                 {/* Remarks */}
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <label className="text-[10.5px] font-bold tracking-wider text-[#faedd9]/90 uppercase flex items-center gap-1">
+                    <label className="text-[10.5px] font-bold tracking-wider uppercase flex items-center gap-1 theme-label">
                       <FileText className="w-3 h-3 text-[#d8b4fe]" />
                       <span>Remarks (Keterangan Kontainer)</span>
                     </label>
@@ -414,7 +414,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                           Kosongkan
                         </button>
                       )}
-                      <span className="text-[9px] text-[#faedd9]/60 font-mono">Default: 1 X 40 HC</span>
+                      <span className="text-[9px] font-mono opacity-80 theme-label">Default: 1 X 40 HC</span>
                     </div>
                   </div>
 
@@ -461,21 +461,21 @@ export const FormEditor: React.FC<FormEditorProps> = ({
               </div>
 
               {/* Bottom Row: Weight, Package, Container/Seal */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-[#faedd9]/10">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-black/10 dark:border-white/10">
                 {/* Gross Weight */}
                 <div>
-                  <label className="block text-[10px] font-bold tracking-wider text-[#faedd9]/80 uppercase mb-1">
+                  <label className="block text-[10px] font-bold tracking-wider uppercase mb-1 theme-label">
                     Gross Weight
                   </label>
                   <div className="relative flex items-center">
                     <input
                       type="text"
-                      className="w-full liquid-input px-3 py-1.5 pr-12 rounded-xl text-xs font-mono font-bold text-[#faedd9]"
+                      className="w-full liquid-input px-3 py-1.5 pr-12 rounded-xl text-xs font-mono font-bold"
                       value={item.weightKg}
                       onChange={(e) => handleItemChange(index, 'weightKg', e.target.value)}
                       placeholder="e.g. 8732,5"
                     />
-                    <span className="absolute right-2.5 text-[10px] font-bold text-[#faedd9]/70 pointer-events-none">
+                    <span className="absolute right-2.5 text-[10px] font-bold opacity-70 pointer-events-none theme-label">
                       KGS
                     </span>
                   </div>
@@ -483,12 +483,12 @@ export const FormEditor: React.FC<FormEditorProps> = ({
 
                 {/* Package Qty */}
                 <div>
-                  <label className="block text-[10px] font-bold tracking-wider text-[#faedd9]/80 uppercase mb-1">
+                  <label className="block text-[10px] font-bold tracking-wider uppercase mb-1 theme-label">
                     Package (Kemasan)
                   </label>
                   <input
                     type="text"
-                    className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs text-[#fffdfa]"
+                    className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs"
                     value={item.packageQty}
                     onChange={(e) => handleItemChange(index, 'packageQty', e.target.value)}
                     placeholder="e.g. 100 CTN / 1 LOT"
@@ -498,7 +498,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                 {/* Container / Seal */}
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="block text-[10px] font-bold tracking-wider text-[#faedd9]/80 uppercase">
+                    <label className="block text-[10px] font-bold tracking-wider uppercase theme-label">
                       Container / Seal
                     </label>
                     {item.containerSeal && (
@@ -538,32 +538,32 @@ export const FormEditor: React.FC<FormEditorProps> = ({
         </div>
 
         <div className="mb-2.5">
-          <label className="block text-[10px] font-semibold text-[#faedd9]/70 mb-1">
+          <label className="block text-[10px] font-semibold mb-1 theme-label">
             Pilih Preset Shipper
           </label>
           <select
-            className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs font-medium cursor-pointer bg-[#181022] text-[#fffdfa]"
+            className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs font-medium cursor-pointer"
             value={selectedShipperPreset}
             onChange={(e) => handleShipperDropdown(e.target.value)}
           >
             {defaultShippers.map((shipper) => (
-              <option key={shipper.id} value={shipper.id} className="bg-[#181022] text-[#fffdfa]">
+              <option key={shipper.id} value={shipper.id}>
                 🏢 {shipper.name}
               </option>
             ))}
-            <option value="custom" className="bg-[#181022] text-[#d8b4fe]">
+            <option value="custom">
               ✏️ Ketik Manual / Shipper Lainnya...
             </option>
           </select>
         </div>
 
         <div className="mb-2.5">
-          <label className="block text-[10px] font-semibold text-[#faedd9]/80 mb-1">
+          <label className="block text-[10px] font-semibold mb-1 theme-label">
             SHIPPER NAME
           </label>
           <input
             type="text"
-            className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs font-semibold text-[#fffdfa]"
+            className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs font-semibold"
             value={data.shipperName}
             onChange={(e) => {
               setSelectedShipperPreset('custom');
@@ -574,12 +574,12 @@ export const FormEditor: React.FC<FormEditorProps> = ({
         </div>
 
         <div>
-          <label className="block text-[10px] font-semibold text-[#faedd9]/80 mb-1">
+          <label className="block text-[10px] font-semibold mb-1 theme-label">
             SHIPPER ADDRESS
           </label>
           <textarea
             rows={2}
-            className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs resize-none text-[#fffdfa]"
+            className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs resize-none"
             value={data.shipperAddress}
             onChange={(e) => {
               setSelectedShipperPreset('custom');
@@ -597,30 +597,30 @@ export const FormEditor: React.FC<FormEditorProps> = ({
             <Truck className="w-3.5 h-3.5" />
           </div>
           <div>
-            <h3 className="text-xs font-bold text-[#fffdfa]">Pengemudi & Armada</h3>
+            <h3 className="text-xs font-bold theme-text-main">Pengemudi & Armada</h3>
           </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-2.5">
           <div>
-            <label className="block text-[10px] font-semibold text-[#faedd9]/70 mb-1">
+            <label className="block text-[10px] font-semibold mb-1 theme-label">
               UNIT TYPE (Truck/Car)
             </label>
             <input
               type="text"
-              className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs text-[#fffdfa]"
+              className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs"
               value={data.unitType}
               onChange={(e) => handleTextChange('unitType', e.target.value)}
               placeholder="e.g. Trailer 40ft"
             />
           </div>
           <div>
-            <label className="block text-[10px] font-semibold text-[#faedd9]/70 mb-1">
+            <label className="block text-[10px] font-semibold mb-1 theme-label">
               DRIVER NAME (Nama Supir)
             </label>
             <input
               type="text"
-              className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs text-[#fffdfa]"
+              className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs"
               value={data.driverName}
               onChange={(e) => handleTextChange('driverName', e.target.value)}
               placeholder="Nama pengemudi"
@@ -630,24 +630,24 @@ export const FormEditor: React.FC<FormEditorProps> = ({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-2.5">
           <div>
-            <label className="block text-[10px] font-semibold text-[#faedd9]/70 mb-1">
+            <label className="block text-[10px] font-semibold mb-1 theme-label">
               PHONE NO.
             </label>
             <input
               type="text"
-              className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs text-[#fffdfa] font-mono"
+              className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs font-mono"
               value={data.phoneNo}
               onChange={(e) => handleTextChange('phoneNo', e.target.value)}
               placeholder="e.g. 0812-xxxx-xxxx"
             />
           </div>
           <div>
-            <label className="block text-[10px] font-semibold text-[#faedd9]/70 mb-1">
+            <label className="block text-[10px] font-semibold mb-1 theme-label">
               LICENSE / No. Polisi
             </label>
             <input
               type="text"
-              className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs font-mono uppercase text-[#faedd9] font-bold"
+              className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs font-mono uppercase font-bold"
               value={data.licensePlate}
               onChange={(e) => handleTextChange('licensePlate', e.target.value)}
               placeholder="e.g. B 9123 NLS"
@@ -658,7 +658,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="text-[10px] font-semibold text-[#faedd9]/70 flex items-center gap-1">
+              <label className="text-[10px] font-semibold flex items-center gap-1 theme-label">
                 <Calendar className="w-2.5 h-2.5 text-[#d8b4fe]" />
                 <span>Arrived Date / Tanggal Tiba</span>
               </label>
@@ -675,14 +675,14 @@ export const FormEditor: React.FC<FormEditorProps> = ({
             </div>
             <input
               type="date"
-              className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs text-[#fffdfa] cursor-pointer"
+              className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs cursor-pointer"
               value={toISODate(data.arrivedDate)}
               onChange={(e) => handleDateChange('arrivedDate', e.target.value)}
             />
           </div>
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="text-[10px] font-semibold text-[#faedd9]/70 flex items-center gap-1">
+              <label className="text-[10px] font-semibold flex items-center gap-1 theme-label">
                 <Calendar className="w-2.5 h-2.5 text-[#d8b4fe]" />
                 <span>Discharge / Tanggal Bongkar</span>
               </label>
@@ -699,7 +699,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
             </div>
             <input
               type="date"
-              className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs text-[#fffdfa] cursor-pointer"
+              className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs cursor-pointer"
               value={toISODate(data.dischargeDate)}
               onChange={(e) => handleDateChange('dischargeDate', e.target.value)}
             />
