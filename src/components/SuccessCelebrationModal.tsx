@@ -193,7 +193,7 @@ export const SuccessCelebrationModal: React.FC<SuccessCelebrationModalProps> = (
                       {it?.description || 'Kargo'}
                     </span>
                     <span className="text-[10.5px] text-[#faedd9]/70 block truncate">
-                      {it?.weightKg || '20000'} KGS • {it?.remarks || '1x40'}
+                      {it?.weightKg || '20000'} KGS{it?.remarks ? ` • ${it.remarks}` : ''}
                     </span>
                   </button>
                 );

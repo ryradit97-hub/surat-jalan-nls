@@ -91,10 +91,9 @@ ATURAN NORMALISASI & PARAFRASE KHUSUS:
 5. Tanggal Kirim:
    - Jika tanggal kirim disebutkan (misal: "Tanggal kirim : 28 September 2026"), sertakan informasi tanggal ini dengan jelas untuk seluruh pengiriman.
 6. Description of Goods (Nama Barang):
-   - Jika barang tidak disebutkan secara spesifik, gunakan default: "barang PLASTIC KITCHEN WARE".
+   - Jika barang tidak disebutkan, JANGAN menambahkan barang apa pun (jangan mengarang default).
 7. Remarks (Keterangan Kontainer):
-   - Remarks WAJIB SELALU DITULIS: "remarks 1 X 40 HC".
-   - Sekalipun di input tertulis "1 X 40 HR", "40 HR", atau tidak disebutkan, WAJIB SELALU UBAH menjadi "remarks 1 X 40 HC".
+   - Jika terdapat keterangan kontainer berupa 40 HR / 1 X 40 HR, ubah menjadi "remarks 1 X 40 HC". Jika remarks tidak disebutkan, JANGAN menambahkan remarks.
 8. Format Output Multi-Pengiriman:
    - Jika input berupa daftar bernomor (1., 2., 3., dst.), susun kalimat instruksi yang sangat rapi dan bernomor.
    Contoh format hasil parafrase:
@@ -167,13 +166,12 @@ export const paraphraseOfflinePrompt = (rawPrompt: string): string => {
       if (item.poNumber) parts.push(`PO ${item.poNumber}`);
       if (item.deliveryAddress) parts.push(`delivery address ${item.deliveryAddress}`);
       if (item.weightKg) parts.push(`berat ${item.weightKg}`);
-      const desc = item.description || 'PLASTIC KITCHEN WARE';
-      parts.push(`barang ${desc}`);
-      let rem = item.remarks || '1 X 40 HC';
+      if (item.description) parts.push(`barang ${item.description}`);
+      let rem = item.remarks ?? '';
       if (rem.includes('40 HR') || rem.includes('40HR') || rem.includes('40-HR')) {
         rem = rem.replace(/40\s*[-]?\s*HR/gi, '40 HC');
       }
-      parts.push(`remarks ${rem}`);
+      if (rem) parts.push(`remarks ${rem}`);
       if (item.deliveryDate && !dateStr) parts.push(`tanggal kirim ${item.deliveryDate}`);
       return `${idx + 1}. ${parts.join(', ')}`;
     });
@@ -187,13 +185,13 @@ export const paraphraseOfflinePrompt = (rawPrompt: string): string => {
   if (single.deliveryAddress) parts.push(`delivery address ${single.deliveryAddress}`);
   if (single.blNumber) parts.push(`BL ${single.blNumber}`);
   if (single.poNumber) parts.push(`PO ${single.poNumber}`);
-  parts.push(`barang ${single.description || 'PLASTIC KITCHEN WARE'}`);
+  if (single.description) parts.push(`barang ${single.description}`);
   if (single.weightKg) parts.push(`berat ${single.weightKg}`);
-  let rem = single.remarks || '1 X 40 HC';
+  let rem = single.remarks ?? '';
   if (rem.includes('40 HR') || rem.includes('40HR') || rem.includes('40-HR')) {
     rem = rem.replace(/40\s*[-]?\s*HR/gi, '40 HC');
   }
-  parts.push(`remarks ${rem}`);
+  if (rem) parts.push(`remarks ${rem}`);
 
   if (parts.length > 0) {
     return `Buatkan saya surat jalan untuk ${parts.join(', ')}`;
@@ -310,21 +308,27 @@ export const parseIndonesianPromptLocally = (prompt: string): AIExtractionResult
     result.weightKg = w.toUpperCase();
   }
 
-  // 6. Remarks / Keterangan (Always written 1 X 40 HC even if 1 X 40 HR is in template/prompt)
+  // 6. Remarks / Keterangan (Defaults to 1 X 40 HC, normalizes 40 HR -> 40 HC, allows empty)
   const remarksMatch = prompt.match(/(?:remarks|keterangan|ket)[\s:]*([0-9]+\s*[xX]\s*[0-9]+(?:\s*[A-Za-z]+)?|[^,\n\.]+)/i);
-  let rem = remarksMatch ? remarksMatch[1].trim().toUpperCase() : '1 X 40 HC';
-  if (rem.includes('40 HR') || rem.includes('40HR') || rem.includes('40-HR')) {
-    rem = rem.replace(/40\s*[-]?\s*HR/gi, '40 HC');
-  }
-  result.remarks = rem || '1 X 40 HC';
-
-  // 7. Description of Goods / Barang (Default: PLASTIC KITCHEN WARE)
-  const goodsMatch = prompt.match(/(?:description of goods|nama barang|barang|goods|muatan|kargo)[\s:]+([^,\n\.]+?(?:(?=,\s*(?:weight|berat|po|bl|do|remarks))|$))/i);
-  if (goodsMatch) {
-    result.description = goodsMatch[1].trim().toUpperCase();
+  if (remarksMatch) {
+    let rem = remarksMatch[1].trim().toUpperCase();
+    if (rem === 'KOSONG' || rem === '-' || rem === 'TIDAK ADA' || rem === 'NONE' || rem === 'EMPTY') {
+      result.remarks = '';
+    } else {
+      if (rem.includes('40 HR') || rem.includes('40HR') || rem.includes('40-HR')) {
+        rem = rem.replace(/40\s*[-]?\s*HR/gi, '40 HC');
+      }
+      result.remarks = rem;
+    }
+  } else if (prompt.toLowerCase().includes('tanpa remarks') || prompt.toLowerCase().includes('remarks kosong') || prompt.toLowerCase().includes('hapus remarks')) {
+    result.remarks = '';
   } else {
-    result.description = 'PLASTIC KITCHEN WARE';
+    result.remarks = '';
   }
+
+  // 7. Description of Goods / Barang (empty if not mentioned)
+  const goodsMatch = prompt.match(/(?:description of goods|nama barang|barang|goods|muatan|kargo)[\s:]+([^,\n\.]+?(?:(?=,\s*(?:weight|berat|po|bl|do|remarks))|$))/i);
+  result.description = goodsMatch ? goodsMatch[1].trim().toUpperCase() : '';
 
   // 8. Container / Seal (Default empty if not specified in prompt)
   const containerMatch = prompt.match(/(?:container|kontainer|seal)[\s:]*([A-Za-z0-9\/\s\-]+?)(?=(?:,\s*(?:barang|weight|remarks|po|bl|do))|$)/i);
@@ -440,10 +444,12 @@ ATURAN NORMALISASI LOGISTIK (SANGAT PENTING):
 6. Container Seal:
    - Bidang "containerSeal" seringkali kosong. Jika tidak disebutkan di prompt, WAJIB kosongkan string: "". JANGAN mengarang atau mengisi default.
 7. Description of Goods (Nama Barang):
-   - Jika nama barang tidak disebutkan di prompt/template, WAJIB gunakan: "PLASTIC KITCHEN WARE".
+   - Jika nama barang tidak disebutkan, WAJIB isi string kosong: "". JANGAN mengarang default.
 8. Remarks (Keterangan Kontainer):
-   - Remarks WAJIB SELALU DITULIS: "1 X 40 HC".
-   - Sekalipun di teks instruksi tertulis "1 X 40 HR", "40 HR", atau tidak ada keterangan, WAJIB SELALU DITULIS SEBAGAI: "1 X 40 HC".
+   - Jika di teks instruksi tertulis "1 X 40 HR", "40 HR", WAJIB DITULIS SEBAGAI: "1 X 40 HC".
+   - Jika remarks tidak disebutkan atau pengguna meminta tanpa remarks, isi string kosong: "".
+9. ATURAN UMUM FIELD KOSONG (SANGAT PENTING):
+   - Untuk SEMUA field (deliveryAddress, blNumber, poNumber, description, weightKg, remarks, deliveryDate, containerSeal, packageQty, driverName, phoneNo, licensePlate, dll), jika informasinya TIDAK disebutkan di prompt, WAJIB isi string kosong "". JANGAN mengarang, menebak, atau mengisi nilai default/contoh.
 
 Keluarkan HANYA format JSON valid tanpa teks lain dengan struktur:
 {
@@ -452,9 +458,9 @@ Keluarkan HANYA format JSON valid tanpa teks lain dengan struktur:
       "deliveryAddress": "Nama terminal resmi lengkap",
       "blNumber": "Nomor BL",
       "poNumber": "Nomor PO",
-      "description": "PLASTIC KITCHEN WARE (atau nama barang yang disebutkan)",
-      "weightKg": "Berat dengan satuan contoh: 22000 KGS atau 8732,5 KGS",
-      "remarks": "1 X 40 HC",
+      "description": "Nama barang yang disebutkan, kosong jika tidak disebutkan",
+      "weightKg": "Berat dengan satuan contoh: 22000 KGS atau 8732,5 KGS, kosong jika tidak disebutkan",
+      "remarks": "Contoh: 1 X 40 HC, kosong jika tidak disebutkan",
       "deliveryDate": "Contoh: 28 September 2026 atau 14 Sep 2026",
       "containerSeal": "",
       "packageQty": "Jumlah kemasan jika ada",
@@ -537,21 +543,34 @@ Keluarkan HANYA format JSON valid tanpa teks lain dengan struktur:
         const results: AIExtractionResult[] = rawDocs.map((root: any, index: number) => {
           const firstItem = (root.detail_barang && root.detail_barang[0]) || (root.items && root.items[0]) || root;
           const rawAddress = root.deliveryAddress || root.delivery_address || root.alamat_pengiriman || root.tujuan || globalAddr;
-          const rawWeight = firstItem.weightKg || firstItem.weight || firstItem.berat || '20000 KGS';
-          const weightNormalized = rawWeight.toString().toUpperCase().includes('KG') ? rawWeight.toString().toUpperCase() : `${rawWeight} KGS`;
+          const rawWeight = firstItem.weightKg || firstItem.weight || firstItem.berat || '';
+          const weightStr = rawWeight.toString().trim();
+          const weightNormalized = !weightStr ? '' : (weightStr.toUpperCase().includes('KG') ? weightStr.toUpperCase() : `${weightStr} KGS`);
 
           return {
-            deliveryAddress: normalizeDeliveryAddress(rawAddress),
-            blNumber: root.blNumber || root.bl_number || root.doNumber || root.do_number || root.nomor_bl || root.nomor_do || `BL-AUTO-00${index + 1}`,
-            poNumber: root.poNumber || root.po_number || root.nomor_po || `PO-2026/0${index + 1}`,
-            description: firstItem.description || firstItem.deskripsi || firstItem.item || firstItem.nama_barang || 'PLASTIC KITCHEN WARE',
+            deliveryAddress: rawAddress ? normalizeDeliveryAddress(rawAddress) : '',
+            blNumber: root.blNumber || root.bl_number || root.doNumber || root.do_number || root.nomor_bl || root.nomor_do || '',
+            poNumber: root.poNumber || root.po_number || root.nomor_po || '',
+            description: firstItem.description || firstItem.deskripsi || firstItem.item || firstItem.nama_barang || '',
             weightKg: weightNormalized,
             remarks: (() => {
-              let r = (firstItem.remarks || firstItem.keterangan || '1 X 40 HC').toString().trim().toUpperCase();
-              if (r.includes('40 HR') || r.includes('40HR') || r.includes('40-HR')) {
-                r = r.replace(/40\s*[-]?\s*HR/gi, '40 HC');
+              if (firstItem.remarks !== undefined) {
+                let r = firstItem.remarks.toString().trim().toUpperCase();
+                if (r === 'KOSONG' || r === '-' || r === 'EMPTY') return '';
+                if (r.includes('40 HR') || r.includes('40HR') || r.includes('40-HR')) {
+                  r = r.replace(/40\s*[-]?\s*HR/gi, '40 HC');
+                }
+                return r;
               }
-              return r || '1 X 40 HC';
+              if (firstItem.keterangan !== undefined) {
+                let r = firstItem.keterangan.toString().trim().toUpperCase();
+                if (r === 'KOSONG' || r === '-' || r === 'EMPTY') return '';
+                if (r.includes('40 HR') || r.includes('40HR') || r.includes('40-HR')) {
+                  r = r.replace(/40\s*[-]?\s*HR/gi, '40 HC');
+                }
+                return r;
+              }
+              return '';
             })(),
             deliveryDate: root.deliveryDate || root.delivery_date || root.tanggal || root.tanggal_kirim || globalDate,
             containerSeal: (firstItem.containerSeal || firstItem.container_seal || firstItem.container || root.containerSeal || '').trim(),
@@ -598,29 +617,33 @@ export const applyAIExtractionToDocument = (
 ): SuratJalanData => {
   const updated = { ...currentDoc };
 
-  if (aiData.deliveryAddress) updated.deliveryAddress = aiData.deliveryAddress;
-  if (aiData.blNumber) updated.blNumber = aiData.blNumber;
-  if (aiData.poNumber) updated.poNumber = aiData.poNumber;
-  if (aiData.deliveryDate) updated.deliveryDate = aiData.deliveryDate;
+  // Fields not mentioned in the prompt are cleared (no sample/default values)
+  updated.deliveryAddress = aiData.deliveryAddress || '';
+  updated.blNumber = aiData.blNumber || '';
+  updated.poNumber = aiData.poNumber || '';
+  updated.deliveryDate = aiData.deliveryDate || '';
+  updated.driverName = aiData.driverName || '';
+  updated.phoneNo = aiData.phoneNo || '';
+  updated.licensePlate = aiData.licensePlate || '';
+  // Shipper & unit type keep their current values unless mentioned
   if (aiData.unitType) updated.unitType = aiData.unitType;
-  if (aiData.driverName) updated.driverName = aiData.driverName;
-  if (aiData.phoneNo) updated.phoneNo = aiData.phoneNo;
-  if (aiData.licensePlate) updated.licensePlate = aiData.licensePlate;
   if (aiData.shipperName) updated.shipperName = aiData.shipperName;
   if (aiData.shipperAddress) updated.shipperAddress = aiData.shipperAddress;
 
   if (updated.items.length > 0) {
+    updated.items = [...updated.items];
     const item0 = { ...updated.items[0] };
-    item0.description = aiData.description || item0.description || 'PLASTIC KITCHEN WARE';
-    if (aiData.weightKg) item0.weightKg = aiData.weightKg;
-    let finalRemarks = (aiData.remarks || item0.remarks || '1 X 40 HC').toString().trim().toUpperCase();
-    if (finalRemarks.includes('40 HR') || finalRemarks.includes('40HR') || finalRemarks.includes('40-HR')) {
+    item0.description = aiData.description || '';
+    item0.weightKg = aiData.weightKg || '';
+    let finalRemarks = (aiData.remarks ?? '').toString().trim().toUpperCase();
+    if (finalRemarks === 'KOSONG' || finalRemarks === '-' || finalRemarks === 'EMPTY') {
+      finalRemarks = '';
+    } else if (finalRemarks.includes('40 HR') || finalRemarks.includes('40HR') || finalRemarks.includes('40-HR')) {
       finalRemarks = finalRemarks.replace(/40\s*[-]?\s*HR/gi, '40 HC');
     }
-    item0.remarks = finalRemarks || '1 X 40 HC';
-    // CONTAINER/SEAL defaults to empty unless explicitly provided
-    item0.containerSeal = aiData.containerSeal !== undefined ? aiData.containerSeal.trim() : item0.containerSeal;
-    if (aiData.packageQty) item0.packageQty = aiData.packageQty;
+    item0.remarks = finalRemarks;
+    item0.containerSeal = (aiData.containerSeal ?? '').trim();
+    item0.packageQty = aiData.packageQty || '';
     updated.items[0] = item0;
   }
 

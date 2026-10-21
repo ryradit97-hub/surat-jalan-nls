@@ -323,11 +323,13 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                     BARIS #{index + 1}
                   </span>
                   <span className="text-[11px] font-bold text-[#fffdfa] truncate">
-                    {item.description || 'PLASTIC KITCHEN WARE'}
+                    {item.description || '(Nama barang kosong)'}
                   </span>
-                  <span className="text-[10.5px] text-[#faedd9]/80 font-mono shrink-0 hidden sm:inline">
-                    • {item.remarks || '1 X 40 HC'}
-                  </span>
+                  {item.remarks ? (
+                    <span className="text-[10.5px] text-[#faedd9]/80 font-mono shrink-0 hidden sm:inline">
+                      • {item.remarks}
+                    </span>
+                  ) : null}
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
                   <button
@@ -367,7 +369,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                   {/* Preset Badges for Goods */}
                   <div className="flex flex-wrap gap-1">
                     {defaultGoodsDescriptions.map((desc) => {
-                      const isSelected = (item.description || 'PLASTIC KITCHEN WARE') === desc;
+                      const isSelected = item.description === desc;
                       return (
                         <button
                           key={desc}
@@ -402,18 +404,29 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                       <FileText className="w-3 h-3 text-[#d8b4fe]" />
                       <span>Remarks (Keterangan Kontainer)</span>
                     </label>
-                    <span className="text-[9px] text-[#faedd9]/60 font-mono">Default: 1 X 40 HC</span>
+                    <div className="flex items-center gap-2">
+                      {item.remarks && (
+                        <button
+                          type="button"
+                          onClick={() => handleItemChange(index, 'remarks', '')}
+                          className="text-[9.5px] text-red-300 hover:text-red-200 underline cursor-pointer"
+                        >
+                          Kosongkan
+                        </button>
+                      )}
+                      <span className="text-[9px] text-[#faedd9]/60 font-mono">Default: 1 X 40 HC</span>
+                    </div>
                   </div>
 
                   {/* Preset Badges for Remarks */}
                   <div className="flex flex-wrap gap-1">
                     {['1 X 40 HC', '1 X 20 FT', '2 X 20 FT', '1 X 40 REEFER'].map((preset) => {
-                      const isSelected = (item.remarks || '1 X 40 HC') === preset;
+                      const isSelected = item.remarks === preset;
                       return (
                         <button
                           key={preset}
                           type="button"
-                          onClick={() => handleItemChange(index, 'remarks', preset)}
+                          onClick={() => handleItemChange(index, 'remarks', isSelected ? '' : preset)}
                           className={`text-[9.5px] px-2 py-0.5 rounded-lg border transition-all cursor-pointer flex items-center gap-1 ${
                             isSelected
                               ? 'bg-[#faedd9] text-[#1f132b] border-[#faedd9] font-bold shadow-sm'
@@ -425,14 +438,24 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                         </button>
                       );
                     })}
+                    {item.remarks && (
+                      <button
+                        type="button"
+                        onClick={() => handleItemChange(index, 'remarks', '')}
+                        className="text-[9.5px] px-2 py-0.5 rounded-lg border border-red-400/30 bg-red-500/10 hover:bg-red-500/20 text-red-300 transition-all cursor-pointer flex items-center gap-1"
+                        title="Kosongkan Remarks"
+                      >
+                        <span>Kosongkan</span>
+                      </button>
+                    )}
                   </div>
 
                   <input
                     type="text"
                     className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs font-mono font-semibold text-[#fffdfa]"
-                    value={item.remarks}
+                    value={item.remarks ?? ''}
                     onChange={(e) => handleItemChange(index, 'remarks', e.target.value)}
-                    placeholder="e.g. 1 X 40 HC"
+                    placeholder="Kosongkan jika tidak ada (e.g. 1 X 40 HC)"
                   />
                 </div>
               </div>
