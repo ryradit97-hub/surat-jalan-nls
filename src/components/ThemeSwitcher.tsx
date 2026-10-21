@@ -56,7 +56,7 @@ export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ currentTheme, onSe
 
       {/* Dropdown Card */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-72 theme-dropdown-menu rounded-2xl p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150 border">
+        <div className="absolute right-0 top-full mt-2 w-72 max-w-[calc(100vw-24px)] theme-dropdown-menu rounded-2xl p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150 border">
           <div className="px-3 py-1.5 text-[10px] uppercase font-bold tracking-wider opacity-60 border-b border-white/10 mb-1 flex items-center justify-between">
             <span>Pilih Tema Tampilan</span>
             <Palette className="w-3 h-3 opacity-80" />

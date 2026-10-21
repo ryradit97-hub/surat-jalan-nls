@@ -110,26 +110,26 @@ export const Navbar: React.FC<NavbarProps> = ({
       )}
 
       {/* 2. MAIN TOOLBAR */}
-      <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 theme-nav-bar">
+      <div className="flex items-center justify-between gap-2 px-3 sm:px-4 py-2 sm:py-2.5 theme-nav-bar">
         {/* Brand identity - ALWAYS VISIBLE */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
           <img
             src={nlsLogo}
             alt="PT NIAGA LOGISTICS SEJAHTERA"
-            className="w-9 h-9 object-contain drop-shadow-md shrink-0"
+            className="w-8 h-8 sm:w-9 sm:h-9 object-contain drop-shadow-md shrink-0"
           />
           <div className="flex flex-col justify-center leading-none select-none">
-            <span className="font-black text-xs sm:text-[13px] text-[#fffdfa] tracking-wider uppercase theme-brand-name">
+            <span className="font-black text-[11px] sm:text-[13px] text-[#fffdfa] tracking-wider uppercase theme-brand-name whitespace-nowrap">
               PT NIAGA LOGISTICS
             </span>
-            <span className="font-bold text-[10.5px] sm:text-[11px] text-[#faedd9] tracking-[0.18em] uppercase mt-0.5 theme-brand-subtitle">
+            <span className="font-bold text-[9.5px] sm:text-[11px] text-[#faedd9] tracking-[0.18em] uppercase mt-0.5 theme-brand-subtitle">
               SEJAHTERA
             </span>
           </div>
         </div>
 
         {/* Right Controls: Theme Switcher (always visible) + Studio Actions */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
           {/* THEME SWITCHER */}
           <ThemeSwitcher currentTheme={currentTheme} onSelectTheme={onSelectTheme} />
 
@@ -139,21 +139,22 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 type="button"
                 onClick={onResetDocument}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer theme-btn-ghost"
+                className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer theme-btn-ghost shrink-0"
                 title="Reset formulir aktif ke data awal"
               >
-                <RefreshCw className="w-3 h-3" />
-                <span>Reset</span>
+                <RefreshCw className="w-3 h-3 shrink-0" />
+                <span className="hidden sm:inline">Reset</span>
               </button>
 
               <button
                 type="button"
                 onClick={onOpenPromptView}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all active:scale-95 shadow-sm cursor-pointer theme-btn-primary"
+                className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all active:scale-95 shadow-sm cursor-pointer theme-btn-primary shrink-0"
                 title="Buka Form Prompt AI Penuh"
               >
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Prompt AI Baru</span>
+                <Sparkles className="w-3.5 h-3.5 shrink-0" />
+                <span className="hidden sm:inline">Prompt AI Baru</span>
+                <span className="inline sm:hidden whitespace-nowrap">Prompt AI</span>
               </button>
             </>
           )}

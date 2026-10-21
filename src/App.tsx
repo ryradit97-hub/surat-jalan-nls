@@ -90,7 +90,13 @@ export const App: React.FC = () => {
   const [currentId, setCurrentId] = useState<string>(documents[0]?.id || '');
   const [isPresetsOpen, setIsPresetsOpen] = useState<boolean>(false);
   const [isBatchOpen, setIsBatchOpen] = useState<boolean>(false);
-  const [zoomLevel, setZoomLevel] = useState<number>(100);
+  // Zoom level for document preview: starts at 42% on mobile (<480px) to fit A4 paper without overflow, 55% on small tablets, 100% on desktop
+  const [zoomLevel, setZoomLevel] = useState<number>(() => {
+    if (typeof window === 'undefined') return 100;
+    if (window.innerWidth < 480) return 42;
+    if (window.innerWidth < 768) return 55;
+    return 100;
+  });
   const [activeDropdown, setActiveDropdown] = useState<'download' | 'print' | 'whatsapp' | null>(null);
 
   // Theme Switcher State ('venus' | 'earth-cream' | 'sea-nls' | 'white-moon')
@@ -641,37 +647,38 @@ export const App: React.FC = () => {
           </div>
 
           {/* Right Column: Live Document Preview Canvas */}
-          <div className="preview-card-container theme-preview-container rounded-3xl p-4 md:p-6 flex flex-col items-center overflow-hidden relative shadow-xl border">
+          <div className="preview-card-container theme-preview-container rounded-3xl p-3 sm:p-4 md:p-6 flex flex-col items-center overflow-hidden relative shadow-xl border">
             {/* Canvas Floating Top Toolbar */}
-            <div className="w-full flex items-center justify-between pb-3.5 mb-3.5 border-b theme-toolbar-divider no-print">
-              <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-lg theme-toolbar-icon-box flex items-center justify-center">
-                  <Eye className="w-3.5 h-3.5 theme-toolbar-icon" />
+            <div className="w-full flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-3 pb-3 mb-3 border-b theme-toolbar-divider no-print">
+              {/* Row 1 on mobile: Title + Zoom controls */}
+              <div className="flex items-center justify-between gap-2 w-full md:w-auto">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-6 h-6 rounded-lg theme-toolbar-icon-box flex items-center justify-center shrink-0">
+                    <Eye className="w-3.5 h-3.5 theme-toolbar-icon" />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-xs font-bold theme-toolbar-title whitespace-nowrap">Preview Dokumen</span>
+                    <span className="text-[10px] theme-toolbar-subtitle ml-1.5 hidden sm:inline">A4 Portrait</span>
+                  </div>
                 </div>
-                <div>
-                  <span className="text-xs font-bold theme-toolbar-title">Preview Dokumen Cetak</span>
-                  <span className="text-[10px] theme-toolbar-subtitle ml-2 hidden sm:inline">Standar A4 Portrait</span>
-                </div>
-              </div>
 
-              {/* Zoom & Action Controls */}
-              <div className="flex items-center gap-2">
-                <div className="hidden sm:flex items-center gap-1 theme-zoom-box p-1 rounded-xl border">
+                {/* Mobile & Desktop Zoom Controls */}
+                <div className="flex items-center gap-0.5 sm:gap-1 theme-zoom-box p-0.5 sm:p-1 rounded-xl border shrink-0">
                   <button
                     type="button"
-                    onClick={() => setZoomLevel((prev) => Math.max(60, prev - 10))}
-                    className="p-1 rounded-lg theme-zoom-btn hover:scale-105 transition-all cursor-pointer"
+                    onClick={() => setZoomLevel((prev) => Math.max(30, prev - 10))}
+                    className="p-1 rounded-lg theme-zoom-btn hover:scale-105 active:scale-95 transition-all cursor-pointer"
                     title="Zoom Out"
                   >
                     <ZoomOut className="w-3.5 h-3.5" />
                   </button>
-                  <span className="text-[11px] font-mono px-2 theme-zoom-val select-none">
+                  <span className="text-[10px] sm:text-[11px] font-mono px-1 sm:px-2 theme-zoom-val select-none">
                     {zoomLevel}%
                   </span>
                   <button
                     type="button"
                     onClick={() => setZoomLevel((prev) => Math.min(130, prev + 10))}
-                    className="p-1 rounded-lg theme-zoom-btn hover:scale-105 transition-all cursor-pointer"
+                    className="p-1 rounded-lg theme-zoom-btn hover:scale-105 active:scale-95 transition-all cursor-pointer"
                     title="Zoom In"
                   >
                     <ZoomIn className="w-3.5 h-3.5" />
@@ -679,15 +686,18 @@ export const App: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setZoomLevel(100)}
-                    className="p-1 rounded-lg theme-zoom-btn hover:scale-105 transition-all cursor-pointer ml-0.5"
-                    title="Reset Zoom"
+                    className="p-1 rounded-lg theme-zoom-btn hover:scale-105 active:scale-95 transition-all cursor-pointer ml-0.5"
+                    title="Reset Zoom (100%)"
                   >
                     <RotateCcw className="w-3 h-3" />
                   </button>
                 </div>
+              </div>
 
+              {/* Row 2 on mobile: 3-column action buttons (Download, Cetak, WhatsApp) */}
+              <div className="grid grid-cols-3 gap-1.5 w-full md:w-auto md:flex md:items-center md:gap-2">
                 {/* Unified Action 1: Download PDF */}
-                <div className="relative toolbar-dropdown-container">
+                <div className="relative toolbar-dropdown-container w-full md:w-auto">
                   <button
                     type="button"
                     onClick={() => {
@@ -697,16 +707,16 @@ export const App: React.FC = () => {
                         handleDownloadPdf();
                       }
                     }}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer active:scale-95 border theme-btn-download ${
+                    className={`w-full md:w-auto justify-center flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer active:scale-95 border theme-btn-download ${
                       activeDropdown === 'download' ? 'theme-btn-download-active ring-2 ring-amber-400/40' : ''
                     }`}
                     title={documents.length > 1 ? 'Pilihan unduh PDF (Tab ini atau Semua)' : 'Unduh berkas PDF'}
                   >
-                    <Download className="w-3.5 h-3.5 theme-btn-download-icon" />
-                    <span>Download PDF</span>
+                    <Download className="w-3.5 h-3.5 shrink-0 theme-btn-download-icon" />
+                    <span className="truncate">Download</span>
                     {documents.length > 1 && (
                       <ChevronDown
-                        className={`w-3.5 h-3.5 opacity-70 transition-transform duration-200 ${
+                        className={`w-3.5 h-3.5 shrink-0 opacity-70 transition-transform duration-200 ${
                           activeDropdown === 'download' ? 'rotate-180' : ''
                         }`}
                       />
@@ -715,7 +725,7 @@ export const App: React.FC = () => {
 
                   {/* Dropdown Menu */}
                   {activeDropdown === 'download' && documents.length > 1 && (
-                    <div className="absolute right-0 top-full mt-2 w-72 theme-toolbar-dropdown backdrop-blur-xl border rounded-2xl p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="absolute left-0 md:left-auto md:right-0 top-full mt-2 w-72 max-w-[calc(100vw-32px)] theme-toolbar-dropdown backdrop-blur-xl border rounded-2xl p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
                       <div className="px-3 py-1.5 text-[10px] uppercase font-bold tracking-wider theme-dropdown-header border-b mb-1">
                         Pilihan Unduh PDF
                       </div>
@@ -769,7 +779,7 @@ export const App: React.FC = () => {
                 </div>
 
                 {/* Unified Action 2: Cetak */}
-                <div className="relative toolbar-dropdown-container">
+                <div className="relative toolbar-dropdown-container w-full md:w-auto">
                   <button
                     type="button"
                     onClick={() => {
@@ -779,16 +789,16 @@ export const App: React.FC = () => {
                         handlePrintPdf();
                       }
                     }}
-                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm border theme-btn-print ${
+                    className={`w-full md:w-auto justify-center flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-sm border theme-btn-print ${
                       activeDropdown === 'print' ? 'ring-2 ring-amber-400/40 shadow-md' : ''
                     }`}
                     title={documents.length > 1 ? 'Pilihan cetak dokumen (Tab ini atau Semua)' : 'Cetak surat jalan'}
                   >
-                    <Printer className="w-3.5 h-3.5 theme-btn-print-icon" />
+                    <Printer className="w-3.5 h-3.5 shrink-0 theme-btn-print-icon" />
                     <span>Cetak</span>
                     {documents.length > 1 && (
                       <ChevronDown
-                        className={`w-3.5 h-3.5 opacity-70 transition-transform duration-200 ${
+                        className={`w-3.5 h-3.5 shrink-0 opacity-70 transition-transform duration-200 ${
                           activeDropdown === 'print' ? 'rotate-180' : ''
                         }`}
                       />
@@ -797,7 +807,7 @@ export const App: React.FC = () => {
 
                   {/* Dropdown Menu */}
                   {activeDropdown === 'print' && documents.length > 1 && (
-                    <div className="absolute right-0 top-full mt-2 w-72 theme-toolbar-dropdown backdrop-blur-xl border rounded-2xl p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="absolute left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-0 top-full mt-2 w-72 max-w-[calc(100vw-32px)] theme-toolbar-dropdown backdrop-blur-xl border rounded-2xl p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
                       <div className="px-3 py-1.5 text-[10px] uppercase font-bold tracking-wider theme-dropdown-header border-b mb-1">
                         Pilihan Cetak Dokumen
                       </div>
@@ -850,7 +860,7 @@ export const App: React.FC = () => {
                 </div>
 
                 {/* Unified Action 3: WhatsApp Action */}
-                <div className="relative toolbar-dropdown-container">
+                <div className="relative toolbar-dropdown-container w-full md:w-auto">
                   <button
                     type="button"
                     onClick={() => {
@@ -860,16 +870,16 @@ export const App: React.FC = () => {
                         handleSendSingleDocPdfWhatsApp();
                       }
                     }}
-                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-white transition-all cursor-pointer active:scale-95 shadow-sm border theme-btn-wa ${
+                    className={`w-full md:w-auto justify-center flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3.5 py-1.5 rounded-xl text-xs font-bold text-white transition-all cursor-pointer active:scale-95 shadow-sm border theme-btn-wa ${
                       activeDropdown === 'whatsapp' ? 'ring-2 ring-emerald-400/40' : ''
                     }`}
                     title={documents.length > 1 ? 'Kirim PDF ke WhatsApp (Tab ini atau Semua)' : 'Kirim berkas PDF ke WhatsApp'}
                   >
-                    <MessageSquare className="w-3.5 h-3.5" />
-                    <span>Kirim ke WA</span>
+                    <MessageSquare className="w-3.5 h-3.5 shrink-0" />
+                    <span className="truncate">Kirim WA</span>
                     {documents.length > 1 && (
                       <ChevronDown
-                        className={`w-3.5 h-3.5 opacity-70 transition-transform duration-200 ${
+                        className={`w-3.5 h-3.5 shrink-0 opacity-70 transition-transform duration-200 ${
                           activeDropdown === 'whatsapp' ? 'rotate-180' : ''
                         }`}
                       />
@@ -878,7 +888,7 @@ export const App: React.FC = () => {
 
                   {/* Dropdown Menu */}
                   {activeDropdown === 'whatsapp' && documents.length > 1 && (
-                    <div className="absolute right-0 top-full mt-2 w-80 theme-toolbar-dropdown backdrop-blur-xl border rounded-2xl p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="absolute right-0 top-full mt-2 w-80 max-w-[calc(100vw-32px)] theme-toolbar-dropdown backdrop-blur-xl border rounded-2xl p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
                       <div className="px-3 py-1.5 text-[10px] uppercase font-bold tracking-wider border-b theme-dropdown-header theme-dropdown-wa-header mb-1 flex items-center justify-between">
                         <span>Kirim PDF ke WhatsApp</span>
                         <span className="text-[10px] font-mono opacity-60">{currentDoc.phoneNo || 'Kontak'}</span>
@@ -935,16 +945,27 @@ export const App: React.FC = () => {
             </div>
 
             {/* Document Paper Container with Zoom Transform */}
-            <div className="preview-scroll-container overflow-x-auto w-full flex justify-center py-3 flex-1 scrollbar-thin scrollbar-thumb-[#4a2e63]">
+            <div className="preview-scroll-container overflow-x-auto w-full flex justify-center py-3 flex-1 scrollbar-thin">
               <div
-                className={`preview-zoom-wrapper ${isPrintingAll ? 'no-print' : ''}`}
+                className={`preview-zoom-wrapper shrink-0 ${isPrintingAll ? 'no-print' : ''}`}
                 style={{
-                  transform: `scale(${zoomLevel / 100})`,
-                  transformOrigin: 'top center',
-                  transition: 'transform 0.15s ease-out',
+                  width: `${(210 * zoomLevel) / 100}mm`,
+                  minHeight: `${(297 * zoomLevel) / 100}mm`,
+                  position: 'relative',
+                  transition: 'width 0.15s ease-out, min-height 0.15s ease-out',
                 }}
               >
-                <SuratJalanPreview data={currentDoc} documentRef={documentRef} />
+                <div
+                  style={{
+                    transform: `scale(${zoomLevel / 100})`,
+                    transformOrigin: 'top left',
+                    width: '210mm',
+                    minHeight: '297mm',
+                    transition: 'transform 0.15s ease-out',
+                  }}
+                >
+                  <SuratJalanPreview data={currentDoc} documentRef={documentRef} />
+                </div>
               </div>
             </div>
           </div>

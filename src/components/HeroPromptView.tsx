@@ -150,7 +150,7 @@ Npct
         </div>
 
         {/* ULTRA-LIQUID EXPANSIVE PROMPT FORM CARD (Delicate Thin Hairline Border) */}
-        <div className="relative z-10 rounded-[36px] sm:rounded-[44px] md:rounded-[48px] p-6 sm:p-9 md:p-12 lg:p-14 liquid-hero-glass overflow-hidden transition-all duration-300">
+        <div className="relative z-10 rounded-[28px] sm:rounded-[44px] md:rounded-[48px] p-4 sm:p-8 md:p-12 lg:p-14 liquid-hero-glass overflow-hidden transition-all duration-300">
           {/* Specular Prism Reflection Overlays (Thin 0.5px Top Highlight) */}
           <div className="absolute inset-x-16 top-0 h-[0.5px] bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none" />
           <div className="absolute -top-36 -left-36 w-80 h-80 bg-gradient-to-br from-white/15 via-[#d8b4fe]/10 to-transparent rounded-full blur-3xl pointer-events-none" />
@@ -181,14 +181,14 @@ Npct
             />
 
             {/* Bottom Controls Bar Inside Prompt Form */}
-            <div className="flex flex-wrap items-center justify-between gap-4 pt-4 sm:pt-6 border-t border-white/[0.06]">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 sm:pt-6 border-t border-white/[0.06]">
               {/* LEFT BOTTOM CORNER: LIQUID PARAPHRASE BUTTON */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center">
                 <button
                   type="button"
                   onClick={handleParaphrase}
                   disabled={isParaphrasing || !prompt.trim()}
-                  className="flex items-center gap-2.5 px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-sm sm:text-base font-bold text-[#faedd9] liquid-glass-pill hover:scale-105 active:scale-95 transition-all disabled:opacity-40 cursor-pointer shadow-md"
+                  className="w-full sm:w-auto justify-center flex items-center gap-2.5 px-4 sm:px-6 py-2.5 sm:py-3.5 rounded-2xl text-xs sm:text-base font-bold text-[#faedd9] liquid-glass-pill hover:scale-105 active:scale-95 transition-all disabled:opacity-40 cursor-pointer shadow-md"
                   title="Rapikan kalimat instruksi secara otomatis dengan AI"
                 >
                   {isParaphrasing ? (
@@ -206,11 +206,11 @@ Npct
               </div>
 
               {/* RIGHT BOTTOM CORNER: VOICE, CLEAR & EXPANSIVE SUBMIT BUTTON */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <button
                   type="button"
                   onClick={toggleListening}
-                  className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center transition-all cursor-pointer liquid-glass-pill ${
+                  className={`w-11 h-11 sm:w-14 sm:h-14 shrink-0 rounded-2xl flex items-center justify-center transition-all cursor-pointer liquid-glass-pill ${
                     isListening
                       ? '!bg-[#f472b6] text-white animate-bounce shadow-lg shadow-pink-500/40 border-pink-400'
                       : isTranscribing
@@ -238,20 +238,20 @@ Npct
                   <button
                     type="button"
                     onClick={() => setPrompt('')}
-                    className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center liquid-glass-pill text-[#c4b5fd]/70 hover:text-white hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                    className="w-11 h-11 sm:w-14 sm:h-14 shrink-0 rounded-2xl flex items-center justify-center liquid-glass-pill text-[#c4b5fd]/70 hover:text-white hover:scale-105 active:scale-95 transition-all cursor-pointer"
                     title="Hapus Teks"
                   >
-                    <RotateCcw className="w-5 h-5" />
+                    <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                 )}
 
                 <button
                   type="submit"
                   disabled={!prompt.trim()}
-                  className="flex items-center gap-3 px-8 sm:px-10 md:px-12 py-3.5 sm:py-4 md:py-4.5 rounded-2xl text-base sm:text-lg font-black transition-all cursor-pointer group shadow-lg active:scale-95 disabled:opacity-40 theme-btn-primary"
+                  className="flex-1 sm:flex-none justify-center flex items-center gap-2 sm:gap-3 px-5 sm:px-10 md:px-12 py-3 sm:py-4 md:py-4.5 rounded-2xl text-sm sm:text-lg font-black transition-all cursor-pointer group shadow-lg active:scale-95 disabled:opacity-40 theme-btn-primary"
                 >
-                  <span>Buat Surat Jalan</span>
-                  <ArrowRight className="w-5 h-5 opacity-90 group-hover:translate-x-1.5 transition-transform" />
+                  <span className="whitespace-nowrap">Buat Surat Jalan</span>
+                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 opacity-90 group-hover:translate-x-1.5 transition-transform shrink-0" />
                 </button>
               </div>
             </div>
