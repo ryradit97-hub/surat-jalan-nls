@@ -8,6 +8,7 @@ import { AIPromptEditor } from './components/AIPromptEditor';
 import { HeroPromptView } from './components/HeroPromptView';
 import { AILoadingOverlay } from './components/AILoadingOverlay';
 import { SuratJalanPreview } from './components/SuratJalanPreview';
+import { MagnifierLens } from './components/MagnifierLens';
 import { BatchImportModal } from './components/BatchImportModal';
 import { PresetsModal } from './components/PresetsModal';
 import { SuccessCelebrationModal } from './components/SuccessCelebrationModal';
@@ -17,7 +18,7 @@ import { extractMultipleSuratJalanWithAI, applyAIExtractionToDocument } from './
 import html2canvas from 'html2canvas-pro';
 import { jsPDF } from 'jspdf';
 import * as XLSX from 'xlsx';
-import { Printer, Download, Eye, Sparkles, Sliders, ZoomIn, ZoomOut, RotateCcw, ArrowLeft, Layers, MessageSquare, X, ChevronDown, Check } from 'lucide-react';
+import { Printer, Download, Eye, Sparkles, Sliders, ZoomIn, ZoomOut, RotateCcw, ArrowLeft, Layers, MessageSquare, X, ChevronDown, Check, Search } from 'lucide-react';
 
 export const App: React.FC = () => {
   // First window is fully prompt form ('hero-prompt' | 'studio')
@@ -98,6 +99,7 @@ export const App: React.FC = () => {
     return 100;
   });
   const [activeDropdown, setActiveDropdown] = useState<'download' | 'print' | 'whatsapp' | null>(null);
+  const [isMagnifierActive, setIsMagnifierActive] = useState<boolean>(false);
 
   // Theme Switcher State ('venus' | 'earth-cream' | 'sea-nls' | 'white-moon')
   const [theme, setTheme] = useState<AppTheme>(() => {
@@ -749,6 +751,22 @@ export const App: React.FC = () => {
                   >
                     <RotateCcw className="w-3 h-3" />
                   </button>
+
+                  <div className="h-3 w-[1px] bg-stone-400/30 mx-0.5" />
+
+                  {/* Kaca Pembesar / Magnifier Lens Toggle Button */}
+                  <button
+                    type="button"
+                    onClick={() => setIsMagnifierActive((prev) => !prev)}
+                    className={`p-1 rounded-lg transition-all cursor-pointer flex items-center gap-1 ${
+                      isMagnifierActive
+                        ? 'bg-amber-400 text-stone-900 font-bold shadow-sm ring-2 ring-amber-400/50'
+                        : 'theme-zoom-btn hover:scale-105 active:scale-95'
+                    }`}
+                    title={isMagnifierActive ? 'Matikan Kaca Pembesar' : 'Aktifkan Kaca Pembesar (Magnifier)'}
+                  >
+                    <Search className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               </div>
 
@@ -1019,12 +1037,14 @@ export const App: React.FC = () => {
             >
               <div className="w-fit min-w-full min-h-full flex justify-center items-start p-2 sm:p-5">
                 <div
+                  onDoubleClick={() => setZoomLevel((prev) => (prev <= 60 ? 100 : 42))}
                   className={`preview-zoom-wrapper shrink-0 transition-all duration-150 ${isPrintingAll ? 'no-print' : ''}`}
                   style={{
                     width: `${(210 * zoomLevel) / 100}mm`,
                     height: `${(docHeight * zoomLevel) / 100}px`,
                     position: 'relative',
                   }}
+                  title="Double click / double tap untuk zoom cepat (100% / Fit)"
                 >
                   <div
                     style={{
@@ -1041,6 +1061,16 @@ export const App: React.FC = () => {
                 </div>
               </div>
             </div>
+
+            {/* Interactive Magnifier Lens */}
+            <MagnifierLens
+              isActive={isMagnifierActive}
+              targetRef={documentRef}
+              containerRef={scrollContainerRef}
+              zoomLevel={zoomLevel}
+              data={currentDoc}
+              onClose={() => setIsMagnifierActive(false)}
+            />
           </div>
         </main>
       )}
