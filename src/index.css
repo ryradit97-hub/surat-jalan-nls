@@ -3,6 +3,10 @@
 @layer base {
   :root {
     --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+    --duration-snappy: 140ms;
+    --duration-smooth: 200ms;
     --bg-base: #181022;
     --bg-surface: #231730;
     --bg-card: #2c1e3d;
@@ -21,7 +25,22 @@
     color: #faf5ee;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.25s var(--ease-out), color 0.25s var(--ease-out);
+  }
+
+  /* Tactile Design Engineering Resets (Emil Kowalski) */
+  button, a {
+    transition: transform 140ms var(--ease-out), background-color 140ms var(--ease-out), border-color 140ms var(--ease-out), color 140ms var(--ease-out), box-shadow 140ms var(--ease-out);
+    user-select: none;
+  }
+
+  button:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--app-accent, #d8b4fe);
+    outline-offset: 2px;
   }
 }
 
@@ -31,6 +50,7 @@
 
 /* Default / Venus Theme Base Variables */
 :root, [data-theme="venus"], [data-theme="yoga-purple"] {
+  color-scheme: dark;
   --app-bg: #181022;
   --app-nav-strip: #100a17;
   --app-nav-bar: #1e132b;
@@ -55,6 +75,7 @@
 
 /* Earth Theme (Warm Sand, Cream & Linen) */
 [data-theme="earth-cream"] {
+  color-scheme: light;
   --app-bg: #f7f3eb;
   --app-nav-strip: #ebdcca;
   --app-nav-bar: #faf5ed;
@@ -79,6 +100,7 @@
 
 /* Sea Theme (Official NLS Logo Colors: Navy Blue & Ocean Azure Cyan) */
 [data-theme="sea-nls"] {
+  color-scheme: dark;
   --app-bg: #06152b;
   --app-nav-strip: #030d1c;
   --app-nav-bar: #081d38;
@@ -103,6 +125,7 @@
 
 /* White Moon Theme (Minimalist Porcelain White & Jet Black Accents) */
 [data-theme="white-moon"] {
+  color-scheme: light;
   --app-bg: #f8f9fa;
   --app-nav-strip: #e9ecef;
   --app-nav-bar: #ffffff;
@@ -437,6 +460,36 @@
 [data-theme="earth-cream"] .theme-workflow-btn-inactive:hover {
   color: #261d15 !important;
   background-color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Earth Theme High-Contrast Preset Chips */
+[data-theme="earth-cream"] .theme-chip-active {
+  background-color: #2b2118 !important;
+  color: #ffffff !important;
+  border-color: #2b2118 !important;
+  font-weight: 700 !important;
+  box-shadow: 0 1px 3px rgba(43, 33, 24, 0.15) !important;
+}
+[data-theme="earth-cream"] .theme-chip-inactive {
+  background-color: #ede4d8 !important;
+  color: #3b2816 !important;
+  border-color: rgba(138, 103, 71, 0.28) !important;
+  font-weight: 600 !important;
+}
+[data-theme="earth-cream"] .theme-chip-inactive:hover {
+  background-color: #e2d5c3 !important;
+  color: #1a0f07 !important;
+  border-color: #b87333 !important;
+}
+[data-theme="earth-cream"] .theme-chip-danger {
+  background-color: #fee2e2 !important;
+  color: #991b1b !important;
+  border-color: #f87171 !important;
+  font-weight: 600 !important;
+}
+[data-theme="earth-cream"] .theme-chip-danger:hover {
+  background-color: #fecaca !important;
+  color: #7f1d1d !important;
 }
 
 [data-theme="earth-cream"] .liquid-glass,
@@ -801,6 +854,67 @@
   color: #001f3f !important;
 }
 
+/* Sea NLS Theme Studio Controls & Mode Switcher */
+[data-theme="sea-nls"] .theme-btn-back {
+  background-color: rgba(12, 39, 75, 0.85) !important;
+  color: #e0f2fe !important;
+  border-color: rgba(0, 163, 224, 0.35) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+  font-weight: 600 !important;
+}
+[data-theme="sea-nls"] .theme-btn-back:hover {
+  background-color: rgba(16, 50, 95, 0.95) !important;
+  color: #ffffff !important;
+  border-color: #00A3E0 !important;
+}
+[data-theme="sea-nls"] .theme-workflow-bar {
+  background-color: rgba(5, 20, 38, 0.95) !important;
+  border-color: rgba(0, 163, 224, 0.28) !important;
+}
+[data-theme="sea-nls"] .theme-workflow-btn-active {
+  background-color: #00A3E0 !important;
+  color: #002447 !important;
+  font-weight: 800 !important;
+  box-shadow: 0 2px 8px rgba(0, 163, 224, 0.35) !important;
+}
+[data-theme="sea-nls"] .theme-workflow-btn-inactive {
+  color: #7dd3fc !important;
+  font-weight: 600 !important;
+}
+[data-theme="sea-nls"] .theme-workflow-btn-inactive:hover {
+  color: #ffffff !important;
+  background-color: rgba(0, 163, 224, 0.15) !important;
+}
+
+/* Sea NLS Theme Chips */
+[data-theme="sea-nls"] .theme-chip-active {
+  background-color: #00A3E0 !important;
+  color: #002447 !important;
+  border-color: #00A3E0 !important;
+  font-weight: 700 !important;
+  box-shadow: 0 1px 3px rgba(0, 163, 224, 0.3) !important;
+}
+[data-theme="sea-nls"] .theme-chip-inactive {
+  background-color: rgba(12, 39, 75, 0.75) !important;
+  color: #bae6fd !important;
+  border-color: rgba(0, 163, 224, 0.25) !important;
+  font-weight: 600 !important;
+}
+[data-theme="sea-nls"] .theme-chip-inactive:hover {
+  background-color: rgba(16, 50, 95, 0.9) !important;
+  color: #ffffff !important;
+  border-color: #00A3E0 !important;
+}
+[data-theme="sea-nls"] .theme-chip-danger {
+  background-color: rgba(239, 68, 68, 0.18) !important;
+  color: #fca5a5 !important;
+  border-color: rgba(239, 68, 68, 0.35) !important;
+}
+[data-theme="sea-nls"] .theme-chip-danger:hover {
+  background-color: rgba(239, 68, 68, 0.28) !important;
+  color: #ffffff !important;
+}
+
 /* Sea Theme Toolbar & Action Buttons */
 [data-theme="sea-nls"] .theme-preview-container {
   background: rgba(8, 29, 56, 0.95) !important;
@@ -1119,6 +1233,36 @@
   background-color: rgba(255, 255, 255, 0.8) !important;
 }
 
+/* White Moon High-Contrast Preset Chips */
+[data-theme="white-moon"] .theme-chip-active {
+  background-color: #0a0a0a !important;
+  color: #ffffff !important;
+  border-color: #0a0a0a !important;
+  font-weight: 700 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12) !important;
+}
+[data-theme="white-moon"] .theme-chip-inactive {
+  background-color: #f1f3f5 !important;
+  color: #1f2937 !important;
+  border-color: #d1d5db !important;
+  font-weight: 600 !important;
+}
+[data-theme="white-moon"] .theme-chip-inactive:hover {
+  background-color: #e5e7eb !important;
+  color: #0a0a0a !important;
+  border-color: #0a0a0a !important;
+}
+[data-theme="white-moon"] .theme-chip-danger {
+  background-color: #fee2e2 !important;
+  color: #991b1b !important;
+  border-color: #f87171 !important;
+  font-weight: 600 !important;
+}
+[data-theme="white-moon"] .theme-chip-danger:hover {
+  background-color: #fecaca !important;
+  color: #7f1d1d !important;
+}
+
 [data-theme="white-moon"] .theme-text-light {
   color: #0a0a0a !important;
 }
@@ -1390,6 +1534,90 @@
   background-color: rgba(255, 255, 255, 0.06);
 }
 
+/* Base / Venus Theme Primary Button & Studio Controls */
+.theme-btn-primary,
+[data-theme="venus"] .theme-btn-primary {
+  background-color: #faedd9 !important;
+  color: #181022 !important;
+  border: 1px solid rgba(250, 237, 217, 0.4) !important;
+  box-shadow: 0 4px 14px rgba(250, 237, 217, 0.25) !important;
+  font-weight: 700 !important;
+}
+.theme-btn-primary:hover,
+[data-theme="venus"] .theme-btn-primary:hover {
+  background-color: #fffdfa !important;
+  box-shadow: 0 6px 20px rgba(250, 237, 217, 0.35) !important;
+}
+.theme-btn-back,
+[data-theme="venus"] .theme-btn-back {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #faedd9 !important;
+  border-color: rgba(250, 237, 217, 0.2) !important;
+  font-weight: 600 !important;
+}
+.theme-btn-back:hover,
+[data-theme="venus"] .theme-btn-back:hover {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+  border-color: rgba(250, 237, 217, 0.35) !important;
+}
+.theme-workflow-bar,
+[data-theme="venus"] .theme-workflow-bar {
+  background-color: rgba(20, 12, 28, 0.8) !important;
+  border-color: rgba(250, 237, 217, 0.15) !important;
+}
+.theme-workflow-btn-active,
+[data-theme="venus"] .theme-workflow-btn-active {
+  background-color: #faedd9 !important;
+  color: #181022 !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+}
+.theme-workflow-btn-inactive,
+[data-theme="venus"] .theme-workflow-btn-inactive {
+  color: rgba(250, 237, 217, 0.75) !important;
+  font-weight: 600 !important;
+}
+.theme-workflow-btn-inactive:hover,
+[data-theme="venus"] .theme-workflow-btn-inactive:hover {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Base / Venus Theme Chips */
+.theme-chip-active,
+[data-theme="venus"] .theme-chip-active {
+  background-color: #faedd9 !important;
+  color: #181022 !important;
+  border-color: #faedd9 !important;
+  font-weight: 700 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+}
+.theme-chip-inactive,
+[data-theme="venus"] .theme-chip-inactive {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  color: #faedd9 !important;
+  border-color: rgba(250, 237, 217, 0.18) !important;
+  font-weight: 500 !important;
+}
+.theme-chip-inactive:hover,
+[data-theme="venus"] .theme-chip-inactive:hover {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+  border-color: rgba(250, 237, 217, 0.35) !important;
+}
+.theme-chip-danger,
+[data-theme="venus"] .theme-chip-danger {
+  background-color: rgba(239, 68, 68, 0.15) !important;
+  color: #fca5a5 !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+}
+.theme-chip-danger:hover,
+[data-theme="venus"] .theme-chip-danger:hover {
+  background-color: rgba(239, 68, 68, 0.25) !important;
+  color: #ffffff !important;
+}
+
 /* Default / Venus Theme Toolbar & Action Buttons */
 .theme-preview-container {
   background: rgba(33, 20, 46, 0.92);
@@ -1416,14 +1644,15 @@
   color: #faedd9;
 }
 .theme-btn-download {
-  background: rgba(250, 237, 217, 0.08);
-  border-color: rgba(250, 237, 217, 0.18);
+  background: rgba(250, 237, 217, 0.12);
+  border: 1px solid rgba(250, 237, 217, 0.28);
   color: #faedd9;
+  font-weight: 700;
 }
 .theme-btn-download:hover, .theme-btn-download-active {
-  background: rgba(250, 237, 217, 0.18);
+  background: rgba(250, 237, 217, 0.22);
   color: #ffffff;
-  border-color: rgba(250, 237, 217, 0.35);
+  border-color: rgba(250, 237, 217, 0.5);
 }
 .theme-btn-download-icon {
   color: #faedd9;

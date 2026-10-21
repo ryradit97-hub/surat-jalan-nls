@@ -270,7 +270,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
           <div className="relative flex items-center gap-2">
             <input
               type="date"
-              className="w-full liquid-input px-3 py-2 rounded-xl text-xs font-semibold text-[#fffdfa] cursor-pointer [color-scheme:dark]"
+              className="w-full liquid-input px-3 py-2 rounded-xl text-xs font-semibold text-[#fffdfa] cursor-pointer"
               value={toISODate(data.deliveryDate)}
               onChange={(e) => handleDateChange('deliveryDate', e.target.value)}
             />
@@ -375,10 +375,10 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                           key={desc}
                           type="button"
                           onClick={() => handleItemChange(index, 'description', desc)}
-                          className={`text-[9.5px] px-2 py-0.5 rounded-lg border transition-all cursor-pointer flex items-center gap-1 ${
+                          className={`text-[9.5px] px-2.5 py-1 rounded-lg border transition-all cursor-pointer flex items-center gap-1 active:scale-95 ${
                             isSelected
-                              ? 'bg-[#faedd9] text-[#1f132b] border-[#faedd9] font-bold shadow-sm'
-                              : 'bg-[#faedd9]/8 hover:bg-[#faedd9]/15 text-[#faedd9]/80 border-[#faedd9]/15'
+                              ? 'theme-chip-active'
+                              : 'theme-chip-inactive'
                           }`}
                         >
                           {isSelected && <Check className="w-2.5 h-2.5" />}
@@ -409,7 +409,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                         <button
                           type="button"
                           onClick={() => handleItemChange(index, 'remarks', '')}
-                          className="text-[9.5px] text-red-300 hover:text-red-200 underline cursor-pointer"
+                          className="text-[9.5px] font-semibold text-rose-400 hover:text-rose-300 underline cursor-pointer"
                         >
                           Kosongkan
                         </button>
@@ -427,10 +427,10 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                           key={preset}
                           type="button"
                           onClick={() => handleItemChange(index, 'remarks', isSelected ? '' : preset)}
-                          className={`text-[9.5px] px-2 py-0.5 rounded-lg border transition-all cursor-pointer flex items-center gap-1 ${
+                          className={`text-[9.5px] px-2.5 py-1 rounded-lg border transition-all cursor-pointer flex items-center gap-1 active:scale-95 ${
                             isSelected
-                              ? 'bg-[#faedd9] text-[#1f132b] border-[#faedd9] font-bold shadow-sm'
-                              : 'bg-[#faedd9]/8 hover:bg-[#faedd9]/15 text-[#faedd9]/80 border-[#faedd9]/15'
+                              ? 'theme-chip-active'
+                              : 'theme-chip-inactive'
                           }`}
                         >
                           {isSelected && <Check className="w-2.5 h-2.5" />}
@@ -442,7 +442,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                       <button
                         type="button"
                         onClick={() => handleItemChange(index, 'remarks', '')}
-                        className="text-[9.5px] px-2 py-0.5 rounded-lg border border-red-400/30 bg-red-500/10 hover:bg-red-500/20 text-red-300 transition-all cursor-pointer flex items-center gap-1"
+                        className="text-[9.5px] px-2.5 py-1 rounded-lg border theme-chip-danger transition-all cursor-pointer flex items-center gap-1 active:scale-95"
                         title="Kosongkan Remarks"
                       >
                         <span>Kosongkan</span>
@@ -505,7 +505,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                       <button
                         type="button"
                         onClick={() => handleItemChange(index, 'containerSeal', '')}
-                        className="text-[9.5px] text-[#f472b6] hover:text-[#fb7185] hover:underline cursor-pointer"
+                        className="text-[9.5px] font-semibold text-rose-400 hover:text-rose-300 hover:underline cursor-pointer"
                         title="Kosongkan Container / Seal"
                       >
                         ✕ Kosongkan
@@ -666,7 +666,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                 <button
                   type="button"
                   onClick={() => handleTextChange('arrivedDate', '')}
-                  className="text-[9.5px] text-[#f472b6] hover:underline cursor-pointer"
+                  className="text-[9.5px] font-semibold text-rose-400 hover:text-rose-300 hover:underline cursor-pointer"
                   title="Hapus tanggal tiba"
                 >
                   Hapus
@@ -675,7 +675,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
             </div>
             <input
               type="date"
-              className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs text-[#fffdfa] cursor-pointer [color-scheme:dark]"
+              className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs text-[#fffdfa] cursor-pointer"
               value={toISODate(data.arrivedDate)}
               onChange={(e) => handleDateChange('arrivedDate', e.target.value)}
             />
@@ -690,7 +690,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                 <button
                   type="button"
                   onClick={() => handleTextChange('dischargeDate', '')}
-                  className="text-[9.5px] text-[#f472b6] hover:underline cursor-pointer"
+                  className="text-[9.5px] font-semibold text-rose-400 hover:text-rose-300 hover:underline cursor-pointer"
                   title="Hapus tanggal bongkar"
                 >
                   Hapus
@@ -699,7 +699,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
             </div>
             <input
               type="date"
-              className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs text-[#fffdfa] cursor-pointer [color-scheme:dark]"
+              className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs text-[#fffdfa] cursor-pointer"
               value={toISODate(data.dischargeDate)}
               onChange={(e) => handleDateChange('dischargeDate', e.target.value)}
             />

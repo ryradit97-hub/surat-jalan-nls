@@ -248,12 +248,12 @@ Npct
             type="button"
             onClick={handleParaphrase}
             disabled={isParaphrasing || !prompt.trim()}
-            className="flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-semibold text-[#faedd9] bg-[#faedd9]/10 hover:bg-[#faedd9]/20 border border-[#faedd9]/20 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+            className="flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-semibold border transition-all active:scale-95 disabled:opacity-50 cursor-pointer theme-btn-back"
             title="Rapikan kalimat instruksi"
           >
             {isParaphrasing ? (
               <>
-                <div className="w-3 h-3 border-2 border-[#faedd9]/30 border-t-[#faedd9] rounded-full animate-spin" />
+                <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
                 <span>Merapikan...</span>
               </>
             ) : (
@@ -268,11 +268,11 @@ Npct
             type="button"
             onClick={handleProcessPrompt}
             disabled={loading || !prompt.trim()}
-            className="flex-1 max-w-[200px] py-2 px-3 rounded-xl text-xs font-bold text-[#181022] bg-[#faedd9] hover:bg-[#fffdfa] transition-all active:scale-[0.98] flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-sm"
+            className="flex-1 max-w-[200px] py-2 px-3 rounded-xl text-xs font-bold transition-all active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-sm theme-btn-primary"
           >
             {loading ? (
               <>
-                <div className="w-3 h-3 border-2 border-[#181022]/30 border-t-[#181022] rounded-full animate-spin" />
+                <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
                 <span>Memproses...</span>
               </>
             ) : (
@@ -287,12 +287,12 @@ Npct
         {/* Studio Mini Progress Bar When Processing */}
         {loading && (
           <div className="mt-3 p-2.5 rounded-xl bg-white/[0.04] border border-white/10 animate-fade-in">
-            <div className="flex items-center justify-between text-[11px] mb-1.5 font-medium text-[#faedd9]">
+            <div className="flex items-center justify-between text-[11px] mb-1.5 font-medium theme-text-light">
               <span className="flex items-center gap-1.5">
                 <Sparkles className="w-3 h-3 text-[#d8b4fe] animate-spin-slow" />
                 <span>AI sedang menyusun data...</span>
               </span>
-              <span className="text-[10px] font-mono font-bold text-[#faedd9] animate-pulse">Memproses</span>
+              <span className="text-[10px] font-mono font-bold animate-pulse">Memproses</span>
             </div>
             <div className="h-1.5 w-full rounded-full bg-black/40 overflow-hidden relative">
               <div className="h-full rounded-full bg-gradient-to-r from-[#a855f7] via-[#f472b6] to-[#faedd9] w-full animate-shimmer-slide" />
@@ -302,7 +302,7 @@ Npct
 
         {/* Suggested Prompts */}
         <div className="mt-3.5 pt-3 border-t border-[#faedd9]/10">
-          <span className="text-[10px] font-semibold tracking-wider text-[#faedd9]/70 uppercase flex items-center gap-1 mb-1.5">
+          <span className="text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1 mb-1.5 theme-hero-sub">
             <MessageSquare className="w-3 h-3 text-[#d8b4fe]" />
             <span>Contoh Prompt Cepat:</span>
           </span>
@@ -313,9 +313,9 @@ Npct
                 key={idx}
                 type="button"
                 onClick={() => setPrompt(item.text)}
-                className="text-left p-2 rounded-xl bg-[#faedd9]/5 hover:bg-[#faedd9]/12 border border-[#faedd9]/8 transition-all text-[11px] group cursor-pointer"
+                className="text-left p-2 rounded-xl border transition-all text-[11px] group cursor-pointer theme-card active:scale-[0.98]"
               >
-                <span className="font-semibold text-[#fffdfa] group-hover:text-[#faedd9] block">
+                <span className="font-semibold block theme-text-light">
                   {item.title}
                 </span>
               </button>
