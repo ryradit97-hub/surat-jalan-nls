@@ -424,125 +424,142 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                 {/* Description of Goods */}
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <label className="text-[10.5px] font-bold tracking-wider uppercase flex items-center gap-1 theme-label">
-                      <Package className="w-3 h-3 text-[#d8b4fe]" />
-                      <span>Description of Goods (Nama Barang)</span>
+                    <label className="text-[10px] font-bold tracking-wider uppercase flex items-center gap-1.5 theme-label">
+                      <Package className="w-3.5 h-3.5 opacity-80" />
+                      <span>Nama Barang (Goods)</span>
                     </label>
+                    {item.description && (
+                      <button
+                        type="button"
+                        onClick={() => handleItemChange(index, 'description', '')}
+                        className="text-[9.5px] font-semibold text-stone-400 hover:text-rose-400 transition-colors cursor-pointer"
+                        title="Kosongkan nama barang"
+                      >
+                        ✕ Kosongkan
+                      </button>
+                    )}
                   </div>
 
-                  {/* Preset Badges for Goods */}
-                  <div className="flex flex-wrap gap-1">
+                  {/* Clean Direct Input */}
+                  <div className="relative">
+                    <input
+                      type="text"
+                      list={`goods-list-${index}`}
+                      className="w-full liquid-input px-3 py-2 rounded-xl text-xs font-semibold theme-text-main"
+                      value={item.description}
+                      onChange={(e) => handleItemChange(index, 'description', e.target.value)}
+                      placeholder="Ketik atau pilih nama barang..."
+                    />
+                    <datalist id={`goods-list-${index}`}>
+                      {defaultGoodsDescriptions.map((desc) => (
+                        <option key={desc} value={desc} />
+                      ))}
+                    </datalist>
+                  </div>
+
+                  {/* Compact Quick Preset Pills */}
+                  <div className="flex flex-wrap items-center gap-1 pt-0.5">
+                    <span className="text-[9px] font-bold uppercase tracking-wider opacity-60 theme-label mr-0.5">
+                      Pilihan:
+                    </span>
                     {defaultGoodsDescriptions.map((desc) => {
-                      const isSelected = item.description === desc;
+                      const isSelected = item.description.trim().toUpperCase() === desc.toUpperCase();
                       return (
                         <button
                           key={desc}
                           type="button"
                           onClick={() => handleItemChange(index, 'description', desc)}
-                          className={`text-[9.5px] px-2.5 py-1 rounded-lg border transition-all cursor-pointer flex items-center gap-1 active:scale-95 ${
+                          className={`text-[9.5px] px-2 py-0.5 rounded-md border transition-all cursor-pointer font-medium active:scale-95 ${
                             isSelected
-                              ? 'theme-chip-active'
-                              : 'theme-chip-inactive'
+                              ? 'theme-chip-active font-bold shadow-xs'
+                              : 'theme-chip-inactive opacity-85 hover:opacity-100 hover:border-current'
                           }`}
                         >
-                          {isSelected && <Check className="w-2.5 h-2.5" />}
+                          {isSelected && <Check className="w-2.5 h-2.5 inline mr-1 -mt-0.5" />}
                           <span>{desc}</span>
                         </button>
                       );
                     })}
                   </div>
-
-                  <input
-                    type="text"
-                    className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs font-semibold text-[#fffdfa]"
-                    value={item.description}
-                    onChange={(e) => handleItemChange(index, 'description', e.target.value)}
-                    placeholder="e.g. PLASTIC KITCHEN WARE"
-                  />
                 </div>
 
                 {/* Remarks */}
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <label className="text-[10.5px] font-bold tracking-wider uppercase flex items-center gap-1 theme-label">
-                      <FileText className="w-3 h-3 text-[#d8b4fe]" />
-                      <span>Remarks (Keterangan Kontainer)</span>
+                    <label className="text-[10px] font-bold tracking-wider uppercase flex items-center gap-1.5 theme-label">
+                      <FileText className="w-3.5 h-3.5 opacity-80" />
+                      <span>Remarks (Kontainer)</span>
                     </label>
-                    <div className="flex items-center gap-2">
-                      {item.remarks && (
-                        <button
-                          type="button"
-                          onClick={() => handleItemChange(index, 'remarks', '')}
-                          className="text-[9.5px] font-semibold text-rose-400 hover:text-rose-300 underline cursor-pointer"
-                        >
-                          Kosongkan
-                        </button>
-                      )}
-                      <span className="text-[9px] font-mono opacity-80 theme-label">Default: 1 X 40 HC</span>
-                    </div>
+                    {item.remarks && (
+                      <button
+                        type="button"
+                        onClick={() => handleItemChange(index, 'remarks', '')}
+                        className="text-[9.5px] font-semibold text-rose-400 hover:text-rose-300 transition-colors cursor-pointer"
+                        title="Kosongkan Remarks"
+                      >
+                        ✕ Kosongkan
+                      </button>
+                    )}
                   </div>
 
-                  {/* Preset Badges for Remarks */}
-                  <div className="flex flex-wrap gap-1">
+                  {/* Clean Direct Input */}
+                  <div className="relative">
+                    <input
+                      type="text"
+                      list={`remarks-list-${index}`}
+                      className="w-full liquid-input px-3 py-2 rounded-xl text-xs font-mono font-semibold theme-text-main"
+                      value={item.remarks ?? ''}
+                      onChange={(e) => handleItemChange(index, 'remarks', e.target.value)}
+                      placeholder="e.g. 1 X 40 HC (opsional / kosongkan jika LCL)"
+                    />
+                    <datalist id={`remarks-list-${index}`}>
+                      {['1 X 40 HC', '1 X 20 FT', '2 X 20 FT', '1 X 40 REEFER'].map((preset) => (
+                        <option key={preset} value={preset} />
+                      ))}
+                    </datalist>
+                  </div>
+
+                  {/* Compact Quick Preset Pills */}
+                  <div className="flex flex-wrap items-center gap-1 pt-0.5">
+                    <span className="text-[9px] font-bold uppercase tracking-wider opacity-60 theme-label mr-0.5">
+                      Pilihan:
+                    </span>
                     {['1 X 40 HC', '1 X 20 FT', '2 X 20 FT', '1 X 40 REEFER'].map((preset) => {
-                      const isSelected = item.remarks === preset;
+                      const isSelected = (item.remarks ?? '').trim().toUpperCase() === preset.toUpperCase();
                       return (
                         <button
                           key={preset}
                           type="button"
                           onClick={() => handleItemChange(index, 'remarks', isSelected ? '' : preset)}
-                          className={`text-[9.5px] px-2.5 py-1 rounded-lg border transition-all cursor-pointer flex items-center gap-1 active:scale-95 ${
+                          className={`text-[9.5px] px-2 py-0.5 rounded-md border font-mono transition-all cursor-pointer active:scale-95 ${
                             isSelected
-                              ? 'theme-chip-active'
-                              : 'theme-chip-inactive'
+                              ? 'theme-chip-active font-bold shadow-xs'
+                              : 'theme-chip-inactive opacity-85 hover:opacity-100 hover:border-current'
                           }`}
                         >
-                          {isSelected && <Check className="w-2.5 h-2.5" />}
+                          {isSelected && <Check className="w-2.5 h-2.5 inline mr-1 -mt-0.5" />}
                           <span>{preset}</span>
                         </button>
                       );
                     })}
-                    {item.remarks && (
-                      <button
-                        type="button"
-                        onClick={() => handleItemChange(index, 'remarks', '')}
-                        className="text-[9.5px] px-2.5 py-1 rounded-lg border theme-chip-danger transition-all cursor-pointer flex items-center gap-1 active:scale-95"
-                        title="Kosongkan Remarks"
-                      >
-                        <span>Kosongkan</span>
-                      </button>
-                    )}
                   </div>
-
-                  <input
-                    type="text"
-                    className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs font-mono font-semibold text-[#fffdfa]"
-                    value={item.remarks ?? ''}
-                    onChange={(e) => handleItemChange(index, 'remarks', e.target.value)}
-                    placeholder="Kosongkan jika tidak ada (e.g. 1 X 40 HC)"
-                  />
                 </div>
               </div>
 
               {/* Bottom Row: Weight, Package, Container/Seal */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-black/10 dark:border-white/10">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2.5 border-t border-black/10 dark:border-white/10">
                 {/* Gross Weight */}
                 <div>
                   <label className="block text-[10px] font-bold tracking-wider uppercase mb-1 theme-label">
                     Gross Weight
                   </label>
-                  <div className="relative flex items-center">
-                    <input
-                      type="text"
-                      className="w-full liquid-input px-3 py-1.5 pr-12 rounded-xl text-xs font-mono font-bold"
-                      value={item.weightKg}
-                      onChange={(e) => handleItemChange(index, 'weightKg', e.target.value)}
-                      placeholder="e.g. 8732,5"
-                    />
-                    <span className="absolute right-2.5 text-[10px] font-bold opacity-70 pointer-events-none theme-label">
-                      KGS
-                    </span>
-                  </div>
+                  <input
+                    type="text"
+                    className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs font-mono font-bold"
+                    value={item.weightKg}
+                    onChange={(e) => handleItemChange(index, 'weightKg', e.target.value)}
+                    placeholder="e.g. 22000 KGS atau 8732,5"
+                  />
                 </div>
 
                 {/* Package Qty */}
@@ -569,7 +586,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                       <button
                         type="button"
                         onClick={() => handleItemChange(index, 'containerSeal', '')}
-                        className="text-[9.5px] font-semibold text-rose-400 hover:text-rose-300 hover:underline cursor-pointer"
+                        className="text-[9.5px] font-semibold text-rose-400 hover:text-rose-300 transition-colors cursor-pointer"
                         title="Kosongkan Container / Seal"
                       >
                         ✕ Kosongkan
@@ -578,7 +595,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                   </div>
                   <input
                     type="text"
-                    className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs font-mono text-[#fffdfa]"
+                    className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs font-mono"
                     value={item.containerSeal}
                     onChange={(e) => handleItemChange(index, 'containerSeal', e.target.value)}
                     placeholder="Biarkan kosong jika belum ada"
