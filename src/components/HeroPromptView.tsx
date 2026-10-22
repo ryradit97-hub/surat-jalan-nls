@@ -9,6 +9,7 @@ import {
   Sliders,
   Check,
   Loader2,
+  HelpCircle,
 } from 'lucide-react';
 import { paraphraseLogisticsPrompt } from '../services/geminiService';
 import { HighlightedPromptTextarea } from './HighlightedPromptTextarea';
@@ -19,11 +20,13 @@ import nlsLogo from '../assets/nlslogo.png';
 interface HeroPromptViewProps {
   onSubmitPrompt: (promptText: string) => void;
   onGoToManual: () => void;
+  onOpenTutorial?: () => void;
 }
 
 export const HeroPromptView: React.FC<HeroPromptViewProps> = ({
   onSubmitPrompt,
   onGoToManual,
+  onOpenTutorial,
 }) => {
   const [prompt, setPrompt] = useState<string>(
     'Buatkan saya surat jalan untuk tanggal 18 Maret 2026 dengan delivery address ke Terminal Peti Kemas Koja (UTC3), dengan BL number SITR160334, PO number PO-2026/089, barang PLASTIC KITCHEN WARE, Weight 22000 KGS, Remarks 1 X 40 HC'
@@ -283,8 +286,8 @@ Npct
           </div>
         </div>
 
-        {/* BELOW THE PROMPT FORM: LINK TO MANUAL INSTEAD */}
-        <div className="mt-8 text-center relative z-10">
+        {/* BELOW THE PROMPT FORM: LINK TO MANUAL & PANDUAN */}
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3 relative z-10">
           <button
             type="button"
             onClick={onGoToManual}
@@ -296,6 +299,18 @@ Npct
               Buka Form Manual ➔
             </span>
           </button>
+
+          {onOpenTutorial && (
+            <button
+              type="button"
+              onClick={onOpenTutorial}
+              className="inline-flex items-center gap-2 px-5 py-3.5 rounded-2xl text-sm sm:text-base font-semibold border backdrop-blur-xl transition-all cursor-pointer group shadow-sm active:scale-95 theme-card"
+              title="Lihat Panduan Penggunaan Aplikasi"
+            >
+              <HelpCircle className="w-4 h-4 text-[#faedd9]" />
+              <span className="theme-text-light">Panduan Aplikasi</span>
+            </button>
+          )}
         </div>
       </div>
     </div>

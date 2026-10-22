@@ -13,6 +13,7 @@ import { BatchImportModal } from './components/BatchImportModal';
 import { PresetsModal } from './components/PresetsModal';
 import { SuccessCelebrationModal } from './components/SuccessCelebrationModal';
 import { RainModal } from './components/RainModal';
+import { TutorialOverlay } from './components/TutorialOverlay';
 import { openWhatsAppDirect } from './utils/whatsappHelper';
 import { extractMultipleSuratJalanWithAI, applyAIExtractionToDocument } from './services/geminiService';
 import html2canvas from 'html2canvas-pro';
@@ -35,6 +36,19 @@ export const App: React.FC = () => {
 
   // Rain Easter Egg Modal Dialogue State
   const [isRainModalOpen, setIsRainModalOpen] = useState<boolean>(false);
+
+  // Tutorial Overlay State (Shown automatically on first open)
+  const [isTutorialOpen, setIsTutorialOpen] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return localStorage.getItem('nls_has_seen_tutorial') !== 'true';
+  });
+
+  const handleCloseTutorial = (dontShowAgain?: boolean) => {
+    if (dontShowAgain) {
+      localStorage.setItem('nls_has_seen_tutorial', 'true');
+    }
+    setIsTutorialOpen(false);
+  };
 
   // Batch Export & Print All States
   const [isBatchExporting, setIsBatchExporting] = useState<boolean>(false);
@@ -628,6 +642,7 @@ export const App: React.FC = () => {
         onDeleteDocument={handleDeleteDocument}
         onResetDocument={handleResetCurrentDoc}
         onOpenPromptView={() => setViewState('hero-prompt')}
+        onOpenTutorial={() => setIsTutorialOpen(true)}
         isStudioView={viewState === 'studio'}
         currentTheme={theme}
         onSelectTheme={setTheme}
@@ -641,6 +656,7 @@ export const App: React.FC = () => {
             setViewState('studio');
             setWorkflowMode('manual');
           }}
+          onOpenTutorial={() => setIsTutorialOpen(true)}
         />
       ) : (
         /* VIEW STATE 2: STUDIO & PREVIEW WORKSPACE GRID */
@@ -1185,6 +1201,20 @@ export const App: React.FC = () => {
       <RainModal
         isOpen={isRainModalOpen}
         onClose={() => setIsRainModalOpen(false)}
+      />
+
+      {/* PANDUAN APLIKASI (TUTORIAL OVERLAY) */}
+      <TutorialOverlay
+        isOpen={isTutorialOpen}
+        onClose={handleCloseTutorial}
+        onGoToPrompt={() => {
+          setViewState('hero-prompt');
+        }}
+        onGoToManual={() => {
+          setViewState('studio');
+          setWorkflowMode('manual');
+        }}
+        currentScreen={viewState}
       />
     </div>
   );
