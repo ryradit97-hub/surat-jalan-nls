@@ -445,21 +445,28 @@
   border-color: #b87333 !important;
 }
 [data-theme="earth-cream"] .theme-workflow-bar {
-  background-color: #ede4d8 !important;
-  border-color: rgba(138, 103, 71, 0.25) !important;
+  background-color: rgba(224, 214, 201, 0.6) !important;
+  border-color: rgba(138, 103, 71, 0.22) !important;
+  box-shadow: inset 0 1px 2px rgba(74, 52, 32, 0.06) !important;
 }
 [data-theme="earth-cream"] .theme-workflow-btn-active {
-  background-color: #2b2118 !important;
-  color: #ffffff !important;
-  font-weight: 700 !important;
+  background-color: #ffffff !important;
+  color: #261d15 !important;
+  border: 1px solid rgba(138, 103, 71, 0.25) !important;
+  box-shadow: 0 1px 3px rgba(74, 52, 32, 0.12), 0 1px 1px rgba(0, 0, 0, 0.04) !important;
+  font-weight: 600 !important;
 }
 [data-theme="earth-cream"] .theme-workflow-btn-inactive {
   color: #6e553f !important;
-  font-weight: 600 !important;
+  font-weight: 500 !important;
+  border: 1px solid transparent !important;
 }
 [data-theme="earth-cream"] .theme-workflow-btn-inactive:hover {
   color: #261d15 !important;
-  background-color: rgba(255, 255, 255, 0.6) !important;
+  background-color: rgba(255, 255, 255, 0.5) !important;
+}
+[data-theme="earth-cream"] .theme-workflow-icon-active {
+  color: #b87333 !important;
 }
 
 /* Earth Theme High-Contrast Preset Chips */
@@ -906,22 +913,28 @@
   border-color: #00A3E0 !important;
 }
 [data-theme="sea-nls"] .theme-workflow-bar {
-  background-color: rgba(5, 20, 38, 0.95) !important;
-  border-color: rgba(0, 163, 224, 0.28) !important;
+  background-color: rgba(4, 18, 36, 0.85) !important;
+  border-color: rgba(0, 163, 224, 0.25) !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35) !important;
 }
 [data-theme="sea-nls"] .theme-workflow-btn-active {
-  background-color: #00A3E0 !important;
-  color: #002447 !important;
-  font-weight: 800 !important;
-  box-shadow: 0 2px 8px rgba(0, 163, 224, 0.35) !important;
+  background: linear-gradient(180deg, rgba(0, 163, 224, 0.26) 0%, rgba(0, 163, 224, 0.14) 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(0, 163, 224, 0.45) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  font-weight: 600 !important;
 }
 [data-theme="sea-nls"] .theme-workflow-btn-inactive {
-  color: #7dd3fc !important;
-  font-weight: 600 !important;
+  color: rgba(125, 211, 252, 0.7) !important;
+  font-weight: 500 !important;
+  border: 1px solid transparent !important;
 }
 [data-theme="sea-nls"] .theme-workflow-btn-inactive:hover {
   color: #ffffff !important;
-  background-color: rgba(0, 163, 224, 0.15) !important;
+  background-color: rgba(0, 163, 224, 0.1) !important;
+}
+[data-theme="sea-nls"] .theme-workflow-icon-active {
+  color: #38bdf8 !important;
 }
 
 /* Sea NLS Theme Chips */
@@ -1292,19 +1305,26 @@
 [data-theme="white-moon"] .theme-workflow-bar {
   background-color: #f1f3f5 !important;
   border-color: #e5e7eb !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04) !important;
 }
 [data-theme="white-moon"] .theme-workflow-btn-active {
-  background-color: #0a0a0a !important;
-  color: #ffffff !important;
-  font-weight: 800 !important;
+  background-color: #ffffff !important;
+  color: #0a0a0a !important;
+  border: 1px solid #d4d4d4 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 1px rgba(0, 0, 0, 0.04) !important;
+  font-weight: 600 !important;
 }
 [data-theme="white-moon"] .theme-workflow-btn-inactive {
   color: #525252 !important;
-  font-weight: 600 !important;
+  font-weight: 500 !important;
+  border: 1px solid transparent !important;
 }
 [data-theme="white-moon"] .theme-workflow-btn-inactive:hover {
   color: #0a0a0a !important;
-  background-color: rgba(255, 255, 255, 0.8) !important;
+  background-color: rgba(255, 255, 255, 0.6) !important;
+}
+[data-theme="white-moon"] .theme-workflow-icon-active {
+  color: #0a0a0a !important;
 }
 
 /* White Moon High-Contrast Preset Chips */
@@ -1675,25 +1695,32 @@
 }
 .theme-workflow-bar,
 [data-theme="venus"] .theme-workflow-bar {
-  background-color: rgba(20, 12, 28, 0.8) !important;
-  border-color: rgba(250, 237, 217, 0.15) !important;
+  background-color: rgba(16, 9, 24, 0.75) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35) !important;
 }
 .theme-workflow-btn-active,
 [data-theme="venus"] .theme-workflow-btn-active {
-  background-color: #faedd9 !important;
-  color: #181022 !important;
-  font-weight: 700 !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.07) 100%) !important;
+  color: #fffdfa !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  font-weight: 600 !important;
 }
 .theme-workflow-btn-inactive,
 [data-theme="venus"] .theme-workflow-btn-inactive {
-  color: rgba(250, 237, 217, 0.75) !important;
-  font-weight: 600 !important;
+  color: rgba(250, 237, 217, 0.65) !important;
+  font-weight: 500 !important;
+  border: 1px solid transparent !important;
 }
 .theme-workflow-btn-inactive:hover,
 [data-theme="venus"] .theme-workflow-btn-inactive:hover {
   color: #ffffff !important;
-  background-color: rgba(255, 255, 255, 0.08) !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+.theme-workflow-icon-active,
+[data-theme="venus"] .theme-workflow-icon-active {
+  color: #f6d89e !important;
 }
 
 /* Base / Venus Theme Chips */

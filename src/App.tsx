@@ -652,38 +652,39 @@ export const App: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setViewState('hero-prompt')}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold theme-btn-back transition-all cursor-pointer border"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium theme-btn-back transition-all cursor-pointer border shrink-0 active:scale-95"
                 title="Kembali ke Jendela Prompt Penuh"
               >
-                <ArrowLeft className="w-3.5 h-3.5" />
-                <span>Prompt Penuh</span>
+                <ArrowLeft className="w-3.5 h-3.5 shrink-0" />
+                <span className="hidden sm:inline">Prompt Penuh</span>
+                <span className="inline sm:hidden">Kembali</span>
               </button>
 
-              <div className="theme-workflow-bar rounded-2xl p-1 flex-1 flex items-center gap-1 border shadow-sm">
+              <div className="theme-workflow-bar rounded-xl p-0.5 sm:p-1 flex-1 flex items-center gap-1 border shadow-sm">
                 <button
                   type="button"
                   onClick={() => setWorkflowMode('ai')}
-                  className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-1.5 px-2.5 sm:px-3 rounded-lg text-xs font-medium transition-all duration-150 cursor-pointer active:scale-[0.98] ${
                     workflowMode === 'ai'
                       ? 'theme-workflow-btn-active shadow-sm'
                       : 'theme-workflow-btn-inactive'
                   }`}
                 >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>Prompt Cepat</span>
+                  <Sparkles className={`w-3.5 h-3.5 shrink-0 transition-colors ${workflowMode === 'ai' ? 'theme-workflow-icon-active' : 'opacity-60'}`} />
+                  <span className="whitespace-nowrap">Prompt Cepat</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setWorkflowMode('manual')}
-                  className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-1.5 px-2.5 sm:px-3 rounded-lg text-xs font-medium transition-all duration-150 cursor-pointer active:scale-[0.98] ${
                     workflowMode === 'manual'
                       ? 'theme-workflow-btn-active shadow-sm'
                       : 'theme-workflow-btn-inactive'
                   }`}
                 >
-                  <Sliders className="w-3.5 h-3.5" />
-                  <span>Input Manual</span>
+                  <Sliders className={`w-3.5 h-3.5 shrink-0 transition-colors ${workflowMode === 'manual' ? 'theme-workflow-icon-active' : 'opacity-60'}`} />
+                  <span className="whitespace-nowrap">Input Manual</span>
                 </button>
               </div>
             </div>
