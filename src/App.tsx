@@ -660,9 +660,9 @@ export const App: React.FC = () => {
         />
       ) : (
         /* VIEW STATE 2: STUDIO & PREVIEW WORKSPACE GRID */
-        <main className="studio-main-grid flex-1 grid grid-cols-1 xl:grid-cols-[480px_1fr] gap-5 p-4 md:p-6 max-w-[1900px] w-full mx-auto animate-fade-in">
+        <main className="studio-main-grid flex-1 grid grid-cols-1 xl:grid-cols-[480px_1fr] gap-5 p-4 md:p-6 max-w-[1900px] w-full mx-auto xl:h-[calc(100vh-92px)] xl:overflow-hidden animate-fade-in">
           {/* Left Column: Form & Automation Panel */}
-          <div className="no-print space-y-3.5">
+          <div className="no-print space-y-3.5 xl:h-full xl:overflow-y-auto xl:pr-2 scrollbar-thin scroll-smooth pb-16">
             {/* WORKFLOW MODE SELECTOR & BACK TO PROMPT */}
             <div className="flex items-center gap-2">
               <button
@@ -724,7 +724,7 @@ export const App: React.FC = () => {
           </div>
 
           {/* Right Column: Live Document Preview Canvas */}
-          <div id="tour-preview-container" className="preview-card-container theme-preview-container rounded-3xl p-3 sm:p-4 md:p-6 flex flex-col items-center overflow-hidden relative shadow-xl border">
+          <div id="tour-preview-container" className="preview-card-container theme-preview-container rounded-3xl p-3 sm:p-4 md:p-6 flex flex-col items-center overflow-hidden relative shadow-xl border xl:h-full">
             {/* Canvas Floating Top Toolbar */}
             <div id="tour-preview-toolbar" className="w-full flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-3 pb-3 mb-3 border-b theme-toolbar-divider no-print">
               {/* Row 1 on mobile: Title + Zoom controls */}
@@ -1044,7 +1044,7 @@ export const App: React.FC = () => {
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
               onMouseLeave={handleMouseUp}
-              className={`preview-scroll-container overflow-auto w-full flex-1 max-h-[72vh] md:max-h-[82vh] xl:max-h-[calc(100vh-140px)] scrollbar-thin select-none overscroll-contain transition-colors ${
+              className={`preview-scroll-container overflow-auto w-full flex-1 min-h-0 h-full max-h-[72vh] md:max-h-[82vh] xl:max-h-none scrollbar-thin select-none overscroll-contain transition-colors ${
                 isDragging ? 'cursor-grabbing' : 'cursor-grab'
               }`}
               style={{
