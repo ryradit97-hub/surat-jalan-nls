@@ -117,6 +117,15 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({
   // TOUR STEPS FOR STUDIO SCREEN (MANUAL INPUT)
   const studioSteps: TourStep[] = [
     {
+      targetId: 'tour-multi-doc-tabs',
+      title: 'Tab Manajemen Multi-Surat Jalan',
+      description:
+        'Jika Anda membuat lebih dari satu surat jalan, setiap dokumen akan tampil sebagai tab terpisah di bilah atas. Klik tab untuk beralih dokumen, tekan (+) untuk menambah surat jalan baru, atau (✕) untuk menutup tab.',
+      icon: <FileText className="w-4 h-4 text-purple-300" />,
+      position: 'bottom',
+      padding: 4,
+    },
+    {
       targetId: 'tour-workflow-toggle',
       title: 'Pilihan Alur (Workflow Mode)',
       description:

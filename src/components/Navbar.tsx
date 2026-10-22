@@ -36,7 +36,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     <header className="sticky top-0 z-40 no-print flex flex-col shadow-lg theme-nav-header border-b">
       {/* 1. CHROME BROWSER TAB STRIP WITH SOFT PASTEL ACCENTS - ONLY IN STUDIO VIEW */}
       {isStudioView && (
-        <div className="theme-tab-strip flex items-center justify-between px-3 pt-2 border-b select-none">
+        <div id="tour-multi-doc-tabs" className="theme-tab-strip flex items-center justify-between px-3 pt-2 border-b select-none">
           <div className="flex items-center gap-2 overflow-hidden flex-1">
             {/* Pastel window dots */}
             <div className="flex items-center gap-1.5 px-2 py-1 mr-2 shrink-0">
