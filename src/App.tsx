@@ -676,7 +676,7 @@ export const App: React.FC = () => {
                 <span className="inline sm:hidden">Kembali</span>
               </button>
 
-              <div className="theme-workflow-bar rounded-xl p-0.5 sm:p-1 flex-1 flex items-center gap-1 border shadow-sm">
+              <div id="tour-workflow-toggle" className="theme-workflow-bar rounded-xl p-0.5 sm:p-1 flex-1 flex items-center gap-1 border shadow-sm">
                 <button
                   type="button"
                   onClick={() => setWorkflowMode('ai')}
@@ -724,9 +724,9 @@ export const App: React.FC = () => {
           </div>
 
           {/* Right Column: Live Document Preview Canvas */}
-          <div className="preview-card-container theme-preview-container rounded-3xl p-3 sm:p-4 md:p-6 flex flex-col items-center overflow-hidden relative shadow-xl border">
+          <div id="tour-preview-container" className="preview-card-container theme-preview-container rounded-3xl p-3 sm:p-4 md:p-6 flex flex-col items-center overflow-hidden relative shadow-xl border">
             {/* Canvas Floating Top Toolbar */}
-            <div className="w-full flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-3 pb-3 mb-3 border-b theme-toolbar-divider no-print">
+            <div id="tour-preview-toolbar" className="w-full flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-3 pb-3 mb-3 border-b theme-toolbar-divider no-print">
               {/* Row 1 on mobile: Title + Zoom controls */}
               <div className="flex items-center justify-between gap-2 w-full md:w-auto">
                 <div className="flex items-center gap-2 min-w-0">

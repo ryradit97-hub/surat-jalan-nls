@@ -169,7 +169,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
   return (
     <div className="flex flex-col gap-3.5">
       {/* SECTION 1: PENGIRIMAN & DOKUMEN UTAMA */}
-      <div className="liquid-card rounded-2xl p-4 md:p-5 shadow-sm border border-[#faedd9]/15 bg-[#251736]/70">
+      <div id="tour-form-info" className="liquid-card rounded-2xl p-4 md:p-5 shadow-sm border border-[#faedd9]/15 bg-[#251736]/70">
         <div className="flex items-center justify-between mb-3 pb-2 border-b border-[#faedd9]/10">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-lg bg-[#faedd9]/15 flex items-center justify-center text-[#faedd9]">
@@ -284,7 +284,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
       </div>
 
       {/* SECTION 2: SHIPPER / PENGIRIM */}
-      <div className="liquid-card rounded-2xl p-4 md:p-5 shadow-sm border border-[#faedd9]/12 bg-[#251736]/70">
+      <div id="tour-form-shipper" className="liquid-card rounded-2xl p-4 md:p-5 shadow-sm border border-[#faedd9]/12 bg-[#251736]/70">
         <div className="flex items-center gap-2 mb-3 pb-2 border-b border-[#faedd9]/10">
           <div className="w-6 h-6 rounded-lg bg-[#faedd9]/15 flex items-center justify-center text-[#faedd9]">
             <User className="w-3.5 h-3.5" />
@@ -348,7 +348,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
       </div>
 
       {/* SECTION 3: DETAIL BARANG & KONTAINER */}
-      <div className="liquid-card rounded-2xl p-4 md:p-5 shadow-sm border border-[#faedd9]/12 bg-[#251736]/70">
+      <div id="tour-form-cargo" className="liquid-card rounded-2xl p-4 md:p-5 shadow-sm border border-[#faedd9]/12 bg-[#251736]/70">
         <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#faedd9]/10">
           <div className="flex items-center gap-2.5">
             <div className="w-7 h-7 rounded-xl bg-[#faedd9]/15 flex items-center justify-center text-[#faedd9] shadow-sm">
@@ -608,7 +608,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
       </div>
 
       {/* SECTION 4: DRIVER & TRUCKING */}
-      <div className="liquid-card rounded-2xl p-4 md:p-5 shadow-sm border border-[#faedd9]/12 bg-[#251736]/70">
+      <div id="tour-form-driver" className="liquid-card rounded-2xl p-4 md:p-5 shadow-sm border border-[#faedd9]/12 bg-[#251736]/70">
         <div className="flex items-center gap-2 mb-3 pb-2 border-b border-[#faedd9]/10">
           <div className="w-6 h-6 rounded-lg bg-[#faedd9]/15 flex items-center justify-center text-[#faedd9]">
             <Truck className="w-3.5 h-3.5" />

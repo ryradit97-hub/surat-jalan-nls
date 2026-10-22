@@ -160,7 +160,7 @@ Npct
 
           <form onSubmit={handleSubmit} className="flex flex-col relative z-10">
             {/* Seamless Liquid Textarea Canvas with Dynamic Aspect Bolding */}
-            <div className="relative mb-4 sm:mb-6 p-1 sm:p-2 transition-all duration-300">
+            <div id="tour-prompt-textarea" className="relative mb-4 sm:mb-6 p-1 sm:p-2 transition-all duration-300">
               <HighlightedPromptTextarea
                 rows={8}
                 value={prompt}
@@ -188,6 +188,7 @@ Npct
               {/* LEFT BOTTOM CORNER: LIQUID PARAPHRASE BUTTON */}
               <div className="flex items-center">
                 <button
+                  id="tour-paraphrase-btn"
                   type="button"
                   onClick={handleParaphrase}
                   disabled={isParaphrasing || !prompt.trim()}
@@ -211,6 +212,7 @@ Npct
               {/* RIGHT BOTTOM CORNER: VOICE, CLEAR & EXPANSIVE SUBMIT BUTTON */}
               <div className="flex items-center gap-2 sm:gap-3">
                 <button
+                  id="tour-mic-btn"
                   type="button"
                   onClick={toggleListening}
                   className={`w-11 h-11 sm:w-14 sm:h-14 shrink-0 rounded-2xl flex items-center justify-center transition-all cursor-pointer liquid-glass-pill ${
@@ -249,6 +251,7 @@ Npct
                 )}
 
                 <button
+                  id="tour-submit-btn"
                   type="submit"
                   disabled={!prompt.trim()}
                   className="flex-1 sm:flex-none justify-center flex items-center gap-2 sm:gap-3 px-5 sm:px-10 md:px-12 py-3 sm:py-4 md:py-4.5 rounded-2xl text-sm sm:text-lg font-black transition-all cursor-pointer group shadow-lg active:scale-95 disabled:opacity-40 theme-btn-primary"
@@ -261,7 +264,7 @@ Npct
           </form>
 
           {/* Liquid Prompt Suggestion Chips */}
-          <div className="mt-8 sm:mt-10 pt-6 sm:pt-8 border-t border-white/[0.06]">
+          <div id="tour-templates" className="mt-8 sm:mt-10 pt-6 sm:pt-8 border-t border-white/[0.06]">
             <div className="flex items-center gap-2 text-xs sm:text-sm font-bold mb-4 theme-hero-sub">
               <MessageSquare className="w-4 h-4 text-[#d8b4fe]" />
               <span>Contoh Prompt Cepat:</span>
@@ -289,6 +292,7 @@ Npct
         {/* BELOW THE PROMPT FORM: LINK TO MANUAL & PANDUAN */}
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3 relative z-10">
           <button
+            id="tour-manual-link"
             type="button"
             onClick={onGoToManual}
             className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-2xl text-sm sm:text-base font-semibold border backdrop-blur-xl transition-all cursor-pointer group shadow-sm active:scale-95 theme-card"
