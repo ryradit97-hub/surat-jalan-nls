@@ -158,9 +158,9 @@ Npct
           <div className="absolute inset-x-16 top-0 h-[0.5px] bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none" />
           <div className="absolute -top-36 -left-36 w-80 h-80 bg-gradient-to-br from-white/15 via-[#d8b4fe]/10 to-transparent rounded-full blur-3xl pointer-events-none" />
 
-          <form onSubmit={handleSubmit} className="flex flex-col relative z-10">
+          <form onSubmit={handleSubmit} className="flex flex-col relative z-10 w-full">
             {/* Seamless Liquid Textarea Canvas with Dynamic Aspect Bolding */}
-            <div id="tour-prompt-textarea" className="relative mb-4 sm:mb-6 p-1 sm:p-2 transition-all duration-300">
+            <div id="tour-prompt-textarea" className="w-full relative mb-4 sm:mb-6 p-1 sm:p-2 transition-all duration-300">
               <HighlightedPromptTextarea
                 rows={8}
                 value={prompt}
@@ -264,7 +264,7 @@ Npct
           </form>
 
           {/* Liquid Prompt Suggestion Chips */}
-          <div id="tour-templates" className="mt-8 sm:mt-10 pt-6 sm:pt-8 border-t border-white/[0.06]">
+          <div id="tour-templates" className="w-full mt-8 sm:mt-10 pt-6 sm:pt-8 border-t border-white/[0.06]">
             <div className="flex items-center gap-2 text-xs sm:text-sm font-bold mb-4 theme-hero-sub">
               <MessageSquare className="w-4 h-4 text-[#d8b4fe]" />
               <span>Contoh Prompt Cepat:</span>

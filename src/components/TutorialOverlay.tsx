@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Sparkles,
   Sliders,
@@ -13,8 +13,6 @@ import {
   Eye,
   MessageSquare,
   HelpCircle,
-  ZoomIn,
-  ZoomOut,
 } from 'lucide-react';
 
 export interface TourStep {
@@ -22,7 +20,9 @@ export interface TourStep {
   title: string;
   description: string;
   icon: React.ReactNode;
-  position?: 'top' | 'bottom' | 'side' | 'auto';
+  position?: 'top' | 'bottom' | 'side' | 'dock-corner' | 'auto';
+  padding?: number;
+  borderRadius?: string;
   actionLabel?: string;
   onAction?: () => void;
 }
@@ -44,16 +44,13 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({
 }) => {
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [dontShowAgain, setDontShowAgain] = useState<boolean>(true);
-  // Default tutorial scale to 90% as requested by user for optimal visibility
-  const [tutorialZoom, setTutorialZoom] = useState<'90' | '100'>('90');
   const [spotlightRect, setSpotlightRect] = useState<{
     top: number;
     left: number;
     width: number;
     height: number;
+    borderRadius: string;
   } | null>(null);
-
-  const prevZoomRef = useRef<string>('');
 
   // TOUR STEPS FOR PROMPT SCREEN (HERO PROMPT)
   const promptSteps: TourStep[] = [
@@ -63,7 +60,8 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({
       description:
         'Ketik atau tempel rincian pengiriman dengan bahasa sehari-hari. Cantumkan nomor BL, PO, tujuan gudang/pelabuhan, nama barang, dan berat kargo.',
       icon: <Sparkles className="w-4 h-4 text-purple-300" />,
-      position: 'side',
+      position: 'dock-corner',
+      padding: 6,
     },
     {
       targetId: 'tour-mic-btn',
@@ -72,6 +70,7 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({
         'Tidak perlu mengetik di keyboard! Klik tombol mikrofon ini dan sebutkan data pengiriman dalam Bahasa Indonesia. Suara Anda akan otomatis diubah menjadi teks.',
       icon: <Mic className="w-4 h-4 text-rose-300" />,
       position: 'bottom',
+      padding: 4,
     },
     {
       targetId: 'tour-paraphrase-btn',
@@ -80,6 +79,7 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({
         'Gunakan tombol ini untuk merapikan kalimat yang berantakan atau singkatan tidak baku menjadi format instruksi logistik yang terstruktur rapi.',
       icon: <Sparkles className="w-4 h-4 text-purple-300" />,
       position: 'bottom',
+      padding: 4,
     },
     {
       targetId: 'tour-submit-btn',
@@ -87,7 +87,8 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({
       description:
         'Klik di sini untuk memproses kalimat prompt. AI otomatis mengekstrak seluruh rincian dan menyusun dokumen surat jalan resmi A4 siap cetak.',
       icon: <ArrowRight className="w-4 h-4 text-emerald-300" />,
-      position: 'bottom',
+      position: 'top',
+      padding: 4,
     },
     {
       targetId: 'tour-templates',
@@ -95,7 +96,8 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({
       description:
         'Pilih salah satu template contoh di bawah (format shorthand DO, rute Terminal Koja, NPCT, JICT, atau batch 4 surat jalan) untuk mencoba seketika.',
       icon: <MessageSquare className="w-4 h-4 text-amber-300" />,
-      position: 'side',
+      position: 'dock-corner',
+      padding: 8,
     },
     {
       targetId: 'tour-manual-link',
@@ -108,6 +110,7 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({
         if (onGoToManual) onGoToManual();
       },
       position: 'top',
+      padding: 4,
     },
   ];
 
@@ -120,6 +123,7 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({
         'Beralih fleksibel antara Mode Prompt Cepat (AI) dan Mode Input Manual langsung dari bilah ini tanpa kehilangan data dokumen aktif.',
       icon: <Sliders className="w-4 h-4 text-amber-300" />,
       position: 'bottom',
+      padding: 4,
     },
     {
       targetId: 'tour-form-info',
@@ -128,6 +132,7 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({
         'Pilih alamat tujuan dari pilihan cepat terminal pelabuhan (Koja UTC3, NPCT1, JICT, dll) atau ketik manual, serta tentukan tanggal kirim, nomor BL, dan PO.',
       icon: <FileText className="w-4 h-4 text-blue-300" />,
       position: 'side',
+      padding: 6,
     },
     {
       targetId: 'tour-form-shipper',
@@ -136,6 +141,7 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({
         'Pilih nama perusahaan pengirim dari daftar preset tersimpan (PT Cotti Coffee, PT Triputra, PT Danora, dll) atau isi nama dan alamat perusahaan baru.',
       icon: <Package className="w-4 h-4 text-purple-300" />,
       position: 'side',
+      padding: 6,
     },
     {
       targetId: 'tour-form-cargo',
@@ -144,6 +150,7 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({
         'Kelola nama barang, ukuran kontainer (1 X 40 HC, 1 X 20 FT, dll), berat gross (KG), dan nomor seal kontainer dengan pilihan cepat 1-klik.',
       icon: <Package className="w-4 h-4 text-amber-300" />,
       position: 'side',
+      padding: 6,
     },
     {
       targetId: 'tour-form-driver',
@@ -152,6 +159,7 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({
         'Tentukan identitas supir yang bertugas, nomor kontak WhatsApp untuk pengiriman rincian, jenis armada truk, dan nomor plat kendaraan.',
       icon: <Truck className="w-4 h-4 text-emerald-300" />,
       position: 'side',
+      padding: 6,
     },
     {
       targetId: 'tour-preview-toolbar',
@@ -159,33 +167,12 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({
       description:
         'Periksa lembar cetak A4 resmi di sebelah kanan. Atur perbesaran (Zoom), geser dokumen bebas (Drag), aktifkan Kaca Pembesar di ponsel, unduh PDF resmi, cetak langsung, atau kirim rincian via WA!',
       icon: <Eye className="w-4 h-4 text-emerald-300" />,
-      position: 'side',
+      position: 'bottom',
+      padding: 6,
     },
   ];
 
   const steps = currentScreen === 'studio' ? studioSteps : promptSteps;
-
-  // Manage browser scale zoom (90% vs 100%)
-  useEffect(() => {
-    if (!isOpen) {
-      if (document.body.style.zoom) {
-        document.body.style.zoom = '';
-      }
-      return;
-    }
-
-    // Save previous zoom and apply tutorial zoom
-    prevZoomRef.current = document.body.style.zoom || '';
-    if (tutorialZoom === '90') {
-      document.body.style.zoom = '90%';
-    } else {
-      document.body.style.zoom = '100%';
-    }
-
-    return () => {
-      document.body.style.zoom = prevZoomRef.current;
-    };
-  }, [isOpen, tutorialZoom]);
 
   // Reset step counter on open or screen change
   useEffect(() => {
@@ -194,7 +181,7 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({
     }
   }, [isOpen, currentScreen]);
 
-  // Measure and position the spotlight box with generous clearance
+  // Measure and position the spotlight box with 100% pixel-perfect crop
   const updateSpotlight = useCallback(() => {
     if (!isOpen) return;
     const currentItem = steps[currentStep];
@@ -204,12 +191,19 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({
     if (el) {
       // Smoothly scroll target element into viewport center
       el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+
+      // Measure exact DOM bounding box
       const rect = el.getBoundingClientRect();
+      const computed = window.getComputedStyle(el);
+      const br = currentItem.borderRadius || computed.borderRadius || '16px';
+      const pad = currentItem.padding ?? 6;
+
       setSpotlightRect({
-        top: rect.top,
-        left: rect.left,
-        width: rect.width,
-        height: rect.height,
+        top: Math.max(0, rect.top - pad),
+        left: Math.max(0, rect.left - pad),
+        width: rect.width + pad * 2,
+        height: rect.height + pad * 2,
+        borderRadius: br,
       });
     } else {
       setSpotlightRect(null);
@@ -220,7 +214,8 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({
   useEffect(() => {
     if (!isOpen) return;
 
-    const timer = setTimeout(updateSpotlight, 80);
+    // Small delay to allow scroll and layout to settle
+    const timer = setTimeout(updateSpotlight, 50);
 
     const handleWindowChange = () => {
       const currentItem = steps[currentStep];
@@ -228,11 +223,16 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({
       const el = document.getElementById(currentItem.targetId);
       if (el) {
         const rect = el.getBoundingClientRect();
+        const computed = window.getComputedStyle(el);
+        const br = currentItem.borderRadius || computed.borderRadius || '16px';
+        const pad = currentItem.padding ?? 6;
+
         setSpotlightRect({
-          top: rect.top,
-          left: rect.left,
-          width: rect.width,
-          height: rect.height,
+          top: Math.max(0, rect.top - pad),
+          left: Math.max(0, rect.left - pad),
+          width: rect.width + pad * 2,
+          height: rect.height + pad * 2,
+          borderRadius: br,
         });
       }
     };
@@ -245,7 +245,7 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({
       window.removeEventListener('resize', handleWindowChange);
       window.removeEventListener('scroll', handleWindowChange, true);
     };
-  }, [isOpen, currentStep, tutorialZoom, updateSpotlight, steps]);
+  }, [isOpen, currentStep, updateSpotlight, steps]);
 
   // Handle ESC and Arrow keys
   useEffect(() => {
@@ -304,36 +304,8 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({
     const windowHeight = window.innerHeight;
     const windowWidth = window.innerWidth;
 
-    // If target is tall (> 220px), place horizontally to the side or dock to avoid covering it!
-    const isTallTarget = spotlightRect.height > 220;
-
-    if (isTallTarget || currentItem.position === 'side') {
-      const spaceRight = windowWidth - (spotlightRect.left + spotlightRect.width + 20);
-      const spaceLeft = spotlightRect.left - 20;
-
-      // Try placing to the right of the target
-      if (spaceRight >= popoverWidth) {
-        return {
-          position: 'fixed',
-          top: `${Math.max(20, Math.min(windowHeight - 280, spotlightRect.top + 20))}px`,
-          left: `${spotlightRect.left + spotlightRect.width + 16}px`,
-          width: `${popoverWidth}px`,
-          zIndex: 60,
-        };
-      }
-
-      // Try placing to the left of the target
-      if (spaceLeft >= popoverWidth) {
-        return {
-          position: 'fixed',
-          top: `${Math.max(20, Math.min(windowHeight - 280, spotlightRect.top + 20))}px`,
-          left: `${spotlightRect.left - popoverWidth - 16}px`,
-          width: `${popoverWidth}px`,
-          zIndex: 60,
-        };
-      }
-
-      // Fallback for large centered element: dock to bottom-right corner without overlapping center
+    // Dock corner position: for wide centered elements (like the main textarea), dock safely at bottom-right
+    if (currentItem.position === 'dock-corner') {
       return {
         position: 'fixed',
         bottom: '24px',
@@ -344,7 +316,56 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({
       };
     }
 
-    // For standard / smaller elements: place below or above
+    // Side placement for tall vertical sections
+    if (currentItem.position === 'side' || spotlightRect.height > 250) {
+      const spaceRight = windowWidth - (spotlightRect.left + spotlightRect.width + 20);
+      const spaceLeft = spotlightRect.left - 20;
+
+      // Try placing to the right of the target
+      if (spaceRight >= popoverWidth) {
+        return {
+          position: 'fixed',
+          top: `${Math.max(20, Math.min(windowHeight - 270, spotlightRect.top + 10))}px`,
+          left: `${spotlightRect.left + spotlightRect.width + 16}px`,
+          width: `${popoverWidth}px`,
+          zIndex: 60,
+        };
+      }
+
+      // Try placing to the left of the target
+      if (spaceLeft >= popoverWidth) {
+        return {
+          position: 'fixed',
+          top: `${Math.max(20, Math.min(windowHeight - 270, spotlightRect.top + 10))}px`,
+          left: `${spotlightRect.left - popoverWidth - 16}px`,
+          width: `${popoverWidth}px`,
+          zIndex: 60,
+        };
+      }
+
+      // Fallback: bottom-right corner
+      return {
+        position: 'fixed',
+        bottom: '24px',
+        right: '24px',
+        width: `${popoverWidth}px`,
+        maxWidth: 'calc(100vw - 32px)',
+        zIndex: 60,
+      };
+    }
+
+    // Top position
+    if (currentItem.position === 'top') {
+      return {
+        position: 'fixed',
+        top: `${Math.max(16, spotlightRect.top - 230)}px`,
+        left: `${Math.max(16, Math.min(windowWidth - popoverWidth - 16, spotlightRect.left + spotlightRect.width / 2 - popoverWidth / 2))}px`,
+        width: `${popoverWidth}px`,
+        zIndex: 60,
+      };
+    }
+
+    // Default / Bottom position: place below target
     const spaceBelow = windowHeight - (spotlightRect.top + spotlightRect.height + 16);
     const spaceAbove = spotlightRect.top - 16;
     const placeBelow = spaceBelow >= 210 || spaceBelow >= spaceAbove;
@@ -377,15 +398,16 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({
       {/* 1. ULTRA HIGH-CONTRAST GOLDEN SPOTLIGHT CUTOUT OVER ACTIVE ELEMENT */}
       {spotlightRect ? (
         <div
-          className="fixed rounded-2xl pointer-events-none transition-all duration-300 ease-out z-50 border-[3px] border-amber-400 shadow-[0_0_0_9999px_rgba(8,4,14,0.85),0_0_0_4px_rgba(251,191,36,0.35),0_0_45px_rgba(251,191,36,0.55)]"
+          className="fixed pointer-events-none transition-all duration-250 ease-out z-50 border-[2.5px] border-amber-400 shadow-[0_0_0_9999px_rgba(8,4,14,0.85),0_0_0_3px_rgba(251,191,36,0.35),0_0_35px_rgba(251,191,36,0.55)]"
           style={{
-            top: `${Math.max(0, spotlightRect.top - 10)}px`,
-            left: `${Math.max(0, spotlightRect.left - 10)}px`,
-            width: `${spotlightRect.width + 20}px`,
-            height: `${spotlightRect.height + 20}px`,
+            top: `${spotlightRect.top}px`,
+            left: `${spotlightRect.left}px`,
+            width: `${spotlightRect.width}px`,
+            height: `${spotlightRect.height}px`,
+            borderRadius: spotlightRect.borderRadius,
           }}
         >
-          {/* Top Focus Tag Indicator (Impossible to miss) */}
+          {/* Top Focus Tag Indicator */}
           <div className="absolute -top-3.5 left-4 px-2 py-0.5 rounded-full text-[9.5px] font-black uppercase tracking-wider bg-amber-400 text-stone-950 shadow-md flex items-center gap-1.5 select-none">
             <span className="w-1.5 h-1.5 rounded-full bg-stone-950 animate-ping inline-block" />
             <span>Fokus Fitur</span>
@@ -408,7 +430,7 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({
         onClick={(e) => e.stopPropagation()}
         className="liquid-card rounded-2xl p-4 shadow-2xl border-2 border-[#faedd9]/30 bg-[#251736] animate-fade-in transition-all duration-200"
       >
-        {/* Step Header with Zoom Scale Control (Clean, without badges) */}
+        {/* Step Header (Clean, without badges) */}
         <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#faedd9]/12">
           <div className="flex items-center gap-2 min-w-0">
             <span className="text-[11px] font-black text-amber-300 tracking-wider uppercase">
@@ -420,40 +442,14 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({
             </span>
           </div>
 
-          <div className="flex items-center gap-1 shrink-0">
-            {/* Quick 90% / 100% Zoom Toggle */}
-            <button
-              type="button"
-              onClick={() => {
-                const nextZoom = tutorialZoom === '90' ? '100' : '90';
-                setTutorialZoom(nextZoom);
-                setTimeout(updateSpotlight, 100);
-              }}
-              className="flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-mono font-bold border border-[#faedd9]/20 hover:border-amber-400/50 text-[#faedd9] hover:text-amber-300 transition-colors cursor-pointer"
-              title={`Ubah skala tampilan (saat ini ${tutorialZoom}%)`}
-            >
-              {tutorialZoom === '90' ? (
-                <>
-                  <ZoomOut className="w-2.5 h-2.5 text-amber-300" />
-                  <span>90%</span>
-                </>
-              ) : (
-                <>
-                  <ZoomIn className="w-2.5 h-2.5" />
-                  <span>100%</span>
-                </>
-              )}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => onClose(dontShowAgain)}
-              className="w-5 h-5 rounded-md flex items-center justify-center text-[#faedd9]/60 hover:text-white hover:bg-white/10 transition-colors cursor-pointer ml-1"
-              title="Tutup panduan (Esc)"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => onClose(dontShowAgain)}
+            className="w-5 h-5 rounded-md flex items-center justify-center text-[#faedd9]/60 hover:text-white hover:bg-white/10 transition-colors cursor-pointer ml-1"
+            title="Tutup panduan (Esc)"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
         </div>
 
         {/* Feature Title & Icon */}
