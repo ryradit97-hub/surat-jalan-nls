@@ -283,7 +283,71 @@ export const FormEditor: React.FC<FormEditorProps> = ({
         </div>
       </div>
 
-      {/* SECTION 2: DETAIL BARANG & KONTAINER */}
+      {/* SECTION 2: SHIPPER / PENGIRIM */}
+      <div className="liquid-card rounded-2xl p-4 md:p-5 shadow-sm border border-[#faedd9]/12 bg-[#251736]/70">
+        <div className="flex items-center gap-2 mb-3 pb-2 border-b border-[#faedd9]/10">
+          <div className="w-6 h-6 rounded-lg bg-[#faedd9]/15 flex items-center justify-center text-[#faedd9]">
+            <User className="w-3.5 h-3.5" />
+          </div>
+          <div>
+            <h3 className="text-xs font-bold text-[#fffdfa]">Shipper / Pengirim</h3>
+          </div>
+        </div>
+
+        <div className="mb-2.5">
+          <label className="block text-[10px] font-semibold mb-1 theme-label">
+            Pilih Preset Shipper
+          </label>
+          <select
+            className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs font-medium cursor-pointer"
+            value={selectedShipperPreset}
+            onChange={(e) => handleShipperDropdown(e.target.value)}
+          >
+            {defaultShippers.map((shipper) => (
+              <option key={shipper.id} value={shipper.id}>
+                🏢 {shipper.name}
+              </option>
+            ))}
+            <option value="custom">
+              ✏️ Ketik Manual / Shipper Lainnya...
+            </option>
+          </select>
+        </div>
+
+        <div className="mb-2.5">
+          <label className="block text-[10px] font-semibold mb-1 theme-label">
+            SHIPPER NAME
+          </label>
+          <input
+            type="text"
+            className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs font-semibold"
+            value={data.shipperName}
+            onChange={(e) => {
+              setSelectedShipperPreset('custom');
+              handleTextChange('shipperName', e.target.value);
+            }}
+            placeholder="Nama Perusahaan Shipper"
+          />
+        </div>
+
+        <div>
+          <label className="block text-[10px] font-semibold mb-1 theme-label">
+            SHIPPER ADDRESS
+          </label>
+          <textarea
+            rows={2}
+            className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs resize-none"
+            value={data.shipperAddress}
+            onChange={(e) => {
+              setSelectedShipperPreset('custom');
+              handleTextChange('shipperAddress', e.target.value);
+            }}
+            placeholder="Alamat Lengkap Shipper"
+          />
+        </div>
+      </div>
+
+      {/* SECTION 3: DETAIL BARANG & KONTAINER */}
       <div className="liquid-card rounded-2xl p-4 md:p-5 shadow-sm border border-[#faedd9]/12 bg-[#251736]/70">
         <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#faedd9]/10">
           <div className="flex items-center gap-2.5">
@@ -523,70 +587,6 @@ export const FormEditor: React.FC<FormEditorProps> = ({
               </div>
             </div>
           ))}
-        </div>
-      </div>
-
-      {/* SECTION 3: SHIPPER */}
-      <div className="liquid-card rounded-2xl p-4 md:p-5 shadow-sm border border-[#faedd9]/12 bg-[#251736]/70">
-        <div className="flex items-center gap-2 mb-3 pb-2 border-b border-[#faedd9]/10">
-          <div className="w-6 h-6 rounded-lg bg-[#faedd9]/15 flex items-center justify-center text-[#faedd9]">
-            <User className="w-3.5 h-3.5" />
-          </div>
-          <div>
-            <h3 className="text-xs font-bold text-[#fffdfa]">Shipper / Pengirim</h3>
-          </div>
-        </div>
-
-        <div className="mb-2.5">
-          <label className="block text-[10px] font-semibold mb-1 theme-label">
-            Pilih Preset Shipper
-          </label>
-          <select
-            className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs font-medium cursor-pointer"
-            value={selectedShipperPreset}
-            onChange={(e) => handleShipperDropdown(e.target.value)}
-          >
-            {defaultShippers.map((shipper) => (
-              <option key={shipper.id} value={shipper.id}>
-                🏢 {shipper.name}
-              </option>
-            ))}
-            <option value="custom">
-              ✏️ Ketik Manual / Shipper Lainnya...
-            </option>
-          </select>
-        </div>
-
-        <div className="mb-2.5">
-          <label className="block text-[10px] font-semibold mb-1 theme-label">
-            SHIPPER NAME
-          </label>
-          <input
-            type="text"
-            className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs font-semibold"
-            value={data.shipperName}
-            onChange={(e) => {
-              setSelectedShipperPreset('custom');
-              handleTextChange('shipperName', e.target.value);
-            }}
-            placeholder="Nama Perusahaan Shipper"
-          />
-        </div>
-
-        <div>
-          <label className="block text-[10px] font-semibold mb-1 theme-label">
-            SHIPPER ADDRESS
-          </label>
-          <textarea
-            rows={2}
-            className="w-full liquid-input px-3 py-1.5 rounded-xl text-xs resize-none"
-            value={data.shipperAddress}
-            onChange={(e) => {
-              setSelectedShipperPreset('custom');
-              handleTextChange('shipperAddress', e.target.value);
-            }}
-            placeholder="Alamat Lengkap Shipper"
-          />
         </div>
       </div>
 
