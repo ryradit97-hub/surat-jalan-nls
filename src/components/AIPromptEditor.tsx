@@ -19,6 +19,7 @@ import {
 import { HighlightedPromptTextarea } from './HighlightedPromptTextarea';
 import { VoiceInputIndicator } from './VoiceInputIndicator';
 import { useSpeechToText } from '../utils/useSpeechToText';
+import { GeneratingLoader } from './GeneratingLoader';
 
 interface AIPromptEditorProps {
   currentDoc: SuratJalanData;
@@ -284,19 +285,18 @@ Npct
           </button>
         </div>
 
-        {/* Studio Mini Progress Bar When Processing */}
+        {/* Studio Mini Progress When Processing */}
         {loading && (
-          <div className="mt-3 p-2.5 rounded-xl bg-white/[0.04] border border-white/10 animate-fade-in">
-            <div className="flex items-center justify-between text-[11px] mb-1.5 font-medium theme-text-light">
-              <span className="flex items-center gap-1.5">
-                <Sparkles className="w-3 h-3 text-[#d8b4fe] animate-spin-slow" />
-                <span>AI sedang menyusun data...</span>
-              </span>
-              <span className="text-[10px] font-mono font-bold animate-pulse">Memproses</span>
+          <div className="mt-3 py-3 animate-fade-in flex flex-col items-center justify-center">
+            <div className="scale-75 origin-center my-[-10px]">
+              <GeneratingLoader />
             </div>
-            <div className="h-1.5 w-full rounded-full bg-black/40 overflow-hidden relative">
-              <div className="h-full rounded-full bg-gradient-to-r from-[#a855f7] via-[#f472b6] to-[#faedd9] w-full animate-shimmer-slide" />
-            </div>
+            <p
+              className="text-xs mt-2 font-medium animate-pulse text-center transition-colors duration-300"
+              style={{ color: 'var(--loader-subtext, var(--app-text-main))' }}
+            >
+              AI sedang menyusun data surat jalan...
+            </p>
           </div>
         )}
 

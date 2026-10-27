@@ -4,7 +4,6 @@ import { AppTheme } from './types/theme';
 import { createEmptySuratJalan } from './utils/defaultData';
 import { Navbar } from './components/Navbar';
 import { FormEditor } from './components/FormEditor';
-import { AIPromptEditor } from './components/AIPromptEditor';
 import { HeroPromptView } from './components/HeroPromptView';
 import { AILoadingOverlay } from './components/AILoadingOverlay';
 import { SuratJalanPreview } from './components/SuratJalanPreview';
@@ -13,6 +12,7 @@ import { BatchImportModal } from './components/BatchImportModal';
 import { PresetsModal } from './components/PresetsModal';
 import { SuccessCelebrationModal } from './components/SuccessCelebrationModal';
 import { RainModal } from './components/RainModal';
+import { ConfirmBackModal } from './components/ConfirmBackModal';
 import { TutorialOverlay } from './components/TutorialOverlay';
 import { openWhatsAppDirect } from './utils/whatsappHelper';
 import { extractMultipleSuratJalanWithAI, applyAIExtractionToDocument } from './services/geminiService';
@@ -25,9 +25,6 @@ export const App: React.FC = () => {
   // First window is fully prompt form ('hero-prompt' | 'studio')
   const [viewState, setViewState] = useState<'hero-prompt' | 'studio'>('hero-prompt');
   
-  // Studio Sidebar Mode ('ai' | 'manual')
-  const [workflowMode, setWorkflowMode] = useState<'ai' | 'manual'>('manual');
-  
   // Loading Animation State
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
 
@@ -36,6 +33,9 @@ export const App: React.FC = () => {
 
   // Rain Easter Egg Modal Dialogue State
   const [isRainModalOpen, setIsRainModalOpen] = useState<boolean>(false);
+
+  // Confirm Back to Prompt Modal State
+  const [isConfirmBackOpen, setIsConfirmBackOpen] = useState<boolean>(false);
 
   // Tutorial Overlay State (Shown automatically on first open)
   const [isTutorialOpen, setIsTutorialOpen] = useState<boolean>(() => {
@@ -303,6 +303,16 @@ export const App: React.FC = () => {
       setIsGenerating(false);
       setViewState('studio');
     }
+  };
+
+  // CONFIRM RESET & RETURN TO PROMPT PENUH
+  const handleConfirmBackToPrompt = () => {
+    const freshDoc = createEmptySuratJalan();
+    setDocuments([freshDoc]);
+    setCurrentId(freshDoc.id);
+    localStorage.removeItem('nls_surat_jalan_docs');
+    setIsConfirmBackOpen(false);
+    setViewState('hero-prompt');
   };
 
   // SEND ALL DOCS OF PDF VIA WHATSAPP (Separate PDF files for all Surat Jalan)
@@ -654,7 +664,6 @@ export const App: React.FC = () => {
           onSubmitPrompt={handleHeroPromptSubmit}
           onGoToManual={() => {
             setViewState('studio');
-            setWorkflowMode('manual');
           }}
           onOpenTutorial={() => setIsTutorialOpen(true)}
         />
@@ -663,64 +672,32 @@ export const App: React.FC = () => {
         <main className="studio-main-grid flex-1 grid grid-cols-1 xl:grid-cols-[480px_1fr] gap-5 p-4 md:p-6 max-w-[1900px] w-full mx-auto xl:h-[calc(100vh-92px)] xl:overflow-hidden animate-fade-in">
           {/* Left Column: Form & Automation Panel */}
           <div className="no-print space-y-3.5 xl:h-full xl:overflow-y-auto xl:pr-2 scrollbar-thin scroll-smooth pb-16">
-            {/* WORKFLOW MODE SELECTOR & BACK TO PROMPT */}
-            <div className="flex items-center gap-2">
+            {/* BACK TO PROMPT HEADER & MANUAL INPUT ONLY */}
+            <div className="flex items-center justify-between gap-2">
               <button
+                id="tour-workflow-toggle"
                 type="button"
-                onClick={() => setViewState('hero-prompt')}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium theme-btn-back transition-all cursor-pointer border shrink-0 active:scale-95"
+                onClick={() => setIsConfirmBackOpen(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold theme-btn-back transition-all cursor-pointer border shadow-sm active:scale-95"
                 title="Kembali ke Jendela Prompt Penuh"
               >
                 <ArrowLeft className="w-3.5 h-3.5 shrink-0" />
-                <span className="hidden sm:inline">Prompt Penuh</span>
-                <span className="inline sm:hidden">Kembali</span>
+                <span>Prompt Penuh</span>
               </button>
 
-              <div id="tour-workflow-toggle" className="theme-workflow-bar rounded-xl p-0.5 sm:p-1 flex-1 flex items-center gap-1 border shadow-sm">
-                <button
-                  type="button"
-                  onClick={() => setWorkflowMode('ai')}
-                  className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-1.5 px-2.5 sm:px-3 rounded-lg text-xs font-medium transition-all duration-150 cursor-pointer active:scale-[0.98] ${
-                    workflowMode === 'ai'
-                      ? 'theme-workflow-btn-active shadow-sm'
-                      : 'theme-workflow-btn-inactive'
-                  }`}
-                >
-                  <Sparkles className={`w-3.5 h-3.5 shrink-0 transition-colors ${workflowMode === 'ai' ? 'theme-workflow-icon-active' : 'opacity-60'}`} />
-                  <span className="whitespace-nowrap">Prompt Cepat</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setWorkflowMode('manual')}
-                  className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-1.5 px-2.5 sm:px-3 rounded-lg text-xs font-medium transition-all duration-150 cursor-pointer active:scale-[0.98] ${
-                    workflowMode === 'manual'
-                      ? 'theme-workflow-btn-active shadow-sm'
-                      : 'theme-workflow-btn-inactive'
-                  }`}
-                >
-                  <Sliders className={`w-3.5 h-3.5 shrink-0 transition-colors ${workflowMode === 'manual' ? 'theme-workflow-icon-active' : 'opacity-60'}`} />
-                  <span className="whitespace-nowrap">Input Manual</span>
-                </button>
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold theme-text-muted bg-white/[0.04] border border-white/10">
+                <Sliders className="w-3.5 h-3.5 opacity-70" />
+                <span>Input Manual</span>
               </div>
             </div>
 
-            {/* Conditional Workflow Rendering */}
-            {workflowMode === 'ai' ? (
-              <AIPromptEditor
-                currentDoc={currentDoc}
-                onUpdateDocument={handleUpdateCurrentDoc}
-                onSwitchToManual={() => setWorkflowMode('manual')}
-                onDocumentGenerated={() => setShowSuccessModal(true)}
-              />
-            ) : (
-              <FormEditor
-                data={currentDoc}
-                onChange={handleUpdateCurrentDoc}
-                onOpenPresets={() => setIsPresetsOpen(true)}
-                onOpenBatchModal={() => setIsBatchOpen(true)}
-              />
-            )}
+            {/* Direct Manual Form Editor */}
+            <FormEditor
+              data={currentDoc}
+              onChange={handleUpdateCurrentDoc}
+              onOpenPresets={() => setIsPresetsOpen(true)}
+              onOpenBatchModal={() => setIsBatchOpen(true)}
+            />
           </div>
 
           {/* Right Column: Live Document Preview Canvas */}
@@ -1203,6 +1180,13 @@ export const App: React.FC = () => {
         onClose={() => setIsRainModalOpen(false)}
       />
 
+      {/* CONFIRMATION BEFORE RETURNING TO PROMPT PENUH */}
+      <ConfirmBackModal
+        isOpen={isConfirmBackOpen}
+        onClose={() => setIsConfirmBackOpen(false)}
+        onConfirm={handleConfirmBackToPrompt}
+      />
+
       {/* PANDUAN APLIKASI (TUTORIAL OVERLAY) */}
       <TutorialOverlay
         isOpen={isTutorialOpen}
@@ -1212,7 +1196,6 @@ export const App: React.FC = () => {
         }}
         onGoToManual={() => {
           setViewState('studio');
-          setWorkflowMode('manual');
         }}
         currentScreen={viewState}
       />

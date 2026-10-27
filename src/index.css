@@ -71,6 +71,20 @@
   --app-trigger-text: #faedd9;
   --app-menu-bg: rgba(27, 16, 38, 0.98);
   --app-menu-border: rgba(255, 255, 255, 0.15);
+
+  /* Loader Theme Adaptations (Venus) */
+  --loader-text: #ffffff;
+  --loader-glow-white: #ffffff;
+  --loader-glow-primary: #ad5fff;
+  --loader-glow-secondary: #471eec;
+  --loader-glow-mid-primary: #d60a47;
+  --loader-glow-mid-secondary: #311e80;
+  --loader-ambient-from: rgba(173, 95, 255, 0.28);
+  --loader-ambient-via: rgba(71, 30, 236, 0.22);
+  --loader-ambient-to: rgba(214, 10, 71, 0.15);
+  --loader-overlay-bg: rgba(18, 10, 27, 0.92);
+  --loader-subtext: #faedd9;
+  --loader-close-btn: rgba(255, 255, 255, 0.12);
 }
 
 /* Earth Theme (Warm Sand, Cream & Linen) */
@@ -96,6 +110,20 @@
   --app-trigger-text: #261d15;
   --app-menu-bg: #ffffff;
   --app-menu-border: rgba(138, 103, 71, 0.2);
+
+  /* Loader Theme Adaptations (Earth Cream) */
+  --loader-text: #261d15;
+  --loader-glow-white: #fffdfa;
+  --loader-glow-primary: #c4884d;
+  --loader-glow-secondary: #b87333;
+  --loader-glow-mid-primary: #d97706;
+  --loader-glow-mid-secondary: #78350f;
+  --loader-ambient-from: rgba(196, 136, 77, 0.3);
+  --loader-ambient-via: rgba(184, 115, 51, 0.22);
+  --loader-ambient-to: rgba(217, 119, 6, 0.15);
+  --loader-overlay-bg: rgba(247, 243, 235, 0.94);
+  --loader-subtext: #261d15;
+  --loader-close-btn: rgba(38, 29, 21, 0.1);
 }
 
 /* Sea Theme (Official NLS Logo Colors: Navy Blue & Ocean Azure Cyan) */
@@ -121,6 +149,20 @@
   --app-trigger-text: #e0f2fe;
   --app-menu-bg: rgba(8, 31, 61, 0.98);
   --app-menu-border: rgba(0, 163, 224, 0.35);
+
+  /* Loader Theme Adaptations (Sea NLS) */
+  --loader-text: #ffffff;
+  --loader-glow-white: #ffffff;
+  --loader-glow-primary: #00A3E0;
+  --loader-glow-secondary: #003B73;
+  --loader-glow-mid-primary: #38bdf8;
+  --loader-glow-mid-secondary: #0284c7;
+  --loader-ambient-from: rgba(0, 163, 224, 0.32);
+  --loader-ambient-via: rgba(0, 59, 115, 0.3);
+  --loader-ambient-to: rgba(56, 189, 248, 0.18);
+  --loader-overlay-bg: rgba(6, 21, 43, 0.94);
+  --loader-subtext: #e0f2fe;
+  --loader-close-btn: rgba(255, 255, 255, 0.15);
 }
 
 /* White Moon Theme (Minimalist Porcelain White & Jet Black Accents) */
@@ -146,6 +188,20 @@
   --app-trigger-text: #0a0a0a;
   --app-menu-bg: #ffffff;
   --app-menu-border: #e5e7eb;
+
+  /* Loader Theme Adaptations (White Moon) */
+  --loader-text: #0a0a0a;
+  --loader-glow-white: #ffffff;
+  --loader-glow-primary: #737373;
+  --loader-glow-secondary: #262626;
+  --loader-glow-mid-primary: #a3a3a3;
+  --loader-glow-mid-secondary: #404040;
+  --loader-ambient-from: rgba(115, 115, 115, 0.18);
+  --loader-ambient-via: rgba(38, 38, 38, 0.12);
+  --loader-ambient-to: rgba(163, 163, 163, 0.12);
+  --loader-overlay-bg: rgba(255, 255, 255, 0.96);
+  --loader-subtext: #0a0a0a;
+  --loader-close-btn: rgba(10, 10, 10, 0.08);
 }
 
 /* Generic Theme Switcher Component Classes */

@@ -72,6 +72,11 @@ export const normalizeDeliveryAddress = (addr?: string): string => {
 export const paraphraseLogisticsPrompt = async (rawPrompt: string): Promise<string> => {
   if (!rawPrompt.trim()) return rawPrompt;
 
+  // Instant deterministic fallback if API key is not configured
+  if (!SECURE_AI_KEY || SECURE_AI_KEY.trim() === '' || SECURE_AI_KEY === 'YOUR_GEMINI_API_KEY') {
+    return paraphraseOfflinePrompt(rawPrompt);
+  }
+
   const systemInstruction = `Anda adalah editor logistik profesional untuk PT NIAGA LOGISTICS SEJAHTERA (NLS Logistik).
 Tugas Anda adalah merapikan kalimat instruksi, pesan WhatsApp tidak beraturan, atau template ringkas/shorthand/malas dari pengguna menjadi instruksi pembuatan Surat Jalan yang formal, lengkap, dan rapi dalam Bahasa Indonesia.
 
@@ -421,6 +426,11 @@ export const extractMultipleSuratJalanWithAI = async (
 ): Promise<AIExtractionResult[]> => {
   const apiKey = SECURE_AI_KEY;
 
+  // Instant deterministic fallback if API key is not configured or placeholder
+  if (!apiKey || apiKey.trim() === '' || apiKey === 'YOUR_GEMINI_API_KEY') {
+    return parseMultipleIndonesianPromptsLocally(prompt);
+  }
+
   const systemInstruction = `Anda adalah asisten AI khusus logistik untuk PT NIAGA LOGISTICS SEJAHTERA (NLS Logistik).
 Tugas Anda adalah membaca instruksi, pesan teks, chat WhatsApp, atau rincian kargo dalam Bahasa Indonesia, kemudian mengekstrak data menjadi JSON murni untuk membuat Surat Jalan Trucking resmi.
 
@@ -505,7 +515,8 @@ Keluarkan HANYA format JSON valid tanpa teks lain dengan struktur:
           'Content-Type': 'application/json',
           'x-goog-api-key': apiKey
         },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify(requestBody),
+        signal: AbortSignal.timeout(3500)
       });
 
       if (!response.ok) {

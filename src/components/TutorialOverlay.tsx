@@ -127,10 +127,10 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({
     },
     {
       targetId: 'tour-workflow-toggle',
-      title: 'Pilihan Alur (Workflow Mode)',
+      title: 'Kembali ke Prompt Penuh',
       description:
-        'Beralih fleksibel antara Mode Prompt Cepat (AI) dan Mode Input Manual langsung dari bilah ini tanpa kehilangan data dokumen aktif.',
-      icon: <Sliders className="w-4 h-4 text-amber-300" />,
+        'Klik tombol ini kapan saja untuk kembali ke jendela prompt penuh dan membuat surat jalan baru dengan instruksi AI.',
+      icon: <ArrowLeft className="w-4 h-4 text-amber-300" />,
       position: 'bottom',
       padding: 4,
     },
