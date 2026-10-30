@@ -2193,6 +2193,8 @@
   box-sizing: border-box;
   position: relative;
   border-radius: 2px;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 /* Header Image Banner - Top Left Corner Positioned */
@@ -2215,7 +2217,7 @@
   text-align: center;
   font-size: 21px;
   font-weight: 900;
-  letter-spacing: 1px;
+  letter-spacing: 0px;
   text-decoration: underline;
   margin-bottom: 1.6rem;
   margin-top: 0.5rem;

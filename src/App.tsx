@@ -315,6 +315,91 @@ export const App: React.FC = () => {
     setViewState('hero-prompt');
   };
 
+  // HELPER: RENDER SINGLE SURAT JALAN DOCUMENT TO FULL 1:1 A4 PDF (Immune to mobile zoom/viewport scaling)
+  const generatePdfForDoc = async (doc: SuratJalanData, index?: number) => {
+    const batchEl = document.getElementById(`batch-export-doc-${doc.id}`);
+    const targetEl =
+      (batchEl?.querySelector('.surat-jalan-document') as HTMLElement) ||
+      documentRef.current;
+
+    if (!targetEl) {
+      throw new Error('Elemen dokumen Surat Jalan tidak ditemukan');
+    }
+
+    const canvas = await html2canvas(targetEl, {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      backgroundColor: '#ffffff',
+      windowWidth: 1200,
+      scrollX: 0,
+      scrollY: 0,
+      onclone: (clonedDoc, clonedElement) => {
+        clonedDoc.documentElement.style.webkitTextSizeAdjust = '100%';
+        (clonedDoc.documentElement.style as any).textSizeAdjust = '100%';
+        clonedDoc.body.style.webkitTextSizeAdjust = '100%';
+        (clonedDoc.body.style as any).textSizeAdjust = '100%';
+        clonedDoc.body.style.margin = '0';
+        clonedDoc.body.style.padding = '0';
+
+        // Strip any zoom/scale transforms and size constraints on all ancestors
+        let parent: HTMLElement | null = clonedElement.parentElement;
+        while (parent && parent !== clonedDoc.body && parent !== clonedDoc.documentElement) {
+          parent.style.transform = 'none';
+          parent.style.webkitTransform = 'none';
+          parent.style.transition = 'none';
+          parent.style.width = 'auto';
+          parent.style.height = 'auto';
+          parent.style.maxWidth = 'none';
+          parent.style.maxHeight = 'none';
+          parent.style.overflow = 'visible';
+          parent = parent.parentElement;
+        }
+
+        const container = clonedDoc.getElementById('batch-export-container');
+        if (container) {
+          container.style.position = 'absolute';
+          container.style.left = '0';
+          container.style.top = '0';
+          container.style.width = '210mm';
+          container.style.margin = '0';
+          container.style.padding = '0';
+          container.style.transform = 'none';
+          container.style.zIndex = '99999';
+
+          Array.from(container.children).forEach((child) => {
+            const childEl = child as HTMLElement;
+            if (!childEl.contains(clonedElement)) {
+              childEl.style.display = 'none';
+            }
+          });
+        }
+
+        clonedElement.style.width = '210mm';
+        clonedElement.style.minWidth = '210mm';
+        clonedElement.style.maxWidth = '210mm';
+        clonedElement.style.minHeight = '297mm';
+        clonedElement.style.margin = '0';
+        clonedElement.style.transform = 'none';
+        clonedElement.style.webkitTransform = 'none';
+        clonedElement.style.webkitTextSizeAdjust = '100%';
+        (clonedElement.style as any).textSizeAdjust = '100%';
+      },
+    });
+
+    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+
+    const fallbackName = index !== undefined ? `SJ_${index + 1}` : 'NLS';
+    const blClean = (doc.blNumber || fallbackName).replace(/[\\/:*?"<>|]/g, '_');
+    const fileName = `Surat_Jalan_${blClean}.pdf`;
+
+    return { pdf, fileName };
+  };
+
   // SEND ALL DOCS OF PDF VIA WHATSAPP (Separate PDF files for all Surat Jalan)
   const handleSendAllDocsPdfWhatsApp = async () => {
     if (documents.length === 0) return;
@@ -338,43 +423,7 @@ export const App: React.FC = () => {
         setBatchExportProgress({ current: i + 1, total: documents.length });
         const doc = documents[i];
 
-        let canvas: HTMLCanvasElement | null = null;
-        const el = document.getElementById(`batch-export-doc-${doc.id}`);
-        if (el) {
-          const targetEl = (el.querySelector('.surat-jalan-document') as HTMLElement) || el;
-          canvas = await html2canvas(targetEl, {
-            scale: 2,
-            useCORS: true,
-            logging: false,
-            backgroundColor: '#ffffff',
-            onclone: (clonedDoc) => {
-              const container = clonedDoc.getElementById('batch-export-container');
-              if (container) {
-                container.style.position = 'static';
-                container.style.left = '0';
-                container.style.top = '0';
-              }
-            },
-          });
-        } else if (documentRef.current && doc.id === currentDoc.id) {
-          canvas = await html2canvas(documentRef.current, {
-            scale: 2,
-            useCORS: true,
-            logging: false,
-            backgroundColor: '#ffffff',
-          });
-        }
-
-        if (!canvas) continue;
-
-        const imgData = canvas.toDataURL('image/jpeg', 1.0);
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-
-        const blClean = (doc.blNumber || `SJ_${i + 1}`).replace(/[\\/:*?"<>|]/g, '_');
-        const fileName = `Surat_Jalan_${blClean}.pdf`;
+        const { pdf, fileName } = await generatePdfForDoc(doc, i);
 
         const blob = pdf.output('blob');
         const file = new File([blob], fileName, { type: 'application/pdf' });
@@ -441,22 +490,8 @@ export const App: React.FC = () => {
       phone = inputPhone.trim();
     }
 
-    if (!documentRef.current) return;
     try {
-      const canvas = await html2canvas(documentRef.current, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#ffffff',
-      });
-      const imgData = canvas.toDataURL('image/jpeg', 1.0);
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-
-      const blClean = (currentDoc.blNumber || 'NLS').replace(/[\\/:*?"<>|]/g, '_');
-      const fileName = `Surat_Jalan_${blClean}.pdf`;
+      const { pdf, fileName } = await generatePdfForDoc(currentDoc);
       const blob = pdf.output('blob');
       const file = new File([blob], fileName, { type: 'application/pdf' });
 
@@ -526,23 +561,9 @@ export const App: React.FC = () => {
 
   // DOWNLOAD DIRECT PDF METHOD (Active Document)
   const handleDownloadPdf = async () => {
-    if (!documentRef.current) return;
     try {
-      const element = documentRef.current;
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#ffffff'
-      });
-      const imgData = canvas.toDataURL('image/jpeg', 1.0);
-      
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      
-      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`Surat_Jalan_${currentDoc.blNumber || 'NLS'}.pdf`);
+      const { pdf, fileName } = await generatePdfForDoc(currentDoc);
+      pdf.save(fileName);
     } catch (err) {
       console.error(err);
       window.print();
@@ -558,35 +579,7 @@ export const App: React.FC = () => {
       for (let i = 0; i < documents.length; i++) {
         setBatchExportProgress({ current: i + 1, total: documents.length });
         const doc = documents[i];
-        const el = document.getElementById(`batch-export-doc-${doc.id}`);
-        if (!el) continue;
-
-        const targetEl = (el.querySelector('.surat-jalan-document') as HTMLElement) || el;
-        const canvas = await html2canvas(targetEl, {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          backgroundColor: '#ffffff',
-          onclone: (clonedDoc) => {
-            const container = clonedDoc.getElementById('batch-export-container');
-            if (container) {
-              container.style.position = 'static';
-              container.style.left = '0';
-              container.style.top = '0';
-            }
-          },
-        });
-
-        const imgData = canvas.toDataURL('image/jpeg', 1.0);
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-
-        // Sanitize filename based on BL number
-        const blClean = (doc.blNumber || `SJ_${i + 1}`).replace(/[\\/:*?"<>|]/g, '_');
-        const fileName = `Surat_Jalan_${blClean}.pdf`;
+        const { pdf, fileName } = await generatePdfForDoc(doc, i);
         pdf.save(fileName);
 
         // Small delay between file downloads to ensure browser allows multiple sequential downloads
