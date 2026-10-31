@@ -315,7 +315,7 @@ export const App: React.FC = () => {
     setViewState('hero-prompt');
   };
 
-  // HELPER: RENDER SINGLE SURAT JALAN DOCUMENT TO FULL 1:1 A4 PDF (Immune to mobile zoom/viewport scaling)
+  // HELPER: RENDER SINGLE SURAT JALAN DOCUMENT TO FULL 1:1 A4 PDF (Immune to mobile zoom/viewport scaling & iOS Safari async stylesheet bug)
   const generatePdfForDoc = async (doc: SuratJalanData, index?: number) => {
     const batchEl = document.getElementById(`batch-export-doc-${doc.id}`);
     const targetEl =
@@ -334,56 +334,62 @@ export const App: React.FC = () => {
       windowWidth: 1200,
       scrollX: 0,
       scrollY: 0,
-      onclone: (clonedDoc, clonedElement) => {
-        clonedDoc.documentElement.style.webkitTextSizeAdjust = '100%';
-        (clonedDoc.documentElement.style as any).textSizeAdjust = '100%';
-        clonedDoc.body.style.webkitTextSizeAdjust = '100%';
-        (clonedDoc.body.style as any).textSizeAdjust = '100%';
-        clonedDoc.body.style.margin = '0';
-        clonedDoc.body.style.padding = '0';
-
-        // Strip any zoom/scale transforms and size constraints on all ancestors
-        let parent: HTMLElement | null = clonedElement.parentElement;
-        while (parent && parent !== clonedDoc.body && parent !== clonedDoc.documentElement) {
-          parent.style.transform = 'none';
-          parent.style.webkitTransform = 'none';
-          parent.style.transition = 'none';
-          parent.style.width = 'auto';
-          parent.style.height = 'auto';
-          parent.style.maxWidth = 'none';
-          parent.style.maxHeight = 'none';
-          parent.style.overflow = 'visible';
-          parent = parent.parentElement;
-        }
-
-        const container = clonedDoc.getElementById('batch-export-container');
-        if (container) {
-          container.style.position = 'absolute';
-          container.style.left = '0';
-          container.style.top = '0';
-          container.style.width = '210mm';
-          container.style.margin = '0';
-          container.style.padding = '0';
-          container.style.transform = 'none';
-          container.style.zIndex = '99999';
-
-          Array.from(container.children).forEach((child) => {
-            const childEl = child as HTMLElement;
-            if (!childEl.contains(clonedElement)) {
-              childEl.style.display = 'none';
+      onclone: async (clonedDoc, clonedElement) => {
+        // 1. Synchronously inline all active CSS rules from the main document into clonedDoc.head
+        // so the cloned iframe never fails when external <link rel="stylesheet"> hasn't loaded yet on iOS Safari
+        try {
+          const styleEl = clonedDoc.createElement('style');
+          let cssText = '';
+          Array.from(document.styleSheets).forEach((sheet) => {
+            try {
+              Array.from(sheet.cssRules).forEach((rule) => {
+                cssText += rule.cssText + '\n';
+              });
+            } catch {
+              // Ignore cross-origin stylesheets
             }
           });
+          if (cssText) {
+            styleEl.textContent = cssText;
+            clonedDoc.head.appendChild(styleEl);
+          }
+        } catch {
+          // Fallback to inline styles on SuratJalanPreview
         }
 
-        clonedElement.style.width = '210mm';
-        clonedElement.style.minWidth = '210mm';
-        clonedElement.style.maxWidth = '210mm';
-        clonedElement.style.minHeight = '297mm';
+        // 2. Isolate clonedElement as the sole child of clonedDoc.body at (0, 0)
+        clonedDoc.documentElement.style.margin = '0';
+        clonedDoc.documentElement.style.padding = '0';
+        clonedDoc.documentElement.style.background = '#ffffff';
+        clonedDoc.documentElement.style.webkitTextSizeAdjust = '100%';
+        (clonedDoc.documentElement.style as any).textSizeAdjust = '100%';
+
+        clonedDoc.body.innerHTML = '';
+        clonedDoc.body.style.margin = '0';
+        clonedDoc.body.style.padding = '0';
+        clonedDoc.body.style.background = '#ffffff';
+        clonedDoc.body.style.width = '794px';
+        clonedDoc.body.style.minHeight = '1123px';
+        clonedDoc.body.style.overflow = 'visible';
+        clonedDoc.body.style.webkitTextSizeAdjust = '100%';
+        (clonedDoc.body.style as any).textSizeAdjust = '100%';
+
+        clonedElement.style.width = '794px';
+        clonedElement.style.minWidth = '794px';
+        clonedElement.style.maxWidth = '794px';
+        clonedElement.style.minHeight = '1123px';
         clonedElement.style.margin = '0';
         clonedElement.style.transform = 'none';
         clonedElement.style.webkitTransform = 'none';
+        clonedElement.style.boxShadow = 'none';
         clonedElement.style.webkitTextSizeAdjust = '100%';
         (clonedElement.style as any).textSizeAdjust = '100%';
+
+        clonedDoc.body.appendChild(clonedElement);
+
+        // Force layout reflow in cloned iframe before html2canvas measures bounds
+        void clonedElement.offsetHeight;
+        await new Promise((resolve) => setTimeout(resolve, 40));
       },
     });
 
