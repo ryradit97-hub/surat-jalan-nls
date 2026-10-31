@@ -139,11 +139,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               type="button"
               onClick={onOpenHistory}
-              className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer theme-btn-ghost shrink-0"
+              className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer theme-btn-ghost shrink-0"
               title="Lihat Riwayat Surat Jalan (30 Hari)"
             >
               <History className="w-3.5 h-3.5 shrink-0 text-[#d8b4fe]" />
-              <span className="hidden sm:inline">Riwayat</span>
+              <span className="text-[11px] sm:text-xs">Riwayat</span>
             </button>
           )}
 

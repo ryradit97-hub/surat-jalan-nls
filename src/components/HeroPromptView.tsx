@@ -10,6 +10,7 @@ import {
   Check,
   Loader2,
   HelpCircle,
+  History,
 } from 'lucide-react';
 import { paraphraseLogisticsPrompt } from '../services/geminiService';
 import { HighlightedPromptTextarea } from './HighlightedPromptTextarea';
@@ -21,12 +22,14 @@ interface HeroPromptViewProps {
   onSubmitPrompt: (promptText: string) => void;
   onGoToManual: () => void;
   onOpenTutorial?: () => void;
+  onOpenHistory?: () => void;
 }
 
 export const HeroPromptView: React.FC<HeroPromptViewProps> = ({
   onSubmitPrompt,
   onGoToManual,
   onOpenTutorial,
+  onOpenHistory,
 }) => {
   const [prompt, setPrompt] = useState<string>(
     'Buatkan saya surat jalan untuk tanggal 18 Maret 2026 dengan delivery address ke Terminal Peti Kemas Koja (UTC3), dengan BL number SITR160334, PO number PO-2026/089, barang PLASTIC KITCHEN WARE, Weight 22000 KGS, Remarks 1 X 40 HC'
@@ -311,6 +314,18 @@ Npct
               Buka Form Manual ➔
             </span>
           </button>
+
+          {onOpenHistory && (
+            <button
+              type="button"
+              onClick={onOpenHistory}
+              className="inline-flex items-center gap-2 px-5 py-3.5 rounded-2xl text-sm sm:text-base font-semibold border backdrop-blur-xl transition-all cursor-pointer group shadow-sm active:scale-95 theme-card"
+              title="Lihat Riwayat Surat Jalan Cloud (30 Hari)"
+            >
+              <History className="w-4 h-4 text-[#d8b4fe]" />
+              <span className="theme-text-light">Riwayat (30 Hari)</span>
+            </button>
+          )}
 
           {onOpenTutorial && (
             <button

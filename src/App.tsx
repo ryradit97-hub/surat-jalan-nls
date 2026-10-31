@@ -794,6 +794,7 @@ export const App: React.FC = () => {
             setMobileStudioTab('editor');
           }}
           onOpenTutorial={() => setIsTutorialOpen(true)}
+          onOpenHistory={() => setIsHistoryOpen(true)}
         />
       ) : (
         /* VIEW STATE 2: STUDIO & PREVIEW WORKSPACE GRID */
