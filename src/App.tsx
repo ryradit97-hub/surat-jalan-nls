@@ -326,6 +326,32 @@ export const App: React.FC = () => {
       throw new Error('Elemen dokumen Surat Jalan tidak ditemukan');
     }
 
+    // Pre-inject an inline <style> tag in main document.head before html2canvas clones the DOM
+    // so DocumentCloner natively clones all CSS rules without waiting for <link rel="stylesheet"> in about:blank
+    let inlineStyleTag = document.getElementById('nls-pdf-inline-styles') as HTMLStyleElement | null;
+    if (!inlineStyleTag) {
+      try {
+        let cssText = '';
+        Array.from(document.styleSheets).forEach((sheet) => {
+          try {
+            Array.from(sheet.cssRules).forEach((rule) => {
+              cssText += rule.cssText + '\n';
+            });
+          } catch {
+            // Ignore cross-origin stylesheets
+          }
+        });
+        if (cssText) {
+          inlineStyleTag = document.createElement('style');
+          inlineStyleTag.id = 'nls-pdf-inline-styles';
+          inlineStyleTag.textContent = cssText;
+          document.head.appendChild(inlineStyleTag);
+        }
+      } catch {
+        // Fallback to inline styles on SuratJalanPreview
+      }
+    }
+
     const canvas = await html2canvas(targetEl, {
       scale: 2,
       useCORS: true,
