@@ -106,53 +106,60 @@ export const SuccessCelebrationModal: React.FC<SuccessCelebrationModalProps> = (
   const activeDoc = documents.find((d) => d.id === currentDocId) || documents[0];
   const firstItem = activeDoc.items[0];
 
+  const formatWeight = (w?: string, fallback = '20000') => {
+    const raw = (w || fallback).trim().replace(/\s*kgs?\b/gi, '').trim();
+    return `${raw} KGS`;
+  };
+
+  const handleClose = () => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    onClose();
+  };
+
   return (
-    /* Floating non-blocking container over the preview screen */
-    <div className="fixed inset-0 z-50 pointer-events-none flex flex-col items-center justify-start pt-10 sm:pt-14 px-4 animate-fade-in">
-      {/* Subtle translucent ambient light */}
-      <div className="absolute w-[500px] h-[350px] bg-[#a855f7]/20 rounded-full blur-[120px] pointer-events-none" />
-
-      {/* Floating Liquid Modal Dialogue (Allows preview screen to remain visible in background) */}
-      <div className="relative z-10 pointer-events-auto max-w-xl w-full rounded-[32px] sm:rounded-[40px] p-5 sm:p-7 liquid-hero-glass shadow-[0_25px_80px_rgba(0,0,0,0.65)] border-[0.5px] border-white/25 overflow-hidden">
-        {/* Specular hairline top reflection line */}
-        <div className="absolute inset-x-12 top-0 h-[0.5px] bg-gradient-to-r from-transparent via-white/50 to-transparent pointer-events-none" />
-        <div className="absolute -top-28 -left-28 w-64 h-64 bg-gradient-to-br from-white/15 via-[#d8b4fe]/10 to-transparent rounded-full blur-3xl pointer-events-none" />
-
+    /* Soft dimmed backdrop container so the white A4 preview behind never bleeds through */
+    <div
+      onClick={handleClose}
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center p-4 bg-[#120b1d]/75 backdrop-blur-md animate-fade-in"
+    >
+      {/* Soft, opaque, low-contrast modal card */}
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="theme-celebration-modal relative z-10 pointer-events-auto max-w-xl w-full rounded-[28px] sm:rounded-[34px] p-5 sm:p-6 bg-[#231733] text-[#f3ecf8] shadow-[0_24px_60px_rgba(10,5,18,0.6)] border border-[#d8b4fe]/20 overflow-hidden"
+      >
         {/* Close Button Top Right */}
         <button
           type="button"
-          onClick={onClose}
-          className="absolute top-4 right-4 w-8 h-8 rounded-xl flex items-center justify-center bg-white/[0.06] hover:bg-white/[0.14] border border-white/10 text-[#c4b5fd]/80 hover:text-white transition-all cursor-pointer backdrop-blur-md"
+          onClick={handleClose}
+          className="absolute top-4 right-4 w-8 h-8 rounded-xl flex items-center justify-center bg-[#2f2042] hover:bg-[#3b2954] border border-[#d8b4fe]/15 text-[#c4b5fd]/80 hover:text-[#f3ecf8] transition-all cursor-pointer"
           title="Tutup Modal"
         >
           <X className="w-4 h-4" />
         </button>
 
         {/* Celebration Header */}
-        <div className="flex items-center gap-3.5 mb-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#f472b6] via-[#d8b4fe] to-[#faedd9] p-0.5 shadow-lg shadow-purple-500/25 shrink-0">
-            <div className="w-full h-full bg-[#1c102c] rounded-[14px] flex items-center justify-center">
-              {isMulti ? (
-                <Layers className="w-6 h-6 text-[#faedd9] animate-bounce" />
-              ) : (
-                <CheckCircle2 className="w-6 h-6 text-[#faedd9] animate-bounce" />
-              )}
-            </div>
+        <div className="flex items-center gap-3.5 mb-4 pr-8">
+          <div className="w-11 h-11 rounded-2xl bg-[#312147] border border-[#d8b4fe]/25 flex items-center justify-center shrink-0">
+            {isMulti ? (
+              <Layers className="w-5 h-5 text-[#d8b4fe]" />
+            ) : (
+              <CheckCircle2 className="w-5 h-5 text-[#d8b4fe]" />
+            )}
           </div>
 
           <div className="min-w-0 flex-1">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/[0.08] border border-[#faedd9]/25 text-[#faedd9] text-[11px] font-semibold mb-1">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#312147] border border-[#d8b4fe]/20 text-[#e9d5ff] text-[11px] font-medium mb-1">
               <Sparkles className="w-3 h-3 text-[#d8b4fe]" />
               <span>
                 {isMulti ? `Batch ${documents.length} Surat Jalan` : 'Dokumen Resmi Terbit'}
               </span>
             </div>
-            <h3 className="text-lg sm:text-xl font-black text-[#fffdfa] tracking-tight leading-tight truncate">
+            <h3 className="text-base sm:text-lg font-bold text-[#f5efe6] tracking-tight leading-tight truncate">
               {isMulti
                 ? `🎉 ${documents.length} Surat Jalan Berhasil Dibuat!`
                 : 'Surat Jalan Berhasil Dibuat! 🎉'}
             </h3>
-            <p className="text-[11px] sm:text-xs text-[#faedd9]/75 truncate">
+            <p className="text-[11px] sm:text-xs text-[#c4b5fd]/75 truncate mt-0.5">
               {isMulti
                 ? 'Semua surat jalan telah tersusun dalam tab Chrome terpisah di atas.'
                 : 'Dokumen A4 standar NLS telah diformat dan siap digunakan.'}
@@ -163,7 +170,7 @@ export const SuccessCelebrationModal: React.FC<SuccessCelebrationModalProps> = (
         {/* MULTI-DOCUMENT TAB LIST CAROUSEL (If user created > 1 Surat Jalan) */}
         {isMulti && (
           <div className="mb-4">
-            <span className="text-[10.5px] font-bold text-[#faedd9]/70 uppercase tracking-wider block mb-2">
+            <span className="text-[10.5px] font-semibold text-[#c4b5fd]/75 uppercase tracking-wider block mb-2">
               Daftar Tab Surat Jalan:
             </span>
             <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-white/15">
@@ -177,23 +184,23 @@ export const SuccessCelebrationModal: React.FC<SuccessCelebrationModalProps> = (
                     onClick={() => onSelectDoc(doc.id)}
                     className={`text-left p-2.5 rounded-2xl border transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-white/[0.12] border-[#faedd9]/50 shadow-md ring-1 ring-[#faedd9]/30'
-                        : 'bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.07] hover:border-white/20'
+                        ? 'bg-[#36244f] border-[#d8b4fe]/45 shadow-sm'
+                        : 'bg-[#1b1128]/80 border-[#d8b4fe]/12 hover:bg-[#2a1c3d] hover:border-[#d8b4fe]/25'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#faedd9]/20 text-[#faedd9] font-mono">
+                      <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-[#463066] text-[#e9d5ff] font-mono">
                         Tab #{idx + 1}
                       </span>
-                      <span className="text-[10px] font-mono text-[#c4b5fd]/80 truncate max-w-[80px]">
+                      <span className="text-[10px] font-mono text-[#c4b5fd]/75 truncate max-w-[85px]">
                         {doc.blNumber || 'Draft'}
                       </span>
                     </div>
-                    <span className="text-xs font-bold text-[#fffdfa] block truncate">
+                    <span className="text-xs font-semibold text-[#f5efe6] block truncate">
                       {it?.description || 'Kargo'}
                     </span>
-                    <span className="text-[10.5px] text-[#faedd9]/70 block truncate">
-                      {it?.weightKg || '20000'} KGS{it?.remarks ? ` • ${it.remarks}` : ''}
+                    <span className="text-[10.5px] text-[#c4b5fd]/75 block truncate mt-0.5">
+                      {formatWeight(it?.weightKg, '20000')}{it?.remarks ? ` • ${it.remarks}` : ''}
                     </span>
                   </button>
                 );
@@ -203,42 +210,42 @@ export const SuccessCelebrationModal: React.FC<SuccessCelebrationModalProps> = (
         )}
 
         {/* SUMMARY CARD OF ACTIVE DOCUMENT */}
-        <div className="p-3.5 sm:p-4 rounded-2xl bg-white/[0.03] border-[0.5px] border-white/[0.08] shadow-[inset_0_1px_2px_rgba(255,255,255,0.06)] mb-4 space-y-2.5">
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-[#1b1128]/85 border border-[#d8b4fe]/15 mb-4 space-y-2.5">
           <div className="flex items-start gap-2">
             <MapPin className="w-3.5 h-3.5 text-[#d8b4fe] shrink-0 mt-0.5" />
             <div className="min-w-0 flex-1">
-              <span className="text-[10px] font-semibold text-[#faedd9]/60 uppercase tracking-wider block">
+              <span className="text-[10px] font-semibold text-[#c4b5fd]/65 uppercase tracking-wider block">
                 Tujuan Pengiriman
               </span>
-              <span className="text-xs font-bold text-[#fffdfa] block truncate">
+              <span className="text-xs font-semibold text-[#f5efe6] block truncate mt-0.5">
                 {activeDoc.deliveryAddress || 'Terminal Peti Kemas Koja (UTC3)'}
               </span>
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 pt-2 border-t border-white/[0.06]">
+          <div className="grid grid-cols-3 gap-2 pt-2 border-t border-[#d8b4fe]/10">
             <div>
-              <span className="text-[9.5px] font-semibold text-[#faedd9]/60 uppercase tracking-wider block">
+              <span className="text-[9.5px] font-semibold text-[#c4b5fd]/65 uppercase tracking-wider block">
                 No. B/L
               </span>
-              <span className="text-xs font-bold text-[#faedd9] font-mono block truncate">
+              <span className="text-xs font-semibold text-[#e9d5ff] font-mono block truncate mt-0.5">
                 {activeDoc.blNumber || '-'}
               </span>
             </div>
             <div>
-              <span className="text-[9.5px] font-semibold text-[#faedd9]/60 uppercase tracking-wider block">
+              <span className="text-[9.5px] font-semibold text-[#c4b5fd]/65 uppercase tracking-wider block">
                 No. P/O
               </span>
-              <span className="text-xs font-bold text-[#faedd9] font-mono block truncate">
+              <span className="text-xs font-semibold text-[#e9d5ff] font-mono block truncate mt-0.5">
                 {activeDoc.poNumber || '-'}
               </span>
             </div>
             <div>
-              <span className="text-[9.5px] font-semibold text-[#faedd9]/60 uppercase tracking-wider block">
+              <span className="text-[9.5px] font-semibold text-[#c4b5fd]/65 uppercase tracking-wider block">
                 Berat & Keterangan
               </span>
-              <span className="text-xs font-bold text-[#fffdfa] block truncate">
-                {firstItem?.weightKg || '22000'} KGS
+              <span className="text-xs font-semibold text-[#f5efe6] block truncate mt-0.5">
+                {formatWeight(firstItem?.weightKg, '22000')}
               </span>
             </div>
           </div>
@@ -248,10 +255,10 @@ export const SuccessCelebrationModal: React.FC<SuccessCelebrationModalProps> = (
         <div className="space-y-2.5">
           {/* Multi-Batch Export Highlights */}
           {isMulti && onDownloadBatchPdf && (
-            <div className="p-3 rounded-2xl bg-gradient-to-r from-purple-500/15 via-[#faedd9]/10 to-purple-500/15 border border-[#faedd9]/30 flex flex-col sm:flex-row items-center justify-between gap-2.5 shadow-sm">
+            <div className="p-3 rounded-2xl bg-[#2c1d42] border border-[#d8b4fe]/20 flex flex-col sm:flex-row items-center justify-between gap-2.5">
               <div className="flex items-center gap-2">
-                <Layers className="w-4 h-4 text-[#faedd9]" />
-                <span className="text-xs font-bold text-[#fffdfa]">
+                <Layers className="w-4 h-4 text-[#d8b4fe]" />
+                <span className="text-xs font-semibold text-[#f5efe6]">
                   Ekspor Batch {documents.length} Surat Jalan:
                 </span>
               </div>
@@ -259,10 +266,10 @@ export const SuccessCelebrationModal: React.FC<SuccessCelebrationModalProps> = (
                 <button
                   type="button"
                   onClick={() => {
-                    onClose();
+                    handleClose();
                     onDownloadBatchPdf();
                   }}
-                  className="flex-1 sm:flex-initial px-3.5 py-1.5 rounded-xl text-xs font-black text-[#181022] bg-gradient-to-r from-[#faedd9] to-[#fff7ed] hover:shadow-md transition-all cursor-pointer shadow-sm active:scale-95"
+                  className="flex-1 sm:flex-initial px-3.5 py-1.5 rounded-xl text-xs font-semibold text-[#f5efe6] bg-[#48326b] hover:bg-[#563d7f] border border-[#d8b4fe]/30 transition-all cursor-pointer active:scale-95"
                   title="Download semua surat jalan (1 file PDF terpisah per surat jalan)"
                 >
                   Download Semua PDF ({documents.length} File)
@@ -271,10 +278,10 @@ export const SuccessCelebrationModal: React.FC<SuccessCelebrationModalProps> = (
                   <button
                     type="button"
                     onClick={() => {
-                      onClose();
+                      handleClose();
                       onPrintAllBatch();
                     }}
-                    className="flex-1 sm:flex-initial px-3 py-1.5 rounded-xl text-xs font-semibold text-[#faedd9] bg-white/[0.08] hover:bg-white/[0.16] border border-white/10 transition-all cursor-pointer active:scale-95"
+                    className="flex-1 sm:flex-initial px-3 py-1.5 rounded-xl text-xs font-medium text-[#e9d5ff] bg-[#36244f] hover:bg-[#422c60] border border-[#d8b4fe]/20 transition-all cursor-pointer active:scale-95"
                     title="Cetak seluruh surat jalan sekaligus"
                   >
                     Cetak Semua
@@ -287,11 +294,11 @@ export const SuccessCelebrationModal: React.FC<SuccessCelebrationModalProps> = (
           {/* Primary Button: Open & Preview */}
           <button
             type="button"
-            onClick={onClose}
-            className="w-full flex items-center justify-center gap-2 py-3 px-5 rounded-2xl text-xs sm:text-sm font-black text-[#181022] bg-gradient-to-r from-[#faedd9] via-[#fff7ed] to-[#faedd9] hover:shadow-[0_10px_30px_rgba(250,237,217,0.4)] hover:scale-[1.01] active:scale-[0.98] transition-all cursor-pointer shadow-md group"
+            onClick={handleClose}
+            className="w-full flex items-center justify-center gap-2 py-2.5 px-5 rounded-2xl text-xs sm:text-sm font-semibold text-[#f5efe6] bg-[#3d295a] hover:bg-[#4a326d] border border-[#d8b4fe]/30 transition-all cursor-pointer group"
           >
-            <span>{isMulti ? 'Tampilkan Dokumen di Preview ➔' : 'Tutup & Lihat Preview A4 ➔'}</span>
-            <ArrowRight className="w-3.5 h-3.5 text-[#7e22ce] group-hover:translate-x-1.5 transition-transform" />
+            <span>{isMulti ? 'Tampilkan Dokumen di Preview' : 'Tutup & Lihat Preview A4'}</span>
+            <ArrowRight className="w-3.5 h-3.5 text-[#d8b4fe] group-hover:translate-x-1 transition-transform" />
           </button>
 
           {/* Secondary Buttons: Direct Print & Download PDF for active doc */}
@@ -299,10 +306,10 @@ export const SuccessCelebrationModal: React.FC<SuccessCelebrationModalProps> = (
             <button
               type="button"
               onClick={() => {
-                onClose();
+                handleClose();
                 setTimeout(() => onPrint(), 250);
               }}
-              className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold text-[#faedd9] bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 hover:border-[#faedd9]/30 backdrop-blur-md transition-all cursor-pointer"
+              className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-semibold text-[#e9d5ff] bg-[#2c1d42] hover:bg-[#36244f] border border-[#d8b4fe]/15 hover:border-[#d8b4fe]/30 transition-all cursor-pointer"
             >
               <Printer className="w-3.5 h-3.5 text-[#d8b4fe]" />
               <span>Cetak Tab Aktif</span>
@@ -311,10 +318,10 @@ export const SuccessCelebrationModal: React.FC<SuccessCelebrationModalProps> = (
             <button
               type="button"
               onClick={() => {
-                onClose();
+                handleClose();
                 setTimeout(() => onDownloadPdf(), 250);
               }}
-              className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold text-[#faedd9] bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 hover:border-[#faedd9]/30 backdrop-blur-md transition-all cursor-pointer"
+              className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-semibold text-[#e9d5ff] bg-[#2c1d42] hover:bg-[#36244f] border border-[#d8b4fe]/15 hover:border-[#d8b4fe]/30 transition-all cursor-pointer"
             >
               <FileDown className="w-3.5 h-3.5 text-[#d8b4fe]" />
               <span>Download Tab Ini</span>
@@ -326,16 +333,16 @@ export const SuccessCelebrationModal: React.FC<SuccessCelebrationModalProps> = (
             <button
               type="button"
               onClick={() => {
-                onClose();
+                handleClose();
                 setTimeout(() => onOpenWhatsApp(), 200);
               }}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-emerald-600 via-emerald-500 to-emerald-600 hover:from-emerald-500 hover:to-emerald-400 border border-emerald-400/40 shadow-[0_4px_16px_rgba(16,185,129,0.25)] hover:shadow-emerald-500/40 transition-all cursor-pointer active:scale-98"
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-semibold text-[#d1fae5] bg-[#1d3b35] hover:bg-[#244840] border border-[#34d399]/25 transition-all cursor-pointer active:scale-98"
             >
-              <MessageSquare className="w-3.5 h-3.5 text-emerald-100" />
+              <MessageSquare className="w-3.5 h-3.5 text-[#6ee7b7]" />
               <span>
                 {isMulti
-                  ? `Kirim Semua (${documents.length}) PDF ke WhatsApp 💬`
-                  : 'Kirim PDF ke WhatsApp 💬'}
+                  ? `Kirim Semua (${documents.length}) PDF ke WhatsApp`
+                  : 'Kirim PDF ke WhatsApp'}
               </span>
             </button>
           )}
@@ -345,9 +352,9 @@ export const SuccessCelebrationModal: React.FC<SuccessCelebrationModalProps> = (
             <button
               type="button"
               onClick={() => triggerFireworks()}
-              className="inline-flex items-center gap-1 text-[11px] text-[#d8b4fe]/80 hover:text-[#faedd9] hover:underline cursor-pointer transition-colors"
+              className="inline-flex items-center gap-1 text-[11px] text-[#c4b5fd]/70 hover:text-[#e9d5ff] hover:underline cursor-pointer transition-colors"
             >
-              <Flame className="w-3 h-3 text-[#f472b6]" />
+              <Flame className="w-3 h-3 text-[#f472b6]/80" />
               <span>🎆 Letupkan kembang api lagi di atas preview</span>
             </button>
           </div>

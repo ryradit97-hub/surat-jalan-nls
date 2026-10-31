@@ -148,6 +148,34 @@ export const App: React.FC = () => {
 
   const documentRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const leftColumnRef = useRef<HTMLDivElement>(null);
+
+  // Scroll utility to cleanly bring both window and inner scroll containers to top
+  const scrollToTop = () => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = 0;
+      scrollContainerRef.current.scrollLeft = 0;
+    }
+    if (leftColumnRef.current) {
+      leftColumnRef.current.scrollTop = 0;
+    }
+  };
+
+  // Ensure scroll is reset to top whenever switching to studio or switching documents
+  useEffect(() => {
+    if (viewState === 'studio') {
+      scrollToTop();
+      const raf = requestAnimationFrame(() => {
+        scrollToTop();
+      });
+      return () => cancelAnimationFrame(raf);
+    }
+  }, [viewState, currentId]);
 
   // Sync active document with list
   const currentDoc = documents.find((d) => d.id === currentId) || documents[0] || createEmptySuratJalan();
@@ -297,12 +325,20 @@ export const App: React.FC = () => {
         setIsGenerating(false);
         setViewState('studio');
         setShowSuccessModal(true);
+        scrollToTop();
       }, remaining);
     } catch (e) {
       console.error(e);
       setIsGenerating(false);
       setViewState('studio');
+      scrollToTop();
     }
+  };
+
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+    scrollToTop();
+    setTimeout(scrollToTop, 40);
   };
 
   // CONFIRM RESET & RETURN TO PROMPT PENUH
@@ -664,7 +700,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen theme-app-shell bg-[#181022] text-[#faf5ee] flex flex-col selection:bg-[#d8b4fe]/30">
+    <div className={`min-h-screen theme-app-shell bg-[#181022] text-[#faf5ee] flex flex-col selection:bg-[#d8b4fe]/30 ${viewState === 'studio' ? 'xl:h-screen xl:overflow-hidden' : ''}`}>
       {/* Top Navbar with Chrome Tab Bar & Liquid Toolbar */}
       <Navbar
         currentDocument={currentDoc}
@@ -672,8 +708,12 @@ export const App: React.FC = () => {
         onSelectDocument={(id) => {
           setCurrentId(id);
           setViewState('studio');
+          scrollToTop();
         }}
-        onNewDocument={handleCreateNewDoc}
+        onNewDocument={() => {
+          handleCreateNewDoc();
+          scrollToTop();
+        }}
         onDeleteDocument={handleDeleteDocument}
         onResetDocument={handleResetCurrentDoc}
         onOpenPromptView={() => setViewState('hero-prompt')}
@@ -694,9 +734,9 @@ export const App: React.FC = () => {
         />
       ) : (
         /* VIEW STATE 2: STUDIO & PREVIEW WORKSPACE GRID */
-        <main className="studio-main-grid flex-1 grid grid-cols-1 xl:grid-cols-[480px_1fr] gap-5 p-4 md:p-6 max-w-[1900px] w-full mx-auto xl:h-[calc(100vh-92px)] xl:overflow-hidden animate-fade-in">
+        <main className="studio-main-grid flex-1 grid grid-cols-1 xl:grid-cols-[480px_1fr] gap-5 p-4 md:p-6 max-w-[1900px] w-full mx-auto xl:h-[calc(100dvh-106px)] xl:overflow-hidden animate-fade-in">
           {/* Left Column: Form & Automation Panel */}
-          <div className="no-print space-y-3.5 xl:h-full xl:overflow-y-auto xl:pr-2 scrollbar-thin scroll-smooth pb-16">
+          <div ref={leftColumnRef} className="no-print space-y-3.5 xl:h-full xl:overflow-y-auto xl:pr-2 scrollbar-thin scroll-smooth pb-16">
             {/* BACK TO PROMPT HEADER & MANUAL INPUT ONLY */}
             <div className="flex items-center justify-between gap-2">
               <button
@@ -1188,10 +1228,13 @@ export const App: React.FC = () => {
       {/* CELEBRATION MODAL WITH FIREWORKS OVER PREVIEW SCREEN */}
       <SuccessCelebrationModal
         isOpen={showSuccessModal}
-        onClose={() => setShowSuccessModal(false)}
+        onClose={handleCloseSuccessModal}
         documents={documents}
         currentDocId={currentId}
-        onSelectDoc={setCurrentId}
+        onSelectDoc={(id) => {
+          setCurrentId(id);
+          scrollToTop();
+        }}
         onPrint={handlePrintPdf}
         onDownloadPdf={handleDownloadPdf}
         onDownloadBatchPdf={handleDownloadBatchPdf}
