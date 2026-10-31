@@ -125,7 +125,7 @@ export const SuccessCelebrationModal: React.FC<SuccessCelebrationModalProps> = (
       {/* Soft, opaque, low-contrast modal card */}
       <div
         onClick={(e) => e.stopPropagation()}
-        className="theme-celebration-modal relative z-10 pointer-events-auto max-w-xl w-full rounded-[28px] sm:rounded-[34px] p-5 sm:p-6 bg-[#231733] text-[#f3ecf8] shadow-[0_24px_60px_rgba(10,5,18,0.6)] border border-[#d8b4fe]/20 overflow-hidden"
+        className="theme-celebration-modal relative z-10 pointer-events-auto max-w-xl w-full max-h-[92vh] overflow-y-auto scrollbar-thin rounded-[28px] sm:rounded-[34px] p-4 sm:p-6 bg-[#231733] text-[#f3ecf8] shadow-[0_24px_60px_rgba(10,5,18,0.6)] border border-[#d8b4fe]/20"
       >
         {/* Close Button Top Right */}
         <button

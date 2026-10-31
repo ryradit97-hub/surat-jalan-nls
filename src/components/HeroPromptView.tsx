@@ -130,7 +130,7 @@ Npct
   };
 
   return (
-    <div className="min-h-[calc(100vh-130px)] flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-8 md:py-14 animate-fade-in relative">
+    <div className="min-h-[calc(100vh-130px)] flex flex-col items-center justify-center px-3 sm:px-6 lg:px-8 py-5 md:py-14 animate-fade-in relative overflow-x-hidden">
       <div className="w-full max-w-6xl relative">
         {/* AMBIENT LIQUID ORBS (Behind the glass card) */}
         <div className="absolute -top-24 -left-20 w-[420px] h-[420px] bg-[#a855f7]/25 rounded-full blur-[110px] pointer-events-none animate-liquid-float" />
@@ -139,34 +139,34 @@ Npct
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[350px] bg-[#7e22ce]/20 rounded-full blur-[120px] pointer-events-none" />
 
         {/* Title Header */}
-        <div className="text-center mb-8 sm:mb-10 relative z-10">
-          <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.06] border border-[#faedd9]/20 text-[#faedd9] text-xs sm:text-sm font-semibold mb-4 backdrop-blur-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.15)] theme-badge">
+        <div className="text-center mb-6 sm:mb-10 relative z-10">
+          <div className="inline-flex items-center gap-2.5 px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full bg-white/[0.06] border border-[#faedd9]/20 text-[#faedd9] text-xs sm:text-sm font-semibold mb-3 sm:mb-4 backdrop-blur-xl shadow-[inset_0_1px_1px_rgba(255,255,255,0.15)] theme-badge">
             <img src={nlsLogo} alt="NLS" className="w-4 h-4 object-contain rounded-full shadow-sm" />
             <span>Asisten Cerdas Surat Jalan</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-[#fffdfa] tracking-tight leading-tight theme-hero-headline">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-[#fffdfa] tracking-tight leading-tight theme-hero-headline">
             Buat Surat Jalan Otomatis
           </h1>
-          <p className="text-sm sm:text-base md:text-lg text-[#faedd9]/80 mt-3 max-w-2xl mx-auto leading-relaxed theme-hero-sub">
+          <p className="text-xs sm:text-base md:text-lg text-[#faedd9]/80 mt-2 sm:mt-3 max-w-2xl mx-auto leading-relaxed theme-hero-sub">
             Ketik atau diktekan kalimat detail pengiriman dalam Bahasa Indonesia. AI menyusun dokumen resmi A4 standar PT Niaga Logistics Sejahtera.
           </p>
         </div>
 
         {/* ULTRA-LIQUID EXPANSIVE PROMPT FORM CARD (Delicate Thin Hairline Border) */}
-        <div className="relative z-10 rounded-[28px] sm:rounded-[44px] md:rounded-[48px] p-4 sm:p-8 md:p-12 lg:p-14 liquid-hero-glass overflow-hidden transition-all duration-300">
+        <div className="relative z-10 rounded-[24px] sm:rounded-[44px] md:rounded-[48px] p-3.5 sm:p-8 md:p-12 lg:p-14 liquid-hero-glass overflow-hidden transition-all duration-300">
           {/* Specular Prism Reflection Overlays (Thin 0.5px Top Highlight) */}
           <div className="absolute inset-x-16 top-0 h-[0.5px] bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none" />
           <div className="absolute -top-36 -left-36 w-80 h-80 bg-gradient-to-br from-white/15 via-[#d8b4fe]/10 to-transparent rounded-full blur-3xl pointer-events-none" />
 
           <form onSubmit={handleSubmit} className="flex flex-col relative z-10 w-full">
             {/* Seamless Liquid Textarea Canvas with Dynamic Aspect Bolding */}
-            <div id="tour-prompt-textarea" className="w-full relative mb-4 sm:mb-6 p-1 sm:p-2 transition-all duration-300">
+            <div id="tour-prompt-textarea" className="w-full relative mb-3 sm:mb-6 p-1 sm:p-2 transition-all duration-300">
               <HighlightedPromptTextarea
-                rows={8}
+                rows={typeof window !== 'undefined' && window.innerWidth < 640 ? 6 : 8}
                 value={prompt}
                 onChange={setPrompt}
                 placeholder="Contoh: Buatkan saya surat jalan untuk tanggal 18 Maret 2026 dengan delivery address ke Terminal Peti Kemas Koja (UTC3), dengan BL number SITR160334, PO number PO-2026/089, barang COCONUT WATER, Weight 22000 KGS, Remarks 1 X 40 HR..."
-                minHeight="260px"
+                minHeight={typeof window !== 'undefined' && window.innerWidth < 640 ? '190px' : '260px'}
               />
             </div>
 
@@ -274,13 +274,21 @@ Npct
                 <button
                   key={idx}
                   type="button"
-                  onClick={() => setPrompt(item.text)}
-                  className="text-left p-4 sm:p-5 rounded-2xl border backdrop-blur-xl transition-all group cursor-pointer active:scale-[0.98] shadow-sm theme-card"
+                  onClick={() => {
+                    setPrompt(item.text);
+                    if (typeof window !== 'undefined') {
+                      const el = document.getElementById('tour-prompt-textarea');
+                      if (el) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      }
+                    }
+                  }}
+                  className="text-left p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border backdrop-blur-xl transition-all group cursor-pointer active:scale-[0.98] shadow-sm theme-card"
                 >
-                  <span className="font-extrabold block mb-1 text-sm sm:text-base theme-text-light">
+                  <span className="font-extrabold block mb-1 text-xs sm:text-base theme-text-light">
                     {item.title}
                   </span>
-                  <span className="line-clamp-2 text-xs sm:text-sm leading-relaxed theme-text-muted">
+                  <span className="line-clamp-2 text-[11px] sm:text-sm leading-relaxed theme-text-muted">
                     {item.text}
                   </span>
                 </button>

@@ -105,13 +105,18 @@ export const App: React.FC = () => {
   const [currentId, setCurrentId] = useState<string>(documents[0]?.id || '');
   const [isPresetsOpen, setIsPresetsOpen] = useState<boolean>(false);
   const [isBatchOpen, setIsBatchOpen] = useState<boolean>(false);
-  // Zoom level for document preview: starts at 42% on mobile (<480px) to fit A4 paper without overflow, 55% on small tablets, 100% on desktop
+  // Zoom level for document preview: dynamically fits screen width on mobile, 100% on desktop
   const [zoomLevel, setZoomLevel] = useState<number>(() => {
     if (typeof window === 'undefined') return 100;
-    if (window.innerWidth < 480) return 42;
+    if (window.innerWidth < 480) {
+      return Math.min(100, Math.max(30, Math.floor(((window.innerWidth - 24) / 794) * 100)));
+    }
     if (window.innerWidth < 768) return 55;
     return 100;
   });
+
+  // Mobile studio tab state: 'preview' (template A4) or 'editor' (form manual)
+  const [mobileStudioTab, setMobileStudioTab] = useState<'preview' | 'editor'>('preview');
   const [activeDropdown, setActiveDropdown] = useState<'download' | 'print' | 'whatsapp' | null>(null);
   const [isMagnifierActive, setIsMagnifierActive] = useState<boolean>(false);
 
@@ -166,16 +171,39 @@ export const App: React.FC = () => {
     }
   };
 
-  // Ensure scroll is reset to top whenever switching to studio or switching documents
+  // Auto-fit zoom level to container width with clean, balanced margins
+  const fitZoomToContainer = () => {
+    if (typeof window === 'undefined') return;
+    const isMobile = window.innerWidth < 1280;
+    const container = scrollContainerRef.current;
+    const containerWidth = container && container.clientWidth > 0 ? container.clientWidth : window.innerWidth;
+    const targetPadding = isMobile ? 20 : 40;
+    const availableWidth = Math.max(260, containerWidth - targetPadding);
+    const calculated = Math.min(100, Math.max(30, Math.floor((availableWidth / 794) * 100)));
+    setZoomLevel(calculated);
+  };
+
+  // Ensure scroll is reset to top and zoom fitted whenever switching to studio, tab or document
   useEffect(() => {
     if (viewState === 'studio') {
       scrollToTop();
-      const raf = requestAnimationFrame(() => {
+      const timer = setTimeout(() => {
+        fitZoomToContainer();
         scrollToTop();
-      });
-      return () => cancelAnimationFrame(raf);
+      }, 50);
+      return () => clearTimeout(timer);
     }
-  }, [viewState, currentId]);
+  }, [viewState, currentId, mobileStudioTab]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (viewState === 'studio' && window.innerWidth < 1280) {
+        fitZoomToContainer();
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [viewState]);
 
   // Sync active document with list
   const currentDoc = documents.find((d) => d.id === currentId) || documents[0] || createEmptySuratJalan();
@@ -324,21 +352,29 @@ export const App: React.FC = () => {
       setTimeout(() => {
         setIsGenerating(false);
         setViewState('studio');
+        setMobileStudioTab('preview');
         setShowSuccessModal(true);
         scrollToTop();
+        setTimeout(fitZoomToContainer, 50);
       }, remaining);
     } catch (e) {
       console.error(e);
       setIsGenerating(false);
       setViewState('studio');
+      setMobileStudioTab('preview');
       scrollToTop();
+      setTimeout(fitZoomToContainer, 50);
     }
   };
 
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
+    setMobileStudioTab('preview');
     scrollToTop();
-    setTimeout(scrollToTop, 40);
+    setTimeout(() => {
+      fitZoomToContainer();
+      scrollToTop();
+    }, 40);
   };
 
   // CONFIRM RESET & RETURN TO PROMPT PENUH
@@ -729,14 +765,55 @@ export const App: React.FC = () => {
           onSubmitPrompt={handleHeroPromptSubmit}
           onGoToManual={() => {
             setViewState('studio');
+            setMobileStudioTab('editor');
           }}
           onOpenTutorial={() => setIsTutorialOpen(true)}
         />
       ) : (
         /* VIEW STATE 2: STUDIO & PREVIEW WORKSPACE GRID */
-        <main className="studio-main-grid flex-1 grid grid-cols-1 xl:grid-cols-[480px_1fr] gap-5 p-4 md:p-6 max-w-[1900px] w-full mx-auto xl:h-[calc(100dvh-106px)] xl:overflow-hidden animate-fade-in">
+        <main className="studio-main-grid flex-1 grid grid-cols-1 xl:grid-cols-[480px_1fr] gap-4 md:gap-5 px-2 py-3 sm:p-4 md:p-6 max-w-[1900px] w-full mx-auto xl:h-[calc(100dvh-106px)] xl:overflow-hidden animate-fade-in">
+          {/* MOBILE SEGMENTED VIEW SWITCHER: PREVIEW (TEMPLATE A4) VS FORM (MANUAL) */}
+          <div className="xl:hidden col-span-1 flex items-center p-1 rounded-2xl bg-[#231733] border border-[#d8b4fe]/20 shadow-md no-print select-none mb-1">
+            <button
+              type="button"
+              onClick={() => {
+                setMobileStudioTab('preview');
+                scrollToTop();
+                setTimeout(fitZoomToContainer, 40);
+              }}
+              className={`flex-1 py-2 px-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                mobileStudioTab === 'preview'
+                  ? 'bg-[#faedd9] text-stone-900 shadow-sm ring-1 ring-amber-400/40 font-black'
+                  : 'text-[#c4b5fd]/80 hover:text-white'
+              }`}
+            >
+              <Eye className="w-3.5 h-3.5" />
+              <span>Preview Template A4</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setMobileStudioTab('editor');
+                scrollToTop();
+              }}
+              className={`flex-1 py-2 px-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                mobileStudioTab === 'editor'
+                  ? 'bg-[#faedd9] text-stone-900 shadow-sm ring-1 ring-amber-400/40 font-black'
+                  : 'text-[#c4b5fd]/80 hover:text-white'
+              }`}
+            >
+              <Sliders className="w-3.5 h-3.5" />
+              <span>Edit Form Data</span>
+            </button>
+          </div>
+
           {/* Left Column: Form & Automation Panel */}
-          <div ref={leftColumnRef} className="no-print space-y-3.5 xl:h-full xl:overflow-y-auto xl:pr-2 scrollbar-thin scroll-smooth pb-16">
+          <div
+            ref={leftColumnRef}
+            className={`no-print space-y-3.5 xl:h-full xl:overflow-y-auto xl:pr-2 scrollbar-thin scroll-smooth pb-16 ${
+              mobileStudioTab === 'editor' ? 'block' : 'hidden xl:block'
+            }`}
+          >
             {/* BACK TO PROMPT HEADER & MANUAL INPUT ONLY */}
             <div className="flex items-center justify-between gap-2">
               <button
@@ -763,10 +840,31 @@ export const App: React.FC = () => {
               onOpenPresets={() => setIsPresetsOpen(true)}
               onOpenBatchModal={() => setIsBatchOpen(true)}
             />
+
+            {/* Mobile Switch to Template Preview Button */}
+            <div className="xl:hidden pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileStudioTab('preview');
+                  scrollToTop();
+                  setTimeout(fitZoomToContainer, 40);
+                }}
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-2xl text-xs font-bold text-stone-900 bg-[#faedd9] hover:bg-white shadow-lg active:scale-95 transition-all cursor-pointer"
+              >
+                <Eye className="w-4 h-4" />
+                <span>Lihat Template Surat Jalan (Preview A4) ➔</span>
+              </button>
+            </div>
           </div>
 
           {/* Right Column: Live Document Preview Canvas */}
-          <div id="tour-preview-container" className="preview-card-container theme-preview-container rounded-3xl p-3 sm:p-4 md:p-6 flex flex-col items-center overflow-hidden relative shadow-xl border xl:h-full">
+          <div
+            id="tour-preview-container"
+            className={`preview-card-container theme-preview-container rounded-2xl sm:rounded-3xl p-2 sm:p-4 md:p-6 flex flex-col items-center overflow-hidden relative shadow-xl border xl:h-full ${
+              mobileStudioTab === 'preview' ? 'flex' : 'hidden xl:flex'
+            }`}
+          >
             {/* Canvas Floating Top Toolbar */}
             <div id="tour-preview-toolbar" className="w-full flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-3 pb-3 mb-3 border-b theme-toolbar-divider no-print">
               {/* Row 1 on mobile: Title + Zoom controls */}
@@ -801,6 +899,14 @@ export const App: React.FC = () => {
                     title="Zoom In"
                   >
                     <ZoomIn className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={fitZoomToContainer}
+                    className="p-1 px-1.5 rounded-lg theme-zoom-btn text-[10px] sm:text-[11px] font-bold hover:scale-105 active:scale-95 transition-all cursor-pointer ml-0.5"
+                    title="Fit ke Lebar Layar (Auto Fit)"
+                  >
+                    Fit
                   </button>
                   <button
                     type="button"
@@ -1094,23 +1200,29 @@ export const App: React.FC = () => {
                 touchAction: 'pan-x pan-y',
               }}
             >
-              <div className="w-fit min-w-full min-h-full flex justify-center items-start p-2 sm:p-5">
+              <div className="w-fit min-w-full min-h-full flex justify-center items-start p-1 sm:p-4 md:p-5">
                 <div
-                  onDoubleClick={() => setZoomLevel((prev) => (prev <= 60 ? 100 : 42))}
+                  onDoubleClick={() => {
+                    if (zoomLevel <= 60) {
+                      setZoomLevel(100);
+                    } else {
+                      fitZoomToContainer();
+                    }
+                  }}
                   className={`preview-zoom-wrapper shrink-0 transition-all duration-150 ${isPrintingAll ? 'no-print' : ''}`}
                   style={{
-                    width: `${(210 * zoomLevel) / 100}mm`,
+                    width: `${(794 * zoomLevel) / 100}px`,
                     height: `${(docHeight * zoomLevel) / 100}px`,
                     position: 'relative',
                   }}
-                  title="Double click / double tap untuk zoom cepat (100% / Fit)"
+                  title="Double click / tap untuk toggle zoom (100% / Fit)"
                 >
                   <div
                     style={{
                       transform: `scale(${zoomLevel / 100})`,
                       transformOrigin: 'top left',
-                      width: '210mm',
-                      minHeight: '297mm',
+                      width: '794px',
+                      minHeight: '1123px',
                       transition: 'transform 0.15s ease-out',
                       pointerEvents: isDragging ? 'none' : 'auto',
                     }}
