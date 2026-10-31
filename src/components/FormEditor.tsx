@@ -1,7 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { SuratJalanData, SuratJalanItem } from '../types/suratJalan';
-import { defaultDeliveryAddresses, defaultShippers, defaultGoodsDescriptions } from '../utils/defaultData';
-import { Plus, Trash2, MapPin, Package, Truck, User, Calendar, Hash, Tag, Copy, FileText, Check, History } from 'lucide-react';
+import { defaultShippers } from '../utils/defaultData';
+import {
+  getMergedDeliveryAddresses,
+  getMergedGoodsDescriptions,
+  getMergedShippers,
+  learnFromSuratJalan,
+} from '../services/masterMemoryService';
+import { Plus, Trash2, MapPin, Package, Truck, User, Calendar, Hash, Tag, Copy, FileText, Check, History, Sparkles } from 'lucide-react';
 
 interface FormEditorProps {
   data: SuratJalanData;
@@ -16,12 +22,16 @@ export const FormEditor: React.FC<FormEditorProps> = ({
   onChange,
   onOpenHistory,
 }) => {
+  const allAddresses = useMemo(() => getMergedDeliveryAddresses(), [data.deliveryAddress]);
+  const allGoods = useMemo(() => getMergedGoodsDescriptions(), [data.items]);
+  const allShippers = useMemo(() => getMergedShippers(), [data.shipperName]);
+
   const [selectedAddressPreset, setSelectedAddressPreset] = useState<string>(
-    defaultDeliveryAddresses.includes(data.deliveryAddress) ? data.deliveryAddress : 'custom'
+    allAddresses.includes(data.deliveryAddress) ? data.deliveryAddress : 'custom'
   );
 
   const [selectedShipperPreset, setSelectedShipperPreset] = useState<string>(
-    defaultShippers.find(s => s.name === data.shipperName)?.id || 'custom'
+    allShippers.find(s => s.name === data.shipperName)?.id || 'custom'
   );
 
   // Month mapping for Indonesian & English dates
@@ -210,7 +220,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
             value={selectedAddressPreset}
             onChange={(e) => handleDeliveryAddressDropdown(e.target.value)}
           >
-            {defaultDeliveryAddresses.map((addr, idx) => (
+            {allAddresses.map((addr, idx) => (
               <option key={idx} value={addr}>
                 📍 {addr}
               </option>
@@ -227,6 +237,11 @@ export const FormEditor: React.FC<FormEditorProps> = ({
             onChange={(e) => {
               setSelectedAddressPreset('custom');
               handleTextChange('deliveryAddress', e.target.value);
+            }}
+            onBlur={() => {
+              if (data.deliveryAddress) {
+                learnFromSuratJalan([data]);
+              }
             }}
             placeholder="Tulis alamat tujuan pengiriman di sini..."
           />
@@ -463,10 +478,15 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                       className="w-full liquid-input px-3 py-2 rounded-xl text-xs font-semibold theme-text-main"
                       value={item.description}
                       onChange={(e) => handleItemChange(index, 'description', e.target.value)}
+                      onBlur={() => {
+                        if (item.description) {
+                          learnFromSuratJalan([data]);
+                        }
+                      }}
                       placeholder="Ketik atau pilih nama barang..."
                     />
                     <datalist id={`goods-list-${index}`}>
-                      {defaultGoodsDescriptions.map((desc) => (
+                      {allGoods.map((desc) => (
                         <option key={desc} value={desc} />
                       ))}
                     </datalist>
@@ -477,7 +497,7 @@ export const FormEditor: React.FC<FormEditorProps> = ({
                     <span className="text-[9px] font-bold uppercase tracking-wider opacity-60 theme-label mr-0.5">
                       Pilihan:
                     </span>
-                    {defaultGoodsDescriptions.map((desc) => {
+                    {allGoods.map((desc) => {
                       const isSelected = item.description.trim().toUpperCase() === desc.toUpperCase();
                       return (
                         <button

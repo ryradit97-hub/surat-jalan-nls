@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ShipperPreset, DriverPreset } from '../types/suratJalan';
-import { defaultShippers, defaultDrivers } from '../utils/defaultData';
+import { getMergedShippers, getMergedDrivers } from '../services/masterMemoryService';
 import { Bookmark, User, Truck, X, ArrowRight } from 'lucide-react';
 
 interface PresetsModalProps {
@@ -16,6 +16,9 @@ export const PresetsModal: React.FC<PresetsModalProps> = ({
   onSelectShipper,
   onSelectDriver,
 }) => {
+  const allShippers = useMemo(() => getMergedShippers(), [isOpen]);
+  const allDrivers = useMemo(() => getMergedDrivers(), [isOpen]);
+
   if (!isOpen) return null;
 
   return (
@@ -48,7 +51,7 @@ export const PresetsModal: React.FC<PresetsModalProps> = ({
               <span>Shipper / Pengirim</span>
             </h4>
             <div className="space-y-1.5">
-              {defaultShippers.map((shipper) => (
+              {allShippers.map((shipper) => (
                 <div
                   key={shipper.id}
                   onClick={() => {
@@ -78,7 +81,7 @@ export const PresetsModal: React.FC<PresetsModalProps> = ({
               <span>Armada & Pengiriman</span>
             </h4>
             <div className="space-y-1.5">
-              {defaultDrivers.map((driver) => (
+              {allDrivers.map((driver) => (
                 <div
                   key={driver.id}
                   onClick={() => {

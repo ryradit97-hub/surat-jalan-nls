@@ -217,8 +217,8 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({
 
     const el = document.getElementById(currentItem.targetId);
     if (el) {
-      // Smoothly scroll target element into viewport center
-      el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+      // Smoothly scroll target element into viewport using nearest so outer container isn't pushed down
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
 
       // Measure exact DOM bounding box
       const rect = el.getBoundingClientRect();

@@ -16,6 +16,7 @@ import { ConfirmBackModal } from './components/ConfirmBackModal';
 import { TutorialOverlay } from './components/TutorialOverlay';
 import { HistoryModal } from './components/HistoryModal';
 import { saveSuratJalanHistory, fetchSuratJalanById } from './services/supabaseService';
+import { learnFromSuratJalan, fetchMasterMemoryFromSupabase } from './services/masterMemoryService';
 import { openWhatsAppDirect } from './utils/whatsappHelper';
 import { extractMultipleSuratJalanWithAI, applyAIExtractionToDocument } from './services/geminiService';
 import html2canvas from 'html2canvas-pro';
@@ -48,9 +49,13 @@ export const App: React.FC = () => {
   // 30-Day Supabase Cloud History Modal State
   const [isHistoryOpen, setIsHistoryOpen] = useState<boolean>(false);
 
-  // Check for shared Surat Jalan via URL query parameter (?view=<id>)
+  // Check for shared Surat Jalan via URL query parameter (?view=<id>) and load learned master memory
   useEffect(() => {
     if (typeof window === 'undefined') return;
+
+    // Load learned shippers, delivery addresses & goods from Supabase cloud
+    fetchMasterMemoryFromSupabase();
+
     const params = new URLSearchParams(window.location.search);
     const viewId = params.get('view');
     if (viewId) {
@@ -71,6 +76,8 @@ export const App: React.FC = () => {
       localStorage.setItem('nls_has_seen_tutorial', 'true');
     }
     setIsTutorialOpen(false);
+    scrollToTop();
+    setTimeout(scrollToTop, 50);
   };
 
   // Batch Export & Print All States
@@ -326,6 +333,8 @@ export const App: React.FC = () => {
     if (newList.length > 0) {
       setCurrentId(newList[0].id);
     }
+    saveSuratJalanHistory(newList);
+    learnFromSuratJalan(newList);
     setViewState('studio');
   };
 
@@ -359,6 +368,7 @@ export const App: React.FC = () => {
         const updatedDoc = applyAIExtractionToDocument(currentDoc, singleResult);
         handleUpdateCurrentDoc(updatedDoc);
         saveSuratJalanHistory([updatedDoc]);
+        learnFromSuratJalan([updatedDoc]);
       } else {
         // Multi-document generation (e.g. 4 Surat Jalan)
         const updatedDocs: SuratJalanData[] = extractedList.map((ext, idx) => {
@@ -370,6 +380,7 @@ export const App: React.FC = () => {
         setDocuments(updatedDocs);
         setCurrentId(updatedDocs[0].id);
         saveSuratJalanHistory(updatedDocs);
+        learnFromSuratJalan(updatedDocs);
       }
 
       const elapsed = Date.now() - startTime;
@@ -798,7 +809,7 @@ export const App: React.FC = () => {
         />
       ) : (
         /* VIEW STATE 2: STUDIO & PREVIEW WORKSPACE GRID */
-        <main className="studio-main-grid flex-1 grid grid-cols-1 xl:grid-cols-[480px_1fr] gap-4 md:gap-5 px-2 py-3 sm:p-4 md:p-6 max-w-[1900px] w-full mx-auto xl:h-[calc(100dvh-106px)] xl:overflow-hidden animate-fade-in">
+        <main className="studio-main-grid flex-1 min-h-0 grid grid-cols-1 xl:grid-cols-[480px_1fr] gap-4 md:gap-5 px-2 py-3 sm:p-4 md:p-6 max-w-[1900px] w-full mx-auto xl:overflow-hidden animate-fade-in">
           {/* MOBILE SEGMENTED VIEW SWITCHER: PREVIEW (TEMPLATE A4) VS FORM (MANUAL) */}
           <div className="xl:hidden col-span-1 flex items-center p-1 rounded-2xl bg-[#231733] border border-[#d8b4fe]/20 shadow-md no-print select-none mb-1">
             <button
@@ -902,12 +913,12 @@ export const App: React.FC = () => {
           {/* Right Column: Live Document Preview Canvas */}
           <div
             id="tour-preview-container"
-            className={`preview-card-container theme-preview-container rounded-2xl sm:rounded-3xl p-2 sm:p-4 md:p-6 flex flex-col items-center overflow-hidden relative shadow-xl border xl:h-full ${
+            className={`preview-card-container theme-preview-container rounded-2xl sm:rounded-3xl p-2 sm:p-4 md:p-6 flex flex-col items-center overflow-hidden relative shadow-xl border xl:h-full xl:min-h-0 ${
               mobileStudioTab === 'preview' ? 'flex' : 'hidden xl:flex'
             }`}
           >
             {/* Canvas Floating Top Toolbar */}
-            <div id="tour-preview-toolbar" className="w-full flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-3 pb-3 mb-3 border-b theme-toolbar-divider no-print">
+            <div id="tour-preview-toolbar" className="w-full shrink-0 flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-3 pb-3 mb-3 border-b theme-toolbar-divider no-print">
               {/* Row 1 on mobile: Title + Zoom controls */}
               <div className="flex items-center justify-between gap-2 w-full md:w-auto">
                 <div className="flex items-center gap-2 min-w-0">
@@ -1367,13 +1378,19 @@ export const App: React.FC = () => {
       {/* Modals with Apple Liquid Frosted Styling */}
       <BatchImportModal
         isOpen={isBatchOpen}
-        onClose={() => setIsBatchOpen(false)}
+        onClose={() => {
+          setIsBatchOpen(false);
+          scrollToTop();
+        }}
         onImport={handleBatchImport}
       />
 
       <PresetsModal
         isOpen={isPresetsOpen}
-        onClose={() => setIsPresetsOpen(false)}
+        onClose={() => {
+          setIsPresetsOpen(false);
+          scrollToTop();
+        }}
         onSelectShipper={handleSelectShipperPreset}
         onSelectDriver={handleSelectDriverPreset}
       />
@@ -1404,7 +1421,10 @@ export const App: React.FC = () => {
       {/* CONFIRMATION BEFORE RETURNING TO PROMPT PENUH */}
       <ConfirmBackModal
         isOpen={isConfirmBackOpen}
-        onClose={() => setIsConfirmBackOpen(false)}
+        onClose={() => {
+          setIsConfirmBackOpen(false);
+          scrollToTop();
+        }}
         onConfirm={handleConfirmBackToPrompt}
       />
 
@@ -1424,7 +1444,10 @@ export const App: React.FC = () => {
       {/* 30-DAY SUPABASE CLOUD HISTORY MODAL (ANONYMOUS DEVICE VAULT) */}
       <HistoryModal
         isOpen={isHistoryOpen}
-        onClose={() => setIsHistoryOpen(false)}
+        onClose={() => {
+          setIsHistoryOpen(false);
+          scrollToTop();
+        }}
         onSelectDocument={(doc) => {
           setDocuments((prev) => {
             const exists = prev.find((d) => d.id === doc.id || (d.blNumber && d.blNumber === doc.blNumber));

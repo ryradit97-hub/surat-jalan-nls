@@ -1,5 +1,6 @@
 import { SuratJalanData } from '../types/suratJalan';
 import { defaultDeliveryAddresses, defaultShippers } from '../utils/defaultData';
+import { getMergedShippers, getMergedDeliveryAddresses, getMergedGoodsDescriptions } from './masterMemoryService';
 
 export interface AIExtractionResult {
   unitType?: string;
@@ -485,16 +486,34 @@ Keluarkan HANYA format JSON valid tanpa teks lain dengan struktur:
   ]
 }`;
 
+  const activeShippers = getMergedShippers();
+  const activeAddresses = getMergedDeliveryAddresses();
+  const activeGoods = getMergedGoodsDescriptions();
+
+  const masterReferenceText = `
+DATA MASTER TERDAFTAR (Gunakan sebagai referensi validasi nama & alamat resmi jika cocok):
+- DAFTAR SHIPPER:
+${activeShippers.map(s => `  * "${s.name}": "${s.address}"`).join('\n')}
+- DAFTAR ALAMAT TUJUAN / TERMINAL:
+${activeAddresses.map(a => `  * "${a}"`).join('\n')}
+- DAFTAR NAMA BARANG:
+${activeGoods.map(g => `  * "${g}"`).join('\n')}
+`;
+
   const requestBody: any = {
     contents: [
       {
         role: 'user',
         parts: [
-          { text: systemInstruction },
+          { text: `${systemInstruction}\n\n${masterReferenceText}` },
           { text: `Ekstrak data Surat Jalan berikut ke JSON:\n"${prompt}"` }
         ]
       }
-    ]
+    ],
+    generationConfig: {
+      responseMimeType: 'application/json',
+      temperature: 0.1,
+    }
   };
 
   if (imageBase64) {
