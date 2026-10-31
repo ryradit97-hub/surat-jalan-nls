@@ -317,6 +317,7 @@ Npct
 
           {onOpenHistory && (
             <button
+              id="tour-history-hero"
               type="button"
               onClick={onOpenHistory}
               className="inline-flex items-center gap-2 px-5 py-3.5 rounded-2xl text-sm sm:text-base font-semibold border backdrop-blur-xl transition-all cursor-pointer group shadow-sm active:scale-95 theme-card"

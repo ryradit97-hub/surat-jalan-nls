@@ -137,6 +137,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* RIWAYAT SURAT JALAN (30 HARI CLOUD) */}
           {onOpenHistory && (
             <button
+              id="tour-history-nav"
               type="button"
               onClick={onOpenHistory}
               className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer theme-btn-ghost shrink-0"

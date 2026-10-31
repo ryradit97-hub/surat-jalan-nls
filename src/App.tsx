@@ -856,6 +856,7 @@ export const App: React.FC = () => {
 
               <div className="flex items-center gap-2">
                 <button
+                  id="tour-history-manual"
                   type="button"
                   onClick={() => setIsHistoryOpen(true)}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#2e1d44] hover:bg-[#3c2658] text-[#faedd9] border border-[#d8b4fe]/25 transition-all cursor-pointer shadow-sm active:scale-95"

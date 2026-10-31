@@ -13,6 +13,7 @@ import {
   Eye,
   MessageSquare,
   HelpCircle,
+  History,
 } from 'lucide-react';
 
 export interface TourStep {
@@ -100,6 +101,15 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({
       padding: 8,
     },
     {
+      targetId: 'tour-history-hero',
+      title: 'Riwayat Cloud 30 Hari (Private Vault)',
+      description:
+        'Semua surat jalan yang Anda buat otomatis tersimpan aman di cloud selama 30 hari tanpa perlu login. Khusus perangkat ini saja—bisa dibuka ulang, diunduh PDF, atau disalin link-nya untuk supir via WhatsApp.',
+      icon: <History className="w-4 h-4 text-purple-300" />,
+      position: 'top',
+      padding: 6,
+    },
+    {
       targetId: 'tour-manual-link',
       title: 'Beralih ke Input Manual',
       description:
@@ -122,6 +132,15 @@ export const TutorialOverlay: React.FC<TutorialOverlayProps> = ({
       description:
         'Jika Anda membuat lebih dari satu surat jalan, setiap dokumen akan tampil sebagai tab terpisah di bilah atas. Klik tab untuk beralih dokumen, tekan (+) untuk menambah surat jalan baru, atau (✕) untuk menutup tab.',
       icon: <FileText className="w-4 h-4 text-purple-300" />,
+      position: 'bottom',
+      padding: 4,
+    },
+    {
+      targetId: 'tour-history-manual',
+      title: 'Akses Riwayat Cloud 30 Hari',
+      description:
+        'Klik tombol ini kapan saja untuk melihat riwayat surat jalan sebelumnya. Anda bisa memuat ulang data lama ke editor tanpa perlu mengetik ulang, atau langsung cetak PDF.',
+      icon: <History className="w-4 h-4 text-purple-300" />,
       position: 'bottom',
       padding: 4,
     },

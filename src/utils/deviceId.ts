@@ -21,3 +21,4 @@ export const getAnonymousDeviceId = (): string => {
     return 'fallback_device_session';
   }
 };
+
