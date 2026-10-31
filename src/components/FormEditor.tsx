@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import { SuratJalanData, SuratJalanItem } from '../types/suratJalan';
 import { defaultDeliveryAddresses, defaultShippers, defaultGoodsDescriptions } from '../utils/defaultData';
-import { Plus, Trash2, MapPin, Package, Truck, User, Calendar, Hash, Tag, Copy, FileText, Check } from 'lucide-react';
+import { Plus, Trash2, MapPin, Package, Truck, User, Calendar, Hash, Tag, Copy, FileText, Check, History } from 'lucide-react';
 
 interface FormEditorProps {
   data: SuratJalanData;
   onChange: (updated: SuratJalanData) => void;
   onOpenPresets: () => void;
   onOpenBatchModal: () => void;
+  onOpenHistory?: () => void;
 }
 
 export const FormEditor: React.FC<FormEditorProps> = ({
   data,
   onChange,
+  onOpenHistory,
 }) => {
   const [selectedAddressPreset, setSelectedAddressPreset] = useState<string>(
     defaultDeliveryAddresses.includes(data.deliveryAddress) ? data.deliveryAddress : 'custom'
@@ -179,9 +181,22 @@ export const FormEditor: React.FC<FormEditorProps> = ({
               <h3 className="text-xs font-bold text-[#fffdfa]">Pengiriman & Dokumen</h3>
             </div>
           </div>
-          <span className="px-2 py-0.5 rounded-full text-[9.5px] font-bold bg-[#faedd9]/15 text-[#faedd9] border border-[#faedd9]/20">
-            UTAMA
-          </span>
+          <div className="flex items-center gap-2">
+            {onOpenHistory && (
+              <button
+                type="button"
+                onClick={onOpenHistory}
+                className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10.5px] font-semibold bg-[#35224c] hover:bg-[#432b60] text-[#faedd9] border border-[#d8b4fe]/25 transition-all cursor-pointer shadow-sm active:scale-95"
+                title="Buka data dari Riwayat 30 Hari Cloud"
+              >
+                <History className="w-3 h-3 text-[#d8b4fe]" />
+                <span>Dari Riwayat</span>
+              </button>
+            )}
+            <span className="px-2 py-0.5 rounded-full text-[9.5px] font-bold bg-[#faedd9]/15 text-[#faedd9] border border-[#faedd9]/20">
+              UTAMA
+            </span>
+          </div>
         </div>
 
         {/* Delivery Address Dropdown & Textarea */}

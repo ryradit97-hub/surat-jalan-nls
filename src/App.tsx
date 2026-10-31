@@ -21,7 +21,7 @@ import { extractMultipleSuratJalanWithAI, applyAIExtractionToDocument } from './
 import html2canvas from 'html2canvas-pro';
 import { jsPDF } from 'jspdf';
 import * as XLSX from 'xlsx';
-import { Printer, Download, Eye, Sparkles, Sliders, ZoomIn, ZoomOut, RotateCcw, ArrowLeft, Layers, MessageSquare, X, ChevronDown, Check, Search } from 'lucide-react';
+import { Printer, Download, Eye, Sparkles, Sliders, ZoomIn, ZoomOut, RotateCcw, ArrowLeft, Layers, MessageSquare, X, ChevronDown, Check, Search, History } from 'lucide-react';
 
 export const App: React.FC = () => {
   // First window is fully prompt form ('hero-prompt' | 'studio')
@@ -841,7 +841,7 @@ export const App: React.FC = () => {
               mobileStudioTab === 'editor' ? 'block' : 'hidden xl:block'
             }`}
           >
-            {/* BACK TO PROMPT HEADER & MANUAL INPUT ONLY */}
+            {/* BACK TO PROMPT HEADER, RIWAYAT BUTTON & MANUAL INPUT TAG */}
             <div className="flex items-center justify-between gap-2">
               <button
                 id="tour-workflow-toggle"
@@ -854,9 +854,21 @@ export const App: React.FC = () => {
                 <span>Prompt Penuh</span>
               </button>
 
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold theme-text-muted bg-white/[0.04] border border-white/10">
-                <Sliders className="w-3.5 h-3.5 opacity-70" />
-                <span>Input Manual</span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsHistoryOpen(true)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#2e1d44] hover:bg-[#3c2658] text-[#faedd9] border border-[#d8b4fe]/25 transition-all cursor-pointer shadow-sm active:scale-95"
+                  title="Buka Riwayat Surat Jalan (30 Hari Cloud)"
+                >
+                  <History className="w-3.5 h-3.5 text-[#d8b4fe]" />
+                  <span>Riwayat (30 Hari)</span>
+                </button>
+
+                <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold theme-text-muted bg-white/[0.04] border border-white/10">
+                  <Sliders className="w-3.5 h-3.5 opacity-70" />
+                  <span>Input Manual</span>
+                </div>
               </div>
             </div>
 
@@ -866,6 +878,7 @@ export const App: React.FC = () => {
               onChange={handleUpdateCurrentDoc}
               onOpenPresets={() => setIsPresetsOpen(true)}
               onOpenBatchModal={() => setIsBatchOpen(true)}
+              onOpenHistory={() => setIsHistoryOpen(true)}
             />
 
             {/* Mobile Switch to Template Preview Button */}
