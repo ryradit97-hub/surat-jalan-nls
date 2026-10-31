@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, RefreshCw, X, Sparkles, FileText, HelpCircle } from 'lucide-react';
+import { Plus, RefreshCw, X, Sparkles, FileText, HelpCircle, History } from 'lucide-react';
 import { SuratJalanData } from '../types/suratJalan';
 import { AppTheme } from '../types/theme';
 import { ThemeSwitcher } from './ThemeSwitcher';
@@ -14,6 +14,7 @@ interface NavbarProps {
   onDeleteDocument: (id: string) => void;
   onOpenPromptView: () => void;
   onOpenTutorial: () => void;
+  onOpenHistory?: () => void;
   isStudioView: boolean;
   currentTheme: AppTheme;
   onSelectTheme: (theme: AppTheme) => void;
@@ -28,6 +29,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onDeleteDocument,
   onOpenPromptView,
   onOpenTutorial,
+  onOpenHistory,
   isStudioView,
   currentTheme,
   onSelectTheme,
@@ -132,6 +134,19 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Right Controls: Theme Switcher (always visible) + Studio Actions */}
         <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+          {/* RIWAYAT SURAT JALAN (30 HARI CLOUD) */}
+          {onOpenHistory && (
+            <button
+              type="button"
+              onClick={onOpenHistory}
+              className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer theme-btn-ghost shrink-0"
+              title="Lihat Riwayat Surat Jalan (30 Hari)"
+            >
+              <History className="w-3.5 h-3.5 shrink-0 text-[#d8b4fe]" />
+              <span className="hidden sm:inline">Riwayat</span>
+            </button>
+          )}
+
           {/* PANDUAN APLIKASI (TUTORIAL OVERLAY) */}
           <button
             type="button"

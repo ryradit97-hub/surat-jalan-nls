@@ -14,6 +14,8 @@ import { SuccessCelebrationModal } from './components/SuccessCelebrationModal';
 import { RainModal } from './components/RainModal';
 import { ConfirmBackModal } from './components/ConfirmBackModal';
 import { TutorialOverlay } from './components/TutorialOverlay';
+import { HistoryModal } from './components/HistoryModal';
+import { saveSuratJalanHistory, fetchSuratJalanById } from './services/supabaseService';
 import { openWhatsAppDirect } from './utils/whatsappHelper';
 import { extractMultipleSuratJalanWithAI, applyAIExtractionToDocument } from './services/geminiService';
 import html2canvas from 'html2canvas-pro';
@@ -42,6 +44,27 @@ export const App: React.FC = () => {
     if (typeof window === 'undefined') return false;
     return localStorage.getItem('nls_has_seen_tutorial') !== 'true';
   });
+
+  // 30-Day Supabase Cloud History Modal State
+  const [isHistoryOpen, setIsHistoryOpen] = useState<boolean>(false);
+
+  // Check for shared Surat Jalan via URL query parameter (?view=<id>)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const viewId = params.get('view');
+    if (viewId) {
+      fetchSuratJalanById(viewId).then((sharedDoc) => {
+        if (sharedDoc) {
+          setDocuments([sharedDoc]);
+          setCurrentId(sharedDoc.id);
+          setViewState('studio');
+          setMobileStudioTab('preview');
+          scrollToTop();
+        }
+      });
+    }
+  }, []);
 
   const handleCloseTutorial = (dontShowAgain?: boolean) => {
     if (dontShowAgain) {
@@ -335,6 +358,7 @@ export const App: React.FC = () => {
         const singleResult = extractedList[0] || {};
         const updatedDoc = applyAIExtractionToDocument(currentDoc, singleResult);
         handleUpdateCurrentDoc(updatedDoc);
+        saveSuratJalanHistory([updatedDoc]);
       } else {
         // Multi-document generation (e.g. 4 Surat Jalan)
         const updatedDocs: SuratJalanData[] = extractedList.map((ext, idx) => {
@@ -345,6 +369,7 @@ export const App: React.FC = () => {
         });
         setDocuments(updatedDocs);
         setCurrentId(updatedDocs[0].id);
+        saveSuratJalanHistory(updatedDocs);
       }
 
       const elapsed = Date.now() - startTime;
@@ -754,6 +779,7 @@ export const App: React.FC = () => {
         onResetDocument={handleResetCurrentDoc}
         onOpenPromptView={() => setViewState('hero-prompt')}
         onOpenTutorial={() => setIsTutorialOpen(true)}
+        onOpenHistory={() => setIsHistoryOpen(true)}
         isStudioView={viewState === 'studio'}
         currentTheme={theme}
         onSelectTheme={setTheme}
@@ -1378,6 +1404,27 @@ export const App: React.FC = () => {
           setViewState('studio');
         }}
         currentScreen={viewState}
+      />
+
+      {/* 30-DAY SUPABASE CLOUD HISTORY MODAL (ANONYMOUS DEVICE VAULT) */}
+      <HistoryModal
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+        onSelectDocument={(doc) => {
+          setDocuments((prev) => {
+            const exists = prev.find((d) => d.id === doc.id || (d.blNumber && d.blNumber === doc.blNumber));
+            if (exists) return prev;
+            return [doc, ...prev];
+          });
+          setCurrentId(doc.id);
+          setViewState('studio');
+          setMobileStudioTab('preview');
+          scrollToTop();
+        }}
+        onDownloadPdf={async (doc) => {
+          const { pdf, fileName } = await generatePdfForDoc(doc);
+          pdf.save(fileName);
+        }}
       />
     </div>
   );
